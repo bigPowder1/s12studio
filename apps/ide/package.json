@@ -1,7 +1,7 @@
 {
   "name": "@s12/ide",
   "productName": "S12 Studio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "Apache-2.0",
   "private": true,
   "description": "S12 Studio: CodeWarrior S12(X) v5.1-style IDE and hiwave-style debugger (Electron)",

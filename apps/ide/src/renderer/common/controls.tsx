@@ -35,9 +35,9 @@ export function useSelectOnOpen(open: boolean) {
 
 // ------------------------------------------------------------------------------------------------ toolbar
 
-export function Toolbar({ children, testId }: { children: ReactNode; testId?: string }) {
+export function Toolbar({ children, testId, className }: { children: ReactNode; testId?: string; className?: string }) {
   return (
-    <div className="cw-toolbar" role="toolbar" data-testid={testId}>
+    <div className={className ? `cw-toolbar ${className}` : 'cw-toolbar'} role="toolbar" data-testid={testId}>
       {children}
     </div>
   );

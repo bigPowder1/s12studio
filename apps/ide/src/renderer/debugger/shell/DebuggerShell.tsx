@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { parseApiError, type HwlAttributeInfo, type HwlLayoutInfo, type UiCommandInfo } from '../../../shared/api';
-import { StatusBar, ToolButton, Toolbar, ToolSeparator } from '../../common/controls';
+import { StatusBar } from '../../common/controls';
 import { MenuBar, useMenuShortcuts } from '../../common/menu/MenuBar';
 import { findCommand, type MenuEntry } from '../../common/menu/model';
 import { useDebugSnapshot, useS12, useS12Event, useSession } from '../../common/s12';
@@ -14,14 +14,15 @@ import type { HiwaveComponentName } from '../components/contract';
 import { rebuiltNotice } from '../components/command/outputBuffer';
 import { findComponent } from '../components/registry';
 import { ControlpointsDialog } from '../dialogs';
+import { DebuggerToolbar } from './DebuggerToolbar';
 import { AboutDialog, BackgroundDialog, ComponentOpenDialog, FontDialog } from './dialogs';
 import { loadDialogOptionsFromIni, loadDialogPreset, loadOptionsOf, LoadExecutableDialog, SetConnectionDialog } from './hiwave-dialogs';
 import { colorrefToCss, cssToColorref, EMPTY_MDI, findWindow, mdiReducer, mdiToHwl, parseOpenArgs, pointsToPx, windowsForCommand, type MdiState, type Rect } from './layout';
 import { MdiArea, type MdiServices } from './MdiArea';
 import { debuggerMenus, STEP_COMMANDS } from './menus';
 import { clockText, cyclesText, HELP_MESSAGE, runStateText } from './status';
-import { parseToolbar, toolbarFromIni } from './toolbar';
-import { ToolbarIcons } from './toolbar-icons';
+import { parseToolbar, toolbarDisabled, toolbarFromIni } from './toolbar';
+import { useClipboardState } from './clipboard-state';
 
 export const DEBUGGER_TITLE = 'S12 Studio Debugger';
 
@@ -419,6 +420,7 @@ export function DebuggerShell() {
   useMenuShortcuts(menus);
 
   const toolbar = useMemo(() => parseToolbar(toolbarSpec), [toolbarSpec]);
+  const clipboard = useClipboardState();
 
   const mdiStyle = useMemo(() => {
     const st: Record<string, string> = {};
@@ -440,13 +442,7 @@ export function DebuggerShell() {
     <div className="cw-frame" data-testid="debugger-shell">
       <MenuBar menus={menus} />
       {view.toolbar && (
-        <Toolbar testId="debugger-toolbar">
-          {toolbar.map((t, i) => {
-            if ('separator' in t) return <ToolSeparator key={`sep${i}`} />;
-            const c = findCommand(menus, t.command);
-            return <ToolButton key={t.cmdId} title={t.title} icon={ToolbarIcons[t.icon] ?? t.title} disabled={!!c?.disabled} onClick={() => run(t.command)} testId={t.testId} />;
-          })}
-        </Toolbar>
+        <DebuggerToolbar items={toolbar} isDisabled={(command) => toolbarDisabled(command, clipboard, (c) => !!findCommand(menus, c)?.disabled)} onCommand={run} />
       )}
       <div className="cw-frame-body">
         <MdiArea state={mdi} dispatch={dispatch} services={services} hideHeadline={view.hideHeadline} style={mdiStyle} />

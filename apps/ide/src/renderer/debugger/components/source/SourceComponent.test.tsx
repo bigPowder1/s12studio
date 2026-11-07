@@ -6,9 +6,9 @@ import { HC12_LANGUAGE_ID, setMonacoLoader } from '../../../common/monaco';
 import { createFakeMonaco, MOUSE_TARGET, type FakeEditor, type FakeMonaco } from '../../../common/monaco/testing/fakeMonaco';
 import { ComponentHostContext, type ComponentHost } from '../contract';
 import { SESSION, snapshot } from '../../shell/testing';
-import type { BreakpointInfo, UiCommandInfo } from '../../../../shared/api';
+import type { BreakpointInfo, SourceFileInfo, UiCommandInfo } from '../../../../shared/api';
 import { breakpointKind, SourceComponent } from './SourceComponent';
-import { addressForLine, breakpointsByLine, findLine } from './model';
+import { addressForLine, breakpointsByLine, findLine, mainLabelLine, pickMainSource } from './model';
 
 const DBG = ['; Lab 3', '', '              XDEF  main', 'main:', 'Entry:        LDS   #$2400   ; stack', '              JSR   INIT', 'spin:         BRA   spin', '* end'].join('\n');
 const LINES = [
@@ -17,6 +17,12 @@ const LINES = [
   { line: 7, address: 0xc006 },
 ];
 const FILE = 'C:\\Lab3\\bin\\main.dbg';
+/** Library start-up module: in the line table, but its .dbg is not on this PC. */
+const LIB = 'C:\\Lib\\bin\\startup.dbg';
+const SOURCE_FILES: SourceFileInfo[] = [
+  { file: LIB, module: 'startup.dbg' },
+  { file: FILE, path: '/p/Lab3/bin/main.dbg', module: 'main.dbg' },
+];
 const bpInfo = (p: Partial<BreakpointInfo>): BreakpointInfo => ({ id: 1, address: 0xc000, enabled: true, temporary: false, hits: 0, ...p });
 
 describe('source model', () => {
@@ -27,6 +33,20 @@ describe('source model', () => {
     expect([...breakpointsByLine(LINES, [bp])]).toEqual([[7, bp]]);
     expect(findLine(DBG.split('\n'), 'spin', 1)).toBe(7);
     expect(findLine(DBG.split('\n'), 'xdef', 8)).toBe(3);
+  });
+
+  it('picks the main module: the file of `main` when present, else an available main.asm/.dbg, never a missing library', () => {
+    expect(pickMainSource(SOURCE_FILES, { file: FILE, line: 5 })).toEqual({ file: FILE, line: 5 });
+    // `main` in a module whose file is missing / no `main` symbol: first available file, main.* preferred
+    expect(pickMainSource(SOURCE_FILES, { file: LIB, line: 9 })).toEqual({ file: FILE });
+    const other = { file: 'C:\\P\\bin\\util.dbg', path: '/p/P/bin/util.dbg', module: 'util.dbg' };
+    const asm = { file: 'C:\\P\\Sources\\main.asm', path: '/p/P/Sources/main.asm', module: 'main.asm' };
+    expect(pickMainSource([other, ...SOURCE_FILES, asm], null)).toEqual({ file: asm.file });
+    expect(pickMainSource([other, ...SOURCE_FILES], null)).toEqual({ file: FILE });
+    expect(pickMainSource([other], null)).toEqual({ file: other.file });
+    expect(pickMainSource([SOURCE_FILES[0]], null)).toBeNull();
+    expect(mainLabelLine(DBG.split('\n'))).toBe(4);
+    expect(mainLabelLine(['  XDEF main', 'mainloop: nop'])).toBeUndefined();
   });
 
   it('gives each breakpoint kind its own margin icon', () => {
@@ -46,19 +66,39 @@ beforeEach(() => {
 });
 afterEach(() => setMonacoLoader(null));
 
-function setup(opts: { withSource?: boolean; sourceLocation?: (a: number) => { file: string; line: number } | null } = {}) {
+function setup(
+  opts: {
+    withSource?: boolean;
+    sourceLocation?: (a: number) => { file: string; line: number } | null;
+    /** Line-table files (default: none, i.e. no main-module fallback). */
+    sourceFiles?: SourceFileInfo[];
+    /** Address of `main` (debug.resolve). */
+    main?: number | null;
+    /** The first readSource call waits for this promise. */
+    holdFirstRead?: Promise<void>;
+    /** debug.resolve waits for this promise. */
+    holdResolve?: Promise<void>;
+  } = {},
+) {
   const { withSource = true } = opts;
+  let reads = 0;
   const listeners: ((c: UiCommandInfo) => void)[] = [];
   const m = createMockS12({
     debug: {
       session: async () => SESSION,
       readSource: async (file) => {
-        if (!withSource) throw new Error('[not-found] no source');
+        if (opts.holdFirstRead && reads++ === 0) await opts.holdFirstRead;
+        if (!withSource || /startup/.test(file)) throw new Error('[not-found] no source');
         return { file, path: '/p/Lab3/bin/main.dbg', text: DBG };
       },
       lineAddresses: async () => LINES,
       sourceLocation: async (a) => (opts.sourceLocation ? opts.sourceLocation(a) : a === 0xc006 ? { file: FILE, line: 7 } : null),
       setBreakpoint: async (spec) => ({ id: 3, temporary: false, enabled: true, hits: 0, ...spec }) as BreakpointInfo,
+      sourceFiles: async () => opts.sourceFiles ?? [],
+      resolve: async (e) => {
+        await opts.holdResolve;
+        return e === 'main' ? (opts.main ?? null) : null;
+      },
     },
   });
   const headlines: string[] = [];
@@ -218,5 +258,104 @@ describe('SourceComponent (Monaco SourceView)', () => {
     fireEvent.change(screen.getByTestId('source-findproc-dialog').querySelector('input')!, { target: { value: '0xC006' } });
     fireEvent.click(screen.getByRole('button', { name: 'OK' }));
     await waitFor(() => expect(ed.position.lineNumber).toBe(7));
+  });
+});
+
+describe('SourceComponent: no source at the PC (debugger start with NORUNAFTERLOAD)', () => {
+  // PC $8000 = library start-up (no line info), $C000 = main (line 5 of main.dbg), $C006 = spin (line 7)
+  const loc = (a: number) => (a === 0xc000 ? { file: FILE, line: 5 } : a === 0xc006 ? { file: FILE, line: 7 } : null);
+  const noSource = () => screen.queryByTestId('source-no-source')?.textContent ?? null;
+
+  it('first halt in no-source code shows the main module (scrolled to main:, no PC line); a halt with source follows the PC; a later no-source halt keeps the file', async () => {
+    const { m, headlines } = setup({ sourceFiles: SOURCE_FILES, main: 0xc000, sourceLocation: loc });
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8000 } })));
+    const ed = await editor();
+    await waitFor(() => expect(noSource()).toBe('No source for PC 0x8000: see the Assembly window'));
+    expect(pcBar(ed)).toEqual([]);
+    expect(root()).not.toHaveAttribute('data-pc-line');
+    expect(root()).toHaveAttribute('data-file', '/p/Lab3/bin/main.dbg');
+    await waitFor(() => expect(ed.revealed).toContain(4)); // `main:`
+    expect(ed.position.lineNumber).toBe(1); // scrolled only: the cursor (and focus) stay put
+    await waitFor(() => expect(headlines.at(-1)).toMatch(/^\/p\/Lab3\/bin\/main\.dbg\tLine: \d+$/));
+    expect(m.calls('debug', 'readSource')).toEqual([[FILE]]);
+    expect(m.calls('debug', 'resolve')).toEqual([['main']]);
+
+    // step into the student's code: normal PC following
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0xc006 }, source: { file: FILE, line: 7 } })));
+    await waitFor(() => expect(pcBar(ed)).toEqual([7]));
+    expect(root()).toHaveAttribute('data-pc-line', '7');
+    expect(noSource()).toBeNull();
+
+    // halt in library code again (e.g. inside a library call): the file stays, without a PC line
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8010 } })));
+    await waitFor(() => expect(noSource()).toBe('No source for PC 0x8010: see the Assembly window'));
+    expect(fake.editors.at(-1)!.model?.getValue()).toBe(DBG);
+    expect(pcBar(ed)).toEqual([]);
+    expect(root()).toHaveAttribute('data-file', '/p/Lab3/bin/main.dbg');
+    expect(m.calls('debug', 'readSource')).toEqual([[FILE]]);
+    expect(m.calls('debug', 'resolve')).toHaveLength(1);
+  });
+
+  it('a PC in a library module whose .dbg is missing also falls back to the main module', async () => {
+    const { m } = setup({ sourceFiles: SOURCE_FILES, main: 0xc000, sourceLocation: (a) => (a === 0x8000 ? { file: LIB, line: 12 } : loc(a)) });
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8000 }, source: { file: LIB, line: 12 } })));
+    const ed = await editor();
+    await waitFor(() => expect(noSource()).toBe('No source for PC 0x8000 (startup.dbg not found): see the Assembly window'));
+    expect(pcBar(ed)).toEqual([]);
+    await waitFor(() => expect(ed.revealed).toContain(4)); // scrolled to `main:`
+    expect(m.calls('debug', 'readSource')).toEqual([[LIB], [FILE]]);
+  });
+
+  it('without a `main` symbol, shows the first available source file (main.dbg preferred)', async () => {
+    const { m } = setup({ sourceFiles: SOURCE_FILES, main: null, sourceLocation: loc });
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8000 } })));
+    const ed = await editor();
+    expect(pcBar(ed)).toEqual([]);
+    await waitFor(() => expect(noSource()).toContain('No source for PC 0x8000'));
+    // the library module (listed first, its file missing) is skipped without even being read
+    await waitFor(() => expect(root()).toHaveAttribute('data-file', '/p/Lab3/bin/main.dbg'));
+    expect(m.calls('debug', 'readSource')).toEqual([[FILE]]);
+  });
+
+  it('a main-module fallback still in flight when a halt with source arrives is dropped (no scroll away from the PC line)', async () => {
+    const gate = () => {
+      let open!: () => void;
+      const p = new Promise<void>((r) => (open = r));
+      return { p, open };
+    };
+    const fallback = gate();
+    const follow = gate();
+    const { m } = setup({ sourceFiles: SOURCE_FILES, main: 0xc000, sourceLocation: loc, holdResolve: fallback.p, holdFirstRead: follow.p });
+    // no source at the PC: the main-module fallback starts (waits in debug.resolve)
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8000 } })));
+    await waitFor(() => expect(m.calls('debug', 'resolve')).toHaveLength(1));
+    // a halt in the student's code: PC following starts reading main.dbg (held)
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0xc006 }, source: { file: FILE, line: 7 } })));
+    await waitFor(() => expect(m.calls('debug', 'readSource')).toHaveLength(1));
+    // the fallback finishes first, then PC following
+    await act(async () => {
+      fallback.open();
+      await fallback.p;
+    });
+    await act(async () => {
+      follow.open();
+      await follow.p;
+    });
+    const ed = await editor();
+    await waitFor(() => expect(pcBar(ed)).toEqual([7]));
+    expect(root()).toHaveAttribute('data-pc-line', '7');
+    expect(ed.revealed).not.toContain(4); // `main:` never scrolled to
+    expect(ed.revealed.at(-1)).toBe(7);
+    expect(noSource()).toBeNull();
+  });
+
+  it('a new load clears the shown file and looks the main module up again', async () => {
+    const { m } = setup({ sourceFiles: SOURCE_FILES, main: 0xc000, sourceLocation: loc });
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8000 } })));
+    await editor();
+    act(() => m.emit('debug', 'loaded', { absPath: '/p/Lab3/bin/Project.abs' }));
+    act(() => m.emit('debug', 'snapshot', snapshot({ regs: { PC: 0x8000 } })));
+    await waitFor(() => expect(m.calls('debug', 'resolve')).toHaveLength(2));
+    await waitFor(() => expect(root()).toHaveAttribute('data-file', '/p/Lab3/bin/main.dbg'));
   });
 });

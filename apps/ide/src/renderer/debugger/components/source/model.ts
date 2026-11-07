@@ -2,7 +2,7 @@
  * Source component model (pure): the line <-> address mapping used for breakpoint marks, Set Breakpoint, Run To
  * Cursor and Set Program Counter (chroma coding is the Monaco HC12 language in common/monaco).
  */
-import type { BreakpointInfo, LineAddress } from '../../../../shared/api';
+import type { BreakpointInfo, LineAddress, SourceFileInfo, SourceLocationInfo } from '../../../../shared/api';
 
 /** First code address of a line, or of the next line that has code (hiwave sets the breakpoint there). */
 export function addressForLine(lines: readonly LineAddress[], line: number): { line: number; address: number } | undefined {
@@ -36,4 +36,28 @@ export function findLine(textLines: readonly string[], text: string, from: numbe
     if (textLines[i].toLowerCase().includes(t)) return i + 1;
   }
   return undefined;
+}
+
+/**
+ * The application's main source module, shown when the PC has no source and no file is shown yet (debugger start
+ * with NORUNAFTERLOAD stops in the library's start-up code). `mainLoc` is the source location of the `main` symbol:
+ * its file when that file is on this PC; else the first available source file, preferring `Sources/main.asm`, then
+ * any `main.asm`/`main.dbg`. Never a module whose file is missing (library `.dbg` files point to the lab PC).
+ */
+export function pickMainSource(files: readonly SourceFileInfo[], mainLoc: SourceLocationInfo | null): { file: string; line?: number } | null {
+  if (mainLoc && (mainLoc.path || files.some((f) => f.path && sameFile(f.file, mainLoc.file)))) return { file: mainLoc.file, line: mainLoc.line };
+  const avail = files.filter((f) => f.path);
+  const base = (p: string) => p.split(/[\\/]/).pop() ?? p;
+  // UNCERTAIN: preference order of the fallback (no `main` symbol / its module has no source) is our own choice
+  const pick =
+    avail.find((f) => /(^|[\\/])sources[\\/]main\.asm$/i.test(f.path!)) ??
+    avail.find((f) => /^main\.(asm|dbg)$/i.test(base(f.path!)) || /^main\.(asm|dbg)$/i.test(base(f.file))) ??
+    avail[0];
+  return pick ? { file: pick.file } : null;
+}
+
+/** Line (1-based) of the `main:` label, if the text has one. */
+export function mainLabelLine(textLines: readonly string[]): number | undefined {
+  const i = textLines.findIndex((l) => /^\s*main\s*:/.test(l));
+  return i < 0 ? undefined : i + 1;
 }

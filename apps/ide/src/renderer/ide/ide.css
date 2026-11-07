@@ -4,6 +4,12 @@
   background: var(--cw-face);
 }
 
+/* IDE main toolbar (ide-toolbar.tsx): a disabled button keeps its colour icon (CodeWarrior 5.1 draws Stop, Save...
+   in colour with nothing to act on); it only ignores clicks and shows no hover bevel. */
+.ide-toolbar .cw-tool-btn:disabled {
+  opacity: 1;
+}
+
 .ide-mdi {
   padding: 2px;
   background: var(--cw-face-shadow);

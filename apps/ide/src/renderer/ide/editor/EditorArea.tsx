@@ -583,6 +583,7 @@ export const EditorArea = forwardRef<EditorAreaHandle, EditorAreaProps>(function
     },
     focus: () => editorRef.current?.focus(),
     activePath: () => activeDoc()?.path ?? null,
+    hasActiveDocument: () => activeDoc() !== null,
     openPaths: () => docsRef.current.flatMap((d) => (d.path ? [d.path] : [])),
     dirtyPaths: () => docsRef.current.filter(isDirty).map((d) => d.path ?? d.name),
     hasUnsavedChanges: () => docsRef.current.some(isDirty),

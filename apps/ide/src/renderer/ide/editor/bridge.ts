@@ -33,6 +33,8 @@ export interface EditorAreaHandle {
   edit(cmd: 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll' | 'balance' | 'shiftLeft' | 'shiftRight'): void;
   focus(): void;
   activePath(): string | null;
+  /** True while a document (untitled included) is the active one. */
+  hasActiveDocument(): boolean;
   openPaths(): string[];
   dirtyPaths(): string[];
   hasUnsavedChanges(): boolean;

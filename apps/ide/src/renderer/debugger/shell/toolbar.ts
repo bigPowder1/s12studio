@@ -72,3 +72,24 @@ export function parseToolbar(value: string | undefined | null): ToolbarItem[] {
 export function toolbarFromIni(text: string): string | undefined {
   return parseIni(text).get('HI-WAVE', 'TOOLBAR');
 }
+
+/**
+ * Whether a toolbar button is disabled: as its menu command (`menuDisabled`), except the buttons hiwave greys on its
+ * own. Cut/Copy/Paste follow what the focused component can take (clipboard-state.ts). New is greyed in the hiwave
+ * screenshot; File > New stays in the menu (re-applies the default layout).
+ */
+export function toolbarDisabled(command: string, clip: { cut: boolean; copy: boolean; paste: boolean }, menuDisabled: (command: string) => boolean): boolean {
+  switch (command) {
+    // UNCERTAIN: why hiwave greys New (no new-configuration handler in this build?); we grey the button only
+    case 'file.new':
+      return true;
+    case 'edit.cut':
+      return !clip.cut;
+    case 'edit.copy':
+      return !clip.copy;
+    case 'edit.paste':
+      return !clip.paste;
+    default:
+      return menuDisabled(command);
+  }
+}

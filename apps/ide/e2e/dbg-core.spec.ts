@@ -35,8 +35,11 @@ test('hiwave window: layout, source, breakpoint, run, registers', async () => {
   await expect(dbg.getByTestId('tb-cut')).toBeVisible();
   await expect(dbg.getByTestId('tb-reset')).toBeEnabled();
 
-  // PC = Entry ($C000) is library start-up code without a .dbg: Source says so, Assembly shows it
-  await expect(dbg.getByTestId('source-empty')).toHaveAttribute('title', /No source for PC 0xC000/);
+  // PC = Entry ($C000) is library start-up code without a .dbg: Source says so in its headline but still shows the
+  // main module (no PC line), Assembly shows the PC
+  await expect(dbg.getByTestId('source-no-source')).toContainText('No source for PC 0xC000');
+  await expect(dbg.getByTestId('source-component')).toHaveAttribute('data-file', /main\.dbg$/i);
+  await expect(dbg.getByTestId('source-component')).not.toHaveAttribute('data-pc-line', /./);
   await expect(dbg.getByTestId('asm-row-C000')).toHaveAttribute('data-pc', 'true');
   await expect(dbg.getByTestId('debugger-status')).toContainText('MC9S12XDP512');
   await s.screenshot(dbg, 'build-dbg-core-open');

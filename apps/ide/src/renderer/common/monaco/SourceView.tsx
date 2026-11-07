@@ -218,6 +218,9 @@ export const SourceView = forwardRef<SourceViewHandle, SourceViewProps>(function
       fixedOverflowWidgets: true,
       cursorBlinking: 'solid',
       readOnlyMessage: { value: 'The Source component is read-only' },
+      // window-style scrollbars: shown whenever the text overflows (not only on hover), with arrows and an opaque track
+      // (sourceView.css), so a thumb never floats over the text
+      scrollbar: { vertical: 'visible', horizontal: 'visible', useShadows: false, verticalHasArrows: true, horizontalHasArrows: true, verticalScrollbarSize: 14, horizontalScrollbarSize: 14, arrowSize: 14, alwaysConsumeMouseWheel: false },
     });
     edRef.current = ed;
     decoRef.current = ed.createDecorationsCollection([]);

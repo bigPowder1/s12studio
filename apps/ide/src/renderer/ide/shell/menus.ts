@@ -14,6 +14,8 @@ export interface IdeMenuState {
   building: boolean;
   /** Active editor document (editor track via setIdeContext). */
   activeFile: string | null;
+  /** An editor document is active, untitled ones included (default: `activeFile` is set). */
+  hasDocument?: boolean;
   openFiles: string[];
   dirtyCount: number;
   recent: string[];
@@ -81,6 +83,9 @@ export function ideMenus(a: IdeMenuActions, st: IdeMenuState): TopMenu[] {
   const inProject = !!project && !!st.activeFile && project.files.some((f) => f.path === st.activeFile);
   const canCompileActive = compileNames(project, st.activeFile, st.selectedFile).length > 0 && !building;
   const conn = project ? effectiveConnection(project) : undefined;
+  // UNCERTAIN: CW 5.1 greys the document commands while no editor window is active (Windows MDI convention; not
+  // confirmed on a 5.1 screenshot). Find, Find in Files, New and Open stay enabled.
+  const noDoc = !(st.hasDocument ?? !!st.activeFile);
   const recent: MenuEntry[] = st.recent.length ? st.recent.slice(0, 10).map((p, i) => ({ id: `file.recent.${i}`, label: `&${(i + 1) % 10} ${esc(p)}`, onSelect: () => a.openPath(p) })) : [{ label: '(empty)', disabled: true }];
 
   return [
@@ -95,9 +100,9 @@ export function ideMenus(a: IdeMenuActions, st: IdeMenuState): TopMenu[] {
         { id: 'file.close', label: '&Close', shortcut: 'Ctrl+W', onSelect: () => a.cmd('editor.close') },
         { id: 'file.closeProject', label: 'Close Pro&ject', disabled: noProj, onSelect: a.closeProject },
         SEP,
-        { id: 'file.save', label: '&Save', shortcut: 'Ctrl+S', onSelect: () => a.cmd('editor.save') },
+        { id: 'file.save', label: '&Save', shortcut: 'Ctrl+S', disabled: noDoc, onSelect: () => a.cmd('editor.save') },
         { id: 'file.saveAll', label: 'Save A&ll', shortcut: 'Ctrl+Shift+S', onSelect: () => a.cmd('editor.saveAll') },
-        { id: 'file.saveAs', label: 'Save &As...', onSelect: () => a.cmd('editor.saveAs') },
+        { id: 'file.saveAs', label: 'Save &As...', disabled: noDoc, onSelect: () => a.cmd('editor.saveAs') },
         { id: 'file.saveCopyAs', label: 'Save a Cop&y As...', disabled: true },
         { id: 'file.revert', label: '&Revert', onSelect: () => a.cmd('editor.revert') },
         SEP,
@@ -123,12 +128,12 @@ export function ideMenus(a: IdeMenuActions, st: IdeMenuState): TopMenu[] {
     {
       label: '&Edit',
       items: [
-        { id: 'edit.undo', label: '&Undo', shortcut: 'Ctrl+Z', onSelect: () => a.cmd('editor.undo') },
-        { id: 'edit.redo', label: '&Redo', shortcut: 'Ctrl+Shift+Z', onSelect: () => a.cmd('editor.redo') },
+        { id: 'edit.undo', label: '&Undo', shortcut: 'Ctrl+Z', disabled: noDoc, onSelect: () => a.cmd('editor.undo') },
+        { id: 'edit.redo', label: '&Redo', shortcut: 'Ctrl+Shift+Z', disabled: noDoc, onSelect: () => a.cmd('editor.redo') },
         SEP,
-        { id: 'edit.cut', label: 'Cu&t', shortcut: 'Ctrl+X', onSelect: () => a.cmd('editor.cut') },
-        { id: 'edit.copy', label: '&Copy', shortcut: 'Ctrl+C', onSelect: () => a.cmd('editor.copy') },
-        { id: 'edit.paste', label: '&Paste', shortcut: 'Ctrl+V', onSelect: () => a.cmd('editor.paste') },
+        { id: 'edit.cut', label: 'Cu&t', shortcut: 'Ctrl+X', disabled: noDoc, onSelect: () => a.cmd('editor.cut') },
+        { id: 'edit.copy', label: '&Copy', shortcut: 'Ctrl+C', disabled: noDoc, onSelect: () => a.cmd('editor.copy') },
+        { id: 'edit.paste', label: '&Paste', shortcut: 'Ctrl+V', disabled: noDoc, onSelect: () => a.cmd('editor.paste') },
         { id: 'edit.delete', label: '&Delete', disabled: true },
         { id: 'edit.selectAll', label: 'Select &All', shortcut: 'Ctrl+A', onSelect: () => a.cmd('editor.selectAll') },
         SEP,
@@ -177,11 +182,11 @@ export function ideMenus(a: IdeMenuActions, st: IdeMenuState): TopMenu[] {
       items: [
         // UNCERTAIN: Find Ctrl+F, Find Next F3, Find in Files Ctrl+Shift+F, Replace Ctrl+H, Go to Line Ctrl+G (memory)
         { id: 'search.find', label: '&Find...', shortcut: 'Ctrl+F', onSelect: () => a.cmd('editor.find') },
-        { id: 'search.replace', label: '&Replace...', shortcut: 'Ctrl+H', onSelect: () => a.cmd('editor.replace') },
+        { id: 'search.replace', label: '&Replace...', shortcut: 'Ctrl+H', disabled: noDoc, onSelect: () => a.cmd('editor.replace') },
         { id: 'search.findInFiles', label: 'Find in F&iles...', shortcut: 'Ctrl+Shift+F', onSelect: () => a.cmd('editor.findInFiles') },
         SEP,
-        { id: 'search.findNext', label: 'Find &Next', shortcut: 'F3', onSelect: () => a.cmd('editor.findNext') },
-        { id: 'search.findPrevious', label: 'Find Pre&vious', shortcut: 'Shift+F3', onSelect: () => a.cmd('editor.findPrevious') },
+        { id: 'search.findNext', label: 'Find &Next', shortcut: 'F3', disabled: noDoc, onSelect: () => a.cmd('editor.findNext') },
+        { id: 'search.findPrevious', label: 'Find Pre&vious', shortcut: 'Shift+F3', disabled: noDoc, onSelect: () => a.cmd('editor.findPrevious') },
         { id: 'search.findInNextFile', label: 'Find In Next Fi&le', disabled: true },
         SEP,
         { id: 'search.enterFindString', label: '&Enter Find String', disabled: true },

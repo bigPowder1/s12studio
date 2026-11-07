@@ -5,8 +5,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MenuBar, useMenuShortcuts } from '../../common/menu/MenuBar';
-import { StatusBar, Splitter, ToolButton, Toolbar, ToolSeparator } from '../../common/controls';
-import { Icons } from '../../common/icons';
+import { StatusBar, Splitter } from '../../common/controls';
 import { useProject, useS12, useS12Event, useS12Store } from '../../common/s12';
 import type { BuildResultInfo, ProjectInfo } from '../../../shared/api';
 import { projectFileName } from '../project/project-file-name';
@@ -17,6 +16,7 @@ import { ErrorsWindow } from '../errors';
 import { ProjectWindow } from '../project';
 import { setIdeStatus, useIdeActions, useIdeStatus } from './actions';
 import { compileNames, ideMenus, type IdeMenuActions } from './menus';
+import { IdeToolbar } from './ide-toolbar';
 import { updatePane, useUpdateNotice } from './update-notice';
 import '../ide.css';
 
@@ -34,9 +34,9 @@ export const ideTitle = (project: Pick<ProjectInfo, 'name' | 'mcpPath' | 'path'>
 export function syncIdeContextFromEditor(): void {
   const ed = getEditorArea();
   if (!ed) return;
-  const next = { activeFile: ed.activePath(), openFiles: ed.openPaths(), dirtyCount: ed.dirtyPaths().length };
+  const next = { activeFile: ed.activePath(), openFiles: ed.openPaths(), dirtyCount: ed.dirtyPaths().length, hasDocument: ed.hasActiveDocument() };
   const cur = getIdeContext();
-  if (cur.activeFile !== next.activeFile || cur.dirtyCount !== next.dirtyCount || cur.openFiles.join('\n') !== next.openFiles.join('\n')) setIdeContext(next);
+  if (cur.activeFile !== next.activeFile || cur.dirtyCount !== next.dirtyCount || cur.hasDocument !== next.hasDocument || cur.openFiles.join('\n') !== next.openFiles.join('\n')) setIdeContext(next);
 }
 
 const STEP_TEXT: Record<string, string> = { check: 'Checking', assemble: 'Assembling', link: 'Linking', burn: 'Burning', done: 'Done' };
@@ -143,7 +143,7 @@ export function IdeShell() {
   );
 
   const menus = useMemo(
-    () => ideMenus(menuActions, { project, building, activeFile: ctx.activeFile, openFiles: ctx.openFiles, dirtyCount: ctx.dirtyCount, recent, toolbarVisible: toolbar, statusBarVisible: statusBar, selectedFile }),
+    () => ideMenus(menuActions, { project, building, activeFile: ctx.activeFile, hasDocument: ctx.hasDocument, openFiles: ctx.openFiles, dirtyCount: ctx.dirtyCount, recent, toolbarVisible: toolbar, statusBarVisible: statusBar, selectedFile }),
     [menuActions, project, building, ctx, recent, toolbar, statusBar, selectedFile],
   );
   useMenuShortcuts(menus);
@@ -151,26 +151,9 @@ export function IdeShell() {
   return (
     <div className="cw-frame ide-frame" data-testid="ide-frame">
       <MenuBar menus={menus} />
-      {toolbar && (
-        <Toolbar testId="ide-toolbar">
-          <ToolButton title="New Text File (Ctrl+N)" icon={Icons.newFile} testId="tb-new" onClick={() => runIdeCommand('editor.new')} />
-          <ToolButton title="Open (Ctrl+O)" icon={Icons.open} testId="tb-open" onClick={menuActions.open} />
-          <ToolButton title="Save (Ctrl+S)" icon={Icons.save} testId="tb-save" onClick={() => runIdeCommand('editor.save')} />
-          <ToolButton title="Save All (Ctrl+Shift+S)" icon={Icons.saveAll} testId="tb-saveall" onClick={() => runIdeCommand('editor.saveAll')} />
-          <ToolSeparator />
-          <ToolButton title="Undo (Ctrl+Z)" icon={Icons.undo} onClick={() => runIdeCommand('editor.undo')} />
-          <ToolButton title="Redo (Ctrl+Shift+Z)" icon={Icons.redo} onClick={() => runIdeCommand('editor.redo')} />
-          <ToolSeparator />
-          <ToolButton title="Cut (Ctrl+X)" icon={Icons.cut} onClick={() => runIdeCommand('editor.cut')} />
-          <ToolButton title="Copy (Ctrl+C)" icon={Icons.copy} onClick={() => runIdeCommand('editor.copy')} />
-          <ToolButton title="Paste (Ctrl+V)" icon={Icons.paste} onClick={() => runIdeCommand('editor.paste')} />
-          <ToolSeparator />
-          <ToolButton title="Find (Ctrl+F)" icon={Icons.find} onClick={() => runIdeCommand('editor.find')} />
-          <ToolButton title="Find in Files (Ctrl+Shift+F)" icon={Icons.findInFiles} onClick={() => runIdeCommand('editor.findInFiles')} />
-          {/* Target, Make, Debug and Run live in the project window's toolbar (ide.md §3), not here (final fidelity F7).
-              UNCERTAIN: CW 5.1's main toolbar content beyond the standard file/edit/search buttons. */}
-        </Toolbar>
-      )}
+      {/* the full CodeWarrior 5.1 main toolbar (file/edit/search, Make, Stop Build, Debug, Compile, Target Settings...);
+          the project window keeps its own small toolbar too (ide.md §3) */}
+      {toolbar && <IdeToolbar menus={menus} />}
       <div className="cw-frame-body ide-mdi">
         <Splitter
           direction="horizontal"

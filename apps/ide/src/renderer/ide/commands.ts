@@ -119,9 +119,11 @@ export interface IdeContextState {
   openFiles: string[];
   /** Number of unsaved editor documents (enables Save All). */
   dirtyCount: number;
+  /** An editor document is active, untitled ones included (enables Save, Undo, Cut/Copy/Paste, Find Next...). */
+  hasDocument?: boolean;
 }
 
-let ideContext: IdeContextState = { activeFile: null, openFiles: [], dirtyCount: 0 };
+let ideContext: IdeContextState = { activeFile: null, openFiles: [], dirtyCount: 0, hasDocument: false };
 const ideContextListeners = new Set<() => void>();
 
 /** Merge a patch into the IDE context (editor track: call on activate/open/close/dirty changes). */

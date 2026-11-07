@@ -10,7 +10,7 @@ import { compileNames, effectiveConnection, ideMenus, type IdeMenuActions } from
 import { collectShortcuts } from '../../common/menu/model';
 
 // the editor track's Monaco editor and Errors & Warnings window are not under test here
-const editorHandle = { current: null as null | { activePath: () => string | null; openPaths: () => string[]; dirtyPaths: () => string[] } };
+const editorHandle = { current: null as null | { activePath: () => string | null; hasActiveDocument: () => boolean; openPaths: () => string[]; dirtyPaths: () => string[] } };
 vi.mock('../editor', () => ({ EditorArea: () => <div data-testid="editor-area" />, getEditorArea: () => editorHandle.current }));
 vi.mock('../errors', () => ({ ErrorsWindow: () => null }));
 
@@ -115,8 +115,37 @@ describe('IdeShell', () => {
     expect(screen.getByTestId('pw-target')).toHaveValue('Standard');
     expect(screen.getByTestId('pw-connection')).toHaveAttribute('title', 'Change MCU/Connection (P&E Multilink USB)');
     expect(screen.getByTestId('ide-status')).not.toHaveTextContent('P&E Multilink USB');
-    expect(screen.queryByTestId('tb-make')).toBeNull();
     expect(document.querySelector('[data-menu-id="window.debugger"]')).toBeNull();
+  });
+
+  it('main toolbar: the full CW 5.1 row; Make builds, Debug launches, Stop Build follows the build, Target Settings opens', async () => {
+    const m = setup();
+    await screen.findByTestId('project-files');
+    const tb = screen.getByTestId('ide-toolbar');
+    expect(within(tb).getAllByRole('button')).toHaveLength(19);
+    expect(screen.getByTestId('tb-make')).toHaveAttribute('title', 'Make (F7)');
+    expect(screen.getByTestId('tb-stop')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('tb-make'));
+    await waitFor(() => expect(m.calls('build', 'make')).toHaveLength(1));
+    act(() => m.emit('build', 'started', { kind: 'make', target: 'Standard' }));
+    expect(screen.getByTestId('tb-stop')).toBeEnabled();
+    expect(screen.getByTestId('tb-make')).toBeDisabled();
+    expect(screen.getByTestId('tb-debug')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('tb-stop'));
+    await waitFor(() => expect(m.calls('build', 'stop')).toHaveLength(1));
+    act(() => m.emit('build', 'finished', okBuild()));
+    expect(screen.getByTestId('tb-stop')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('tb-debug'));
+    await waitFor(() => expect(m.calls('debug', 'launch')).toHaveLength(1));
+    fireEvent.click(screen.getByTestId('tb-settings'));
+    expect(await screen.findByRole('dialog', { name: 'Standard Settings' })).toBeInTheDocument();
+  });
+
+  it('main toolbar without a project greys the project buttons', async () => {
+    setup({ project: { current: async () => null as never } });
+    await waitFor(() => expect(screen.getByTestId('tb-new')).toBeEnabled());
+    for (const id of ['tb-make', 'tb-stop', 'tb-debug', 'tb-compile', 'tb-settings', 'tb-project']) expect(screen.getByTestId(id)).toBeDisabled();
+    expect(screen.getByTestId('tb-open')).toBeEnabled();
   });
 
   it('F7 makes, Ctrl+U brings up to date, Ctrl+F7 compiles the active editor file', async () => {
@@ -149,7 +178,7 @@ describe('IdeShell', () => {
   it('follows the editor area (getEditorArea) for Compile and the Window menu', async () => {
     const m = setup();
     await screen.findByTestId('project-files');
-    editorHandle.current = { activePath: () => '/p/Sources/main.asm', openPaths: () => ['/p/Sources/main.asm', '/p/prm/Project.prm'], dirtyPaths: () => [] };
+    editorHandle.current = { activePath: () => '/p/Sources/main.asm', hasActiveDocument: () => true, openPaths: () => ['/p/Sources/main.asm', '/p/prm/Project.prm'], dirtyPaths: () => [] };
     fireEvent.mouseDown(document.body); // clicking into the editor syncs the IDE context (also a 500 ms timer)
     key('F7', { ctrlKey: true });
     await waitFor(() => expect(m.calls('build', 'compile')).toEqual([[['main.asm']]]));

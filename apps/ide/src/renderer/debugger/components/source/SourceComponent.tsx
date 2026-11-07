@@ -6,6 +6,12 @@
  * Location, Set Program Counter, Open Source File, Copy, Go to Line, Find, Marks. Info bar: full path and "Line: N"
  * (first visible line). When the PC is in code without source (library), shows "no source" and leaves it to Assembly.
  *
+ * No-source halts keep the file already shown. When nothing has been shown yet (NORUNAFTERLOAD: the load stops at the
+ * reset entry, which is in the ME305 library's start-up code whose `.dbg` is not on the student's PC), the window
+ * shows the application's main module instead (the file of `main`, scrolled to `main:`) with no PC line, so a
+ * student never faces an empty Source window (owner decision; hiwave itself would leave it empty, final fidelity
+ * F11). Normal PC following resumes at the first halt in code that has source.
+ *
  * The PC line follows the *current* PC: the snapshot's `source` belongs to the PC of the last halt, so after Set
  * Program Counter / a PC edit in the Register window (no halt) the location is looked up with `debug.sourceLocation`.
  */
@@ -21,7 +27,7 @@ import { useComponentHost, useComponentMenu, useUiCommands, type DebuggerCompone
 import { resolveCommandAddress, showLocation, useBreakpoints, useDebuggerBus } from '../../shell/bus';
 import { PromptDialog } from '../../shell/PromptDialog';
 import { ControlpointsDialog } from '../../dialogs/ControlpointsDialog';
-import { addressForLine, breakpointsByLine, findLine, sameFile } from './model';
+import { addressForLine, breakpointsByLine, findLine, mainLabelLine, pickMainSource, sameFile } from './model';
 
 const attrOn = (attrs: readonly { name: string; value: string }[], name: string, def: boolean) => {
   const v = attrs.find((a) => a.name.toUpperCase() === name)?.value;
@@ -82,17 +88,26 @@ export function SourceComponent({ attributes }: DebuggerComponentProps) {
   const view = useRef<SourceViewHandle>(null);
   const root = useRef<HTMLDivElement>(null);
   const font = useMonoFont(root);
-  /** Line to put the cursor on once the view shows the file (SPC, Go to Line, Find after a file switch). */
-  const pendingGoto = useRef<{ line: number; file?: string } | null>(null);
+  /**
+   * Line to put the cursor on once the view shows the file (SPC, Go to Line, Find after a file switch); `quiet` only
+   * scrolls it to the top (main module at start: no cursor move, no focus theft from the active window).
+   */
+  const pendingGoto = useRef<{ line: number; file?: string; quiet?: boolean } | null>(null);
   const halted = snap.state === 'halted';
   const report = useCallback((e: unknown) => bus.status(parseApiError(e).message), [bus]);
 
   // .dbg files that could not be read: not retried on every snapshot (cleared when an application is loaded)
   const missing = useRef(new Set<string>());
   const reading = useRef<string | null>(null);
+  /** Main-module fallback already looked up for this load (once per load: see `showMainModule`). */
+  const mainTried = useRef(false);
+  /** Bumped when a file gets shown (showFile) or the application reloads: a pending main-module fallback is stale. */
+  const fileGen = useRef(0);
   useS12Event('debug', 'loaded', () => {
     setSrc(null);
     missing.current.clear();
+    mainTried.current = false;
+    fileGen.current++;
     setLoadGen((g) => g + 1);
   });
 
@@ -100,24 +115,34 @@ export function SourceComponent({ attributes }: DebuggerComponentProps) {
   // before this component's effects in the same commit)
   const srcRef = useRef<SourceText | null>(null);
   srcRef.current = src;
-  /** Put the cursor on a line of `file` (default: the shown file) once the view shows it. */
-  const gotoLine = useCallback((line: number, file?: string) => {
+  /** The shown file has the PC line (set during render, at `pcLine`). */
+  const pcShown = useRef(false);
+  /** Put the cursor on a line of `file` (default: the shown file) once the view shows it (`quiet`: scroll only). */
+  const gotoLine = useCallback((line: number, file?: string, quiet?: boolean) => {
     const want = file ?? srcRef.current?.file;
     const v = view.current;
+    // a quiet (main-module) scroll never moves the view away from a PC line: PC following has taken over
+    if (quiet && pcShown.current) {
+      pendingGoto.current = null;
+      return;
+    }
     if (v?.editor()?.getModel() && want && sameFile(want, srcRef.current?.file)) {
       pendingGoto.current = null;
-      v.gotoLine(line);
-    } else pendingGoto.current = { line, file: want };
+      if (quiet) v.revealLine(line, 'top');
+      else v.gotoLine(line);
+    } else pendingGoto.current = { line, file: want, quiet };
   }, []);
   useEffect(() => {
     const p = pendingGoto.current;
-    if (p && p.file && sameFile(p.file, src?.file) && view.current?.editor()?.getModel()) gotoLine(p.line, p.file);
+    if (p && p.file && sameFile(p.file, src?.file) && view.current?.editor()?.getModel()) gotoLine(p.line, p.file, p.quiet);
   });
 
   /** Show a file (loading it when needed). */
   const showFile = useCallback(
     async (file: string) => {
       if (!src || !sameFile(src.file, file)) {
+        // before the awaits: a main-module fallback still in flight must not land after (or over) this file
+        fileGen.current++;
         const text = await s12.debug.readSource(file);
         const la = await s12.debug.lineAddresses(file).catch(() => [] as LineAddress[]);
         setSrc(text);
@@ -151,25 +176,63 @@ export function SourceComponent({ attributes }: DebuggerComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s12, pc, haltPc, snapLoc?.file, snapLoc?.line, haltKey, loadGen]);
 
-  // follow the PC: open its file (the view keeps the PC line in sight)
+  /**
+   * No source for the PC and no file shown yet: show the application's main module (looked up once per load) under
+   * the "no source" headline (set by the caller), with no PC line. Dropped when a file got shown meanwhile (PC following, Open Source File...)
+   * or the application was reloaded.
+   */
+  const showMainModule = useCallback(
+    () => {
+      if (srcRef.current || mainTried.current) return;
+      mainTried.current = true;
+      const gen = fileGen.current;
+      const d = s12.debug;
+      void (async () => {
+        const files = await Promise.resolve(d.sourceFiles()).catch(() => [] as SourceFileInfo[]);
+        const at = await Promise.resolve(d.resolve('main')).catch(() => null);
+        const loc = typeof at === 'number' ? await Promise.resolve(d.sourceLocation(at)).catch(() => null) : null;
+        const pick = pickMainSource(Array.isArray(files) ? files : [], loc ?? null);
+        if (!pick) return;
+        const text = await d.readSource(pick.file);
+        const la = await Promise.resolve(d.lineAddresses(pick.file)).catch(() => [] as LineAddress[]);
+        // stale: a file got shown or is being read for the PC (PC following took over), or the application reloaded
+        if (fileGen.current !== gen || srcRef.current || reading.current !== null) return;
+        setSrc(text);
+        setLineAddrs(Array.isArray(la) ? la : []);
+        gotoLine(mainLabelLine(text.text.split(/\r?\n/)) ?? pick.line ?? 1, pick.file, true);
+      })().catch(() => undefined);
+    },
+    [s12, gotoLine],
+  );
+
+  // follow the PC: open its file (the view keeps the PC line in sight); no source: keep the shown file, or show the
+  // main module when none is shown yet
   useEffect(() => {
     if (!pcLoc) return;
     const { pc: at, loc } = pcLoc;
     if (!loc) {
-      setNoSource(`No source for PC ${addr(at)}: see the Assembly window`);
+      const reason = `No source for PC ${addr(at)}: see the Assembly window`;
+      setNoSource(reason);
+      showMainModule();
       return;
     }
     const notFound = `No source for PC ${addr(at)} (${loc.file.split(/[\\/]/).pop()} not found): see the Assembly window`;
     if (missing.current.has(loc.file)) {
       setNoSource(notFound);
+      showMainModule();
       return;
     }
     if (reading.current === loc.file) return;
     reading.current = loc.file;
     showFile(loc.file)
+      .then(() => {
+        // PC following owns the scroll position now: a queued main-module scroll is dropped
+        if (pendingGoto.current?.quiet) pendingGoto.current = null;
+      })
       .catch(() => {
         missing.current.add(loc.file);
         setNoSource(notFound);
+        showMainModule();
       })
       .finally(() => {
         reading.current = null;
@@ -213,6 +276,7 @@ export function SourceComponent({ attributes }: DebuggerComponentProps) {
   const codeLines = useMemo(() => [...new Set(lineAddrs.map((l) => l.line))].sort((a, b) => a - b), [lineAddrs]);
   const marksForView = useMemo<SourceBreakpointMark[]>(() => [...bpLines].map(([line, b]) => ({ line, enabled: b.enabled, kind: breakpointKind(b), id: b.id })), [bpLines]);
   const pcLine = pcLoc?.loc && src && sameFile(pcLoc.loc.file, src.file) ? pcLoc.loc.line : null;
+  pcShown.current = pcLine !== null;
 
   const toggleAtLine = useCallback(
     async (line: number) => {
@@ -366,7 +430,8 @@ export function SourceComponent({ attributes }: DebuggerComponentProps) {
       }}
     >
       {src && noSource && (
-        <div className="s12-mdi-headline" style={{ color: 'var(--cw-changed)', flex: 'none' }} data-testid="source-no-source">
+        // neutral grey, not red: at start this is the normal state (PC in the library start-up code), not an error
+        <div className="s12-mdi-headline" style={{ color: 'var(--cw-gray-text)', flex: 'none' }} data-testid="source-no-source">
           {noSource}
         </div>
       )}
@@ -385,7 +450,7 @@ export function SourceComponent({ attributes }: DebuggerComponentProps) {
             onTopLineChange={(l) => {
               setFirstVisible(l);
               const p = pendingGoto.current;
-              if (p) gotoLine(p.line, p.file);
+              if (p) gotoLine(p.line, p.file, p.quiet);
             }}
             fontFamily={font.family}
             fontSize={font.size}

@@ -10,6 +10,17 @@
   position: absolute;
   inset: 0;
 }
+/* scrollbars: opaque track and thumb (as the native scrollbars of the other debugger windows), not Monaco's overlay */
+.s12-source-host .monaco-scrollable-element > .scrollbar {
+  background: #f0f0f0;
+}
+.s12-source-host .monaco-scrollable-element > .scrollbar > .slider {
+  background: #c1c1c1;
+}
+.s12-source-host .monaco-scrollable-element > .scrollbar > .slider:hover,
+.s12-source-host .monaco-scrollable-element > .scrollbar > .slider.active {
+  background: #a8a8a8;
+}
 /* current PC statement: blue bar, white text (THEME.pcLine / pcLineText) */
 .monaco-editor .s12-pc-line {
   background: var(--cw-pc-line, #0000ff);

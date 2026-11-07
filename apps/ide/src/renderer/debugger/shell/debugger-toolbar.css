@@ -1,0 +1,67 @@
+/* hiwave main toolbar (classic, non-flat MFC CToolBar). Scoped to .s12-dbg-toolbar: the IDE toolbar keeps the
+   common flat .cw-tool-btn look from theme.css. Owned by the debugger shell track; imported by DebuggerToolbar.tsx. */
+.cw-toolbar.s12-dbg-toolbar {
+  gap: 0;
+  padding: 2px 4px 2px 6px;
+  min-height: 28px;
+}
+
+/* Raised button: white top/left, dark-shadow bottom/right outside, shadow grey bottom/right inside (as a push button). */
+.s12-dbg-toolbar .s12-dbg-tb-btn {
+  box-sizing: border-box;
+  flex: none;
+  width: 23px;
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+  box-shadow: inset -1px -1px 0 var(--cw-face-shadow);
+  border-radius: 0;
+  color: var(--cw-window-text);
+  cursor: default;
+}
+
+.s12-dbg-toolbar .s12-dbg-tb-btn > svg {
+  display: block;
+  flex: none;
+}
+
+/* Pressed: sunken, the glyph pushed 1px down-right. */
+.s12-dbg-toolbar .s12-dbg-tb-btn:active:not(:disabled) {
+  border-color: var(--cw-face-dark-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-dark-shadow);
+  box-shadow: inset 1px 1px 0 var(--cw-face-shadow);
+}
+
+.s12-dbg-toolbar .s12-dbg-tb-btn:active:not(:disabled) > svg {
+  transform: translate(1px, 1px);
+}
+
+.s12-dbg-toolbar .s12-dbg-tb-btn:focus {
+  outline: none;
+}
+
+.s12-dbg-toolbar .s12-dbg-tb-btn:focus-visible {
+  outline: 1px dotted var(--cw-face-dark-shadow);
+  outline-offset: -4px;
+}
+
+/* Disabled: the button stays raised; the glyph is drawn etched (filter in toolbar-icons.tsx). */
+.s12-dbg-toolbar .s12-dbg-tb-btn:disabled {
+  opacity: 1;
+}
+
+.s12-dbg-toolbar .s12-dbg-tb-btn:disabled > svg {
+  filter: url(#s12-dbg-tb-disabled);
+}
+
+/* Separator: hiwave's toolbar leaves an 8px gap between groups (no etched line). */
+.s12-dbg-toolbar .s12-dbg-tb-sep {
+  flex: none;
+  width: 8px;
+  height: 22px;
+}

@@ -440,10 +440,11 @@ describe('EditorArea: review fixes', () => {
     expect(() => JSON.stringify(h)).not.toThrow();
     expect(String(h)).toBe('[object Object]');
     expect(Object.keys(h).sort()).toEqual(
-      ['activePath', 'close', 'closeAll', 'comment', 'dirtyPaths', 'edit', 'find', 'findInFiles', 'findNext', 'findPrevious', 'focus', 'gotoLine', 'hasUnsavedChanges', 'newFile', 'openFile', 'openPaths', 'replace', 'revert', 'save', 'saveAll', 'saveAs'].sort(),
+      ['activePath', 'close', 'closeAll', 'comment', 'dirtyPaths', 'edit', 'find', 'findInFiles', 'findNext', 'findPrevious', 'focus', 'gotoLine', 'hasActiveDocument', 'hasUnsavedChanges', 'newFile', 'openFile', 'openPaths', 'replace', 'revert', 'save', 'saveAll', 'saveAs'].sort(),
     );
     await openMain(ref);
     expect(h.activePath()).toBe(MAIN); // still calls the latest closures
+    expect(h.hasActiveDocument()).toBe(true);
   });
 
   it('Edit > Paste uses the system clipboard, else the last text copied in the editor', async () => {
