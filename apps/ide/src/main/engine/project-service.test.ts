@@ -3,11 +3,15 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readElf } from '@s12/formats';
+import { normPath } from '@s12/project';
 import { copyExample, copyFixture, hasFixtures, describeFx } from '../../../test/fixtures';
 import { EventBus } from '../events';
 import { BuildService } from './build-service';
 import { resolveLaunch } from './debug-launch';
 import { ProjectService } from './project-service';
+
+/** Expected engine path: the engine reports real paths with forward slashes ("C:/x/y" on Windows, see paths.ts). */
+const real = (...parts: string[]) => normPath(join(...parts));
 
 const lab3 = hasFixtures ? copyFixture('Lab3') : { dir: '/nonexistent/Lab3', dispose: () => undefined };
 const blinky = copyExample('blinky');
@@ -31,7 +35,7 @@ describeFx('ProjectService (Lab3 copy)', () => {
     expect(info.files.map((f) => f.name)).toContain('main.asm');
     expect(info.groups.map((g) => g.name)).toEqual(['Sources', 'Includes', 'Libraries', 'Project Settings']);
     expect(info.connections.map((c) => c.name)).toContain('Full_Chip_Simulation');
-    expect(info.targets[0].absPath).toBe(join(lab3.dir, 'bin/Project.abs'));
+    expect(info.targets[0].absPath).toBe(real(lab3.dir, 'bin/Project.abs'));
     expect(events).toContain('project.changed');
     // final fidelity F5: CodeWarrior's own outputs are current, so main.asm is not marked and shows its sizes
     const main = info.files.find((f) => f.name === 'main.asm')!;
@@ -44,9 +48,9 @@ describeFx('ProjectService (Lab3 copy)', () => {
 
   it('Project > Debug uses the Full Chip Simulation connection for the icd12 .mcp setting (UNCERTAIN fallback)', async () => {
     const r = await resolveLaunch(svc, {});
-    expect(r.iniPath).toBe(join(lab3.dir, 'Full_Chip_Simulation.ini'));
-    expect(r.absPath).toBe(join(lab3.dir, 'bin/Project.abs'));
-    expect(r.projectDir).toBe(lab3.dir);
+    expect(r.iniPath).toBe(real(lab3.dir, 'Full_Chip_Simulation.ini'));
+    expect(r.absPath).toBe(real(lab3.dir, 'bin/Project.abs'));
+    expect(r.projectDir).toBe(real(lab3.dir));
     expect(r.load).toBe(true);
   });
 
@@ -79,7 +83,7 @@ describe('ProjectService + BuildService (examples/blinky copy, public)', () => {
     const info = await svc.open(sidecar);
     expect(info.name).toBe('blinky');
     expect(info.mcpPath ?? null).toBeNull();
-    expect(info.sidecarPath).toBe(sidecar);
+    expect(info.sidecarPath).toBe(real(sidecar));
     expect(info.files.map((f) => f.name)).toContain('main.asm');
     expect(info.targets.length).toBeGreaterThan(0);
     expect(info.connections.map((c) => c.name)).toContain('Full_Chip_Simulation');
@@ -92,7 +96,7 @@ describe('ProjectService + BuildService (examples/blinky copy, public)', () => {
     expect(r).toMatchObject({ ok: true, errors: 0, linked: true });
     expect(r.compiled).toContain('main.asm');
     expect(existsSync(r.absPath!)).toBe(true);
-    expect(r.absPath!.startsWith(join(blinky.dir, 'bin'))).toBe(true);
+    expect(r.absPath!.startsWith(real(blinky.dir, 'bin'))).toBe(true);
     expect((await builds.make()).upToDate).toBe(true);
   });
 
@@ -104,7 +108,7 @@ describe('ProjectService + BuildService (examples/blinky copy, public)', () => {
     expect(bad.ok).toBe(false);
     expect(bad.errors).toBeGreaterThan(0);
     const err = bad.messages.find((m) => m.severity === 'error')!;
-    expect(err.file).toBe(mainAsm);
+    expect(err.file).toBe(real(mainAsm));
     expect(err.line).toBe(good.split(/\r?\n/).length + 1);
     writeFileSync(mainAsm, good, 'latin1');
     await svc.refreshStatus();
@@ -114,9 +118,9 @@ describe('ProjectService + BuildService (examples/blinky copy, public)', () => {
 
   it('Project > Debug resolves the Full Chip Simulation .ini and the built application', async () => {
     const r = await resolveLaunch(svc, {});
-    expect(r.iniPath).toBe(join(blinky.dir, 'Full_Chip_Simulation.ini'));
+    expect(r.iniPath).toBe(real(blinky.dir, 'Full_Chip_Simulation.ini'));
     expect(r.absPath).toBe(builds.lastResult()!.absPath);
-    expect(r.projectDir).toBe(blinky.dir);
+    expect(r.projectDir).toBe(real(blinky.dir));
   });
 
   it('close emits project.closed', async () => {

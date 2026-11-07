@@ -9,6 +9,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { mkdtempSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { normPath } from '@s12/project';
 import { copyExample } from '../../../test/fixtures';
 import type { OutputLineInfo } from '../../shared/api/debug';
 import { DebugEngine, hardwareFallbackMessage } from '../../worker/engine';
@@ -40,7 +41,7 @@ describe('resolveLaunch connection fallbacks', () => {
   it('a hardware connection is debugged on Full_Chip_Simulation.ini (fallbackFrom set, no extra note)', async () => {
     const { dir, svc } = await blinkyOnPe();
     const r = await resolveLaunch(svc, {});
-    expect(r.iniPath).toBe(join(dir, 'Full_Chip_Simulation.ini'));
+    expect(r.iniPath).toBe(normPath(join(dir, 'Full_Chip_Simulation.ini')));
     expect(r.fallbackFrom).toMatchObject({ name: 'P&E_Multilink_USB', target: 'icd12' });
     expect(r.notes).toBeUndefined();
   });
@@ -49,10 +50,10 @@ describe('resolveLaunch connection fallbacks', () => {
     const { dir, svc } = await blinkyOnPe();
     unlinkSync(join(dir, 'P&E_Multilink_USB.ini'));
     const r = await resolveLaunch(svc, {});
-    expect(r.iniPath).toBe(join(dir, 'Full_Chip_Simulation.ini'));
+    expect(r.iniPath).toBe(normPath(join(dir, 'Full_Chip_Simulation.ini')));
     expect(r.fallbackFrom).toBeUndefined();
     expect(r.notes).toEqual(["Note: the project's connection file P&E_Multilink_USB.ini was not found, so S12 Studio uses Full_Chip_Simulation.ini."]);
-    expect(r.projectDir).toBe(dir);
+    expect(r.projectDir).toBe(normPath(dir));
   });
 
   it('missing and no Full Chip Simulation .ini: a clear not-found error', async () => {

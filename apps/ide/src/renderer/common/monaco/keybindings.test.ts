@@ -40,8 +40,13 @@ function shortcutsOf(menus: readonly TopMenu[]): Set<string> {
   return out;
 }
 
-/** Monaco user-settings label ("ctrl+shift+f5") -> menu notation ("Ctrl+Shift+F5"). */
-const fromMonacoLabel = (s: string) => normalizeShortcut(s.replace(/\bcmd\b/, 'ctrl'));
+/**
+ * Monaco user-settings label ("ctrl+shift+f5") -> menu notation ("Ctrl+Shift+F5"). On macOS (labels use "cmd") Mac
+ * users press the menus' Ctrl shortcuts as Cmd, so "cmd" maps to Ctrl and Monaco's emacs-style Control bindings
+ * ("ctrl+n" = cursor down) are a different key that no menu shortcut is pressed with.
+ */
+const fromMonacoLabel = (s: string, mac: boolean) =>
+  mac && /\bctrl\b/.test(s) ? `MacControl:${s}` : normalizeShortcut(s.replace(/\bcmd\b/, 'ctrl'));
 
 interface KeybindingService {
   getKeybindings(): { command: string | null; resolvedKeybinding?: { getUserSettingsLabel(): string | null } }[];
@@ -61,11 +66,13 @@ beforeAll(async () => {
   // @ts-expect-error no declaration file for this internal module
   const keybinding = (await import('monaco-editor/platform/keybinding/common/keybinding')) as { IKeybindingService: unknown };
   const kb = services.StandaloneServices.get(keybinding.IKeybindingService);
-  keymap = kb.getKeybindings().flatMap((k) => {
+  const bindings = kb.getKeybindings();
+  const mac = bindings.some((k) => /\bcmd\b/.test(k.resolvedKeybinding?.getUserSettingsLabel() ?? ''));
+  keymap = bindings.flatMap((k) => {
     const label = k.resolvedKeybinding?.getUserSettingsLabel();
     // only the first chord can steal a single menu key
     const first = label?.split(' ')[0];
-    return first && k.command && !k.command.startsWith('-') ? [{ shortcut: fromMonacoLabel(first), command: k.command }] : [];
+    return first && k.command && !k.command.startsWith('-') ? [{ shortcut: fromMonacoLabel(first, mac), command: k.command }] : [];
   });
 }, 60000);
 

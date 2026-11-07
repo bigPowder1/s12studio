@@ -5,7 +5,7 @@
  * examples/blinky only.
  */
 import { afterAll, describe, expect, it } from 'vitest';
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { HiwareNoteType, noteDescString, parseHiwareNotes, readElf } from '@s12/formats';
@@ -26,8 +26,10 @@ describe('build in a folder with non-Latin-1 characters', () => {
 
   it(`Make of examples/blinky in "${FOLDER}": 0 errors, outputs written, '?' in recorded paths`, async () => {
     const dir = join(tmp, FOLDER);
-    cpSync(EXAMPLE, dir, { recursive: true });
     const fs = createNodeFs();
+    // the app's own copy (fs/promises cp, as for the Documents demo copy); Node's native cpSync is not used for this
+    await fs.copyDir!(EXAMPLE, dir);
+    expect(readdirSync(tmp)).toContain(FOLDER);
     const cw = join(tmp, 'cw');
     await installCompilerRoot(fs, cw);
     const proj = await openProject(fs, join(dir, 'blinky.s12studio.json'), { compilerDir: cw });
