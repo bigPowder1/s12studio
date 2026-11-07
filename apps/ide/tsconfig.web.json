@@ -1,0 +1,57 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "vite/client"
+    ],
+    "jsx": "react-jsx",
+    "paths": {
+      "@s12/formats": [
+        "../../packages/formats/src/index.ts"
+      ],
+      "@s12/asm": [
+        "../../packages/asm/src/index.ts"
+      ],
+      "@s12/link": [
+        "../../packages/link/src/index.ts"
+      ],
+      "@s12/sim": [
+        "../../packages/sim/src/index.ts"
+      ],
+      "@s12/debug": [
+        "../../packages/debug/src/index.ts"
+      ],
+      "@s12/hw": [
+        "../../packages/hw/src/index.ts"
+      ],
+      "@s12/project": [
+        "../../packages/project/src/index.ts"
+      ],
+      "@s12/devices": [
+        "../../packages/devices/src/index.ts"
+      ],
+      "@s12/isa": [
+        "../../packages/isa/src/index.ts"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@common/*": [
+        "./src/renderer/common/*"
+      ]
+    }
+  },
+  "include": [
+    "src/renderer/**/*.ts",
+    "src/renderer/**/*.tsx",
+    "src/shared/**/*.ts",
+    "test/vitest.d.ts"
+  ]
+}

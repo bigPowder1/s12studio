@@ -1,0 +1,96 @@
+/* VisualizationTool-lite. Classes are prefixed vis-. */
+.vis-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--cw-face);
+}
+.vis-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--cw-face-shadow);
+  flex-wrap: wrap;
+}
+.vis-add {
+  min-width: 0;
+  padding: 0 6px;
+  height: 20px;
+}
+.vis-hint {
+  margin-left: auto;
+  color: var(--cw-gray-text);
+}
+.vis-error {
+  color: var(--cw-cmd-error);
+  padding: 2px 4px;
+}
+.vis-canvas {
+  position: relative;
+  flex: 1;
+  overflow: auto;
+  background: var(--cw-window);
+  background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
+  background-size: 16px 16px;
+  min-height: 80px;
+}
+.vis-empty {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  color: var(--cw-gray-text);
+}
+.vis-item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid transparent;
+  cursor: move;
+  user-select: none;
+}
+.vis-item:hover {
+  border-color: var(--cw-face-shadow);
+  background: rgba(212, 208, 200, 0.35);
+}
+.vis-label {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.vis-item-error {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: var(--cw-cmd-error);
+  font-weight: bold;
+}
+.vis-bar {
+  width: 140px;
+}
+.vis-bar-track {
+  height: 12px;
+  border: 1px solid;
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+  background: #fff;
+}
+.vis-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0a246a, #3a6ea5);
+}
+.vis-bar-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--cw-gray-text);
+}
+.vis-text {
+  padding: 1px 6px;
+  border: 1px solid;
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+  background: #fff;
+  min-width: 48px;
+  text-align: right;
+}

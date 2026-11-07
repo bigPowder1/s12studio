@@ -1,0 +1,10 @@
+/* S-record file of the application (logical addresses). Created by S12 Studio. */
+OPENFILE "%ABS_FILE%.s19"
+format = motorola
+busWidth = 1
+SRECORD = Sx
+origin = 0x0000
+len = 0x10000
+destination = 0
+SENDBYTE 1 "%ABS_FILE%"
+CLOSE

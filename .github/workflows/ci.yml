@@ -1,0 +1,125 @@
+# CI: unit tests, typechecks and Electron E2E on Windows, macOS and Linux.
+#
+# The private course fixtures (s12studio-fixtures) are not in this repository, so the fixture-dependent golden
+# tests skip themselves here. The golden suite runs in the PRIVATE fixtures repository instead
+# (docs/ci/fixtures-golden.yml, installed there as .github/workflows/golden.yml), because the logs of a public
+# repository are world-readable and a failing golden test prints diffs of the fixture sources and listings.
+# The E2E job runs the public demo (e2e/public-demo.spec.ts, examples/blinky) and fails if no test passed, then
+# packages an unpacked app (npm run dist:dir) and runs the packaged-app smoke test (e2e/packaged.spec.ts) on it.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Unit tests (fixture tests skip)
+        run: npx vitest run
+      - name: Typecheck engine packages
+        run: npx tsc -p tsconfig.json --noEmit
+      - name: Typecheck app
+        run: npm run typecheck -w @s12/ide
+
+  e2e:
+    name: e2e (${{ matrix.os }})
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Linux GUI dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libasound2t64 libgbm1 libnss3 libgtk-3-0
+          # Ubuntu 24.04 restricts unprivileged user namespaces, which breaks Chromium's sandbox.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Build the app
+        run: npm run build -w @s12/ide
+      # Playwright exits 0 when every test is skipped (all fixture specs skip in a public checkout), so the json
+      # report is checked below: at least one test must have passed.
+      - name: E2E (Linux, Xvfb)
+        if: runner.os == 'Linux'
+        working-directory: apps/ide
+        env:
+          S12_SCREENS_DIR: ${{ runner.temp }}/screens
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/e2e-report.json
+        run: xvfb-run -a npx playwright test -c e2e/playwright.config.ts --reporter=list,json
+      - name: E2E (Windows)
+        if: runner.os == 'Windows'
+        working-directory: apps/ide
+        env:
+          S12_SCREENS_DIR: ${{ runner.temp }}/screens
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/e2e-report.json
+        run: npx playwright test -c e2e/playwright.config.ts --reporter=list,json
+      - name: At least one E2E test passed
+        shell: bash
+        env:
+          REPORT: ${{ runner.temp }}/e2e-report.json
+        run: |
+          node -e '
+            const s = require(process.env.REPORT).stats;
+            console.log(`E2E: ${s.expected} passed, ${s.skipped} skipped, ${s.unexpected} failed, ${s.flaky} flaky`);
+            if (!(s.expected > 0)) { console.error("::error::no E2E test passed (all skipped?)"); process.exit(1); }
+          '
+      # Packaged build (electron-builder --dir: app.asar, extraResources, no installer) + e2e/packaged.spec.ts:
+      # the app starts from app.asar, builds examples/blinky and the debug-engine worker runs from inside the asar.
+      - name: Package (unpacked app)
+        run: npm run dist:dir -w @s12/ide
+      - name: Packaged-app E2E (Linux, Xvfb)
+        if: runner.os == 'Linux'
+        working-directory: apps/ide
+        env:
+          S12_PACKAGED_APP: ${{ github.workspace }}/apps/ide/dist/linux-unpacked/s12studio
+        run: xvfb-run -a npx playwright test -c e2e/playwright.config.ts packaged.spec.ts
+      - name: Packaged-app E2E (Windows)
+        if: runner.os == 'Windows'
+        working-directory: apps/ide
+        env:
+          S12_PACKAGED_APP: ${{ github.workspace }}\apps\ide\dist\win-unpacked\S12Studio.exe
+        run: npx playwright test -c e2e/playwright.config.ts packaged.spec.ts
+      - name: Upload screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/screens
+            apps/ide/test-results
+          if-no-files-found: ignore
+          retention-days: 7

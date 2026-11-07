@@ -1,0 +1,1 @@
+export { VisualizationComponent } from './VisualizationComponent';

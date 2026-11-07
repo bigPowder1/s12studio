@@ -1,0 +1,30 @@
+{
+  "name": "s12-studio",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "app": "npm run build -w @s12/ide && npm run start -w @s12/ide",
+    "app:dev": "npm run dev -w @s12/ide",
+    "app:e2e": "npm run e2e -w @s12/ide",
+    "typecheck:app": "npm run typecheck -w @s12/ide",
+    "dist": "npm run dist -w @s12/ide",
+    "dist:dir": "npm run dist:dir -w @s12/ide",
+    "dist:linux": "npm run dist:linux -w @s12/ide",
+    "dist:win": "npm run dist:win -w @s12/ide",
+    "dist:mac": "npm run dist:mac -w @s12/ide"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}

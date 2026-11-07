@@ -1,0 +1,145 @@
+# Release: on a version tag (v0.1.0, v0.2.0-beta.1, ...) build the installers on each OS and upload them to a DRAFT
+# GitHub Release. A maintainer reviews the draft and publishes it (docs/RELEASING.md).
+#
+# The installers contain S12 Studio and the public demo project (examples/blinky) only: no course content. Students
+# open the blank_project folder their course gives them. This workflow never checks out the private fixtures.
+#
+# The tests here always run WITHOUT the private fixtures: this repository's logs are public, and a failing golden
+# test would print fixture content. The golden suite runs in the private fixtures repository (docs/ci/).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to (re)build, e.g. v0.1.0'
+        required: true
+
+# Least privilege: read-only by default; the two jobs that write the release ask for contents: write themselves.
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  draft:
+    name: Create draft release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # gh release create
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+      - name: Tag must match apps/ide/package.json version
+        run: |
+          v="v$(node -p "require('./apps/ide/package.json').version")"
+          if [ "$v" != "$TAG" ]; then echo "::error::tag $TAG does not match apps/ide/package.json version $v"; exit 1; fi
+      - name: Create the draft release (once, before the parallel builds upload into it)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; builds will upload into it."
+          else
+            # Fill in the repository (the template uses the OWNER/s12studio placeholder).
+            owner="${GITHUB_REPOSITORY%%/*}"; name="${GITHUB_REPOSITORY#*/}"
+            sed "s#OWNER/s12studio#${GITHUB_REPOSITORY}#g; s#OWNER\.github\.io/s12studio#${owner,,}.github.io/${name}#g" \
+              .github/release-notes-template.md > "$RUNNER_TEMP/notes.md"
+            pre=""; case "$TAG" in *-*) pre="--prerelease";; esac
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft $pre --verify-tag \
+              --title "S12 Studio ${TAG#v}" --notes-file "$RUNNER_TEMP/notes.md"
+          fi
+
+  build:
+    name: build (${{ matrix.name }})
+    needs: draft
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows
+            os: windows-latest
+            target: --win
+          - name: macos
+            os: macos-latest     # Apple Silicon runner; the config builds arm64 and x64 (no native modules)
+            target: --mac
+          - name: linux
+            os: ubuntu-latest
+            target: --linux
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write   # electron-builder uploads into the draft release (GH_TOKEN on that step only)
+    timeout-minutes: 60
+    # GH_TOKEN (write access) is given only to the "Package and upload" step, not to npm ci or the tests.
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TAG }}
+          persist-credentials: false   # no write token in .git/config for npm lifecycle scripts to find
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Tests (without the private fixtures; golden tests skip)
+        shell: bash
+        run: S12_FIXTURES="$RUNNER_TEMP/no-fixtures" npx vitest run
+      - name: Build the app
+        run: npm run build -w @s12/ide
+      - name: Licence texts for the installer (LICENSE, NOTICE, bundled npm packages -> <resources>/licenses)
+        run: npm run licenses -w @s12/ide
+      # - name: Write the App Store Connect API key (macOS notarization, later)
+      #   if: runner.os == 'macOS'
+      #   shell: bash
+      #   env:
+      #     P8: ${{ secrets.APPLE_API_KEY_P8 }}
+      #   run: printf '%s' "$P8" > "$GITHUB_WORKSPACE/../AuthKey.p8"
+      - name: Package and upload to the draft release
+        working-directory: apps/ide
+        env:
+          # electron-builder uploads into the draft created above: publish provider github, owner/repo from
+          # GITHUB_REPOSITORY (set by Actions; apps/ide/electron-builder.config.cjs reads it), token from GH_TOKEN.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Unsigned beta: Windows unsigned, macOS ad-hoc (identity "-" in the config).
+          # --- Signing, later (docs/RELEASING.md "Enabling code signing"): uncomment and add the secrets/variables. ---
+          # Windows, Azure Artifact Signing (win.azureSignOptions in the config).
+          # Kept on this step only, so npm ci and the tests never see the signing secrets.
+          # S12_WIN_SIGN: azure
+          # AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          # AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          # AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          # AZURE_SIGNING_ENDPOINT: ${{ vars.AZURE_SIGNING_ENDPOINT }}        # e.g. https://wus2.codesigning.azure.net
+          # AZURE_SIGNING_ACCOUNT: ${{ vars.AZURE_SIGNING_ACCOUNT }}          # Artifact Signing account name
+          # AZURE_SIGNING_PROFILE: ${{ vars.AZURE_SIGNING_PROFILE }}          # certificate profile name
+          # S12_WIN_PUBLISHER_NAME: ${{ vars.S12_WIN_PUBLISHER_NAME }}        # = the certificate subject CN
+          # macOS, Developer ID + hardened runtime + notarization:
+          # S12_MAC_SIGN: developer-id
+          # CSC_LINK: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          # CSC_KEY_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          # APPLE_API_KEY: ${{ github.workspace }}/../AuthKey.p8               # written by the commented step above
+          # APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          # APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: npx electron-builder --config electron-builder.config.cjs ${{ matrix.target }} --publish always
+      - name: Keep the installers as a workflow artifact too
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.name }}
+          path: |
+            apps/ide/dist/*.exe
+            apps/ide/dist/*.dmg
+            apps/ide/dist/*.zip
+            apps/ide/dist/*.AppImage
+            apps/ide/dist/*.yml
+            apps/ide/dist/*.blockmap
+          if-no-files-found: warn
+          retention-days: 14

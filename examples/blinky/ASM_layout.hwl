@@ -1,0 +1,12 @@
+OPEN source 0 0 60 42
+Source < attributes MARKS off
+OPEN assembly 60 0 40 30
+Assembly < attributes ADR on,CODE off,ABSADR on,SYMB off,TOPPC 0x4000
+OPEN register 60 30 40 30
+OPEN procedure 60 60 40 17
+OPEN memory 60 77 40 23
+Memory < attributes FORMAT hex,WORD 1,ASC on,ADR on,MODE automatic,UPDATERATE 10,ADDRESS 0x80
+OPEN data 0 42 60 28
+Data < attributes SCOPE global,FORMAT Symb,MODE periodical,UPDATERATE 1
+OPEN command 0 70 60 30
+AUTOSIZE on

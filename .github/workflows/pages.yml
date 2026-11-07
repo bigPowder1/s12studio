@@ -1,0 +1,48 @@
+# Deploys docs-site/ (the download page and install guide) to GitHub Pages.
+# One-time setup: repository Settings > Pages > Source = "GitHub Actions".
+# The placeholder "OWNER/s12studio" in the site is replaced with this repository's "owner/name" at deploy time.
+name: Pages
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['docs-site/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fill in the repository name
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          OWNER_LC="$(printf '%s' "${REPO%%/*}" | tr '[:upper:]' '[:lower:]')"   # Pages host names are lower case
+          mkdir -p "$RUNNER_TEMP/site"
+          cp -R docs-site/. "$RUNNER_TEMP/site/"
+          find "$RUNNER_TEMP/site" -type f \( -name '*.html' -o -name '*.js' \) \
+            -exec sed -i "s#OWNER/s12studio#${REPO}#g; s#OWNER\.github\.io/s12studio#${OWNER_LC}.github.io/${REPO#*/}#g" {} +
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

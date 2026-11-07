@@ -1,0 +1,1 @@
+export { ProcedureComponent } from './ProcedureComponent';

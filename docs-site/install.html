@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Install guide: S12 Studio</title>
+  <meta name="description" content="How to install the S12 Studio beta on Windows, macOS and Linux, including the warnings shown for unsigned apps.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script src="js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">S12 Studio</a>
+      <nav class="site" aria-label="Main">
+        <ul>
+          <li><a href="index.html#download">Download</a></li>
+          <li><a href="index.html#quickstart">Quick start</a></li>
+          <li><a href="install.html" aria-current="page">Install guide</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="https://github.com/bigPowder1/s12studio">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap hero">
+      <h1>Install guide</h1>
+      <p class="lead">The beta installers are not code-signed yet, so your computer warns you the first time. This
+        page shows what each warning means and what to click. You only do this once.</p>
+      <ul class="toc">
+        <li><a class="button secondary" href="#windows">Windows</a></li>
+        <li><a class="button secondary" href="#mac">macOS</a></li>
+        <li><a class="button secondary" href="#linux">Linux</a></li>
+      </ul>
+    </div>
+
+    <section class="alt" id="windows" aria-labelledby="windows-h">
+      <div class="wrap">
+        <h2 id="windows-h">Windows 10 / 11</h2>
+        <ol>
+          <li>Download <code>S12Studio-&hellip;-win-x64-setup.exe</code> from the
+            <a href="https://github.com/bigPowder1/s12studio/releases/latest">latest release</a>. If your browser says the
+            file "isn't commonly downloaded", choose <span class="ui">Keep</span> (Edge: <span class="ui">&hellip;
+            &rarr; Keep &rarr; Show more &rarr; Keep anyway</span>).</li>
+          <li>Run the installer. A blue <strong>"Windows protected your PC"</strong> box (Microsoft Defender
+            SmartScreen) appears because the app is new and unsigned.</li>
+          <li>Click <span class="ui">More info</span>, check that the app is "S12 Studio", then click
+            <span class="ui">Run anyway</span>.</li>
+          <li>The installer sets up S12 Studio for your user account (no administrator password needed; you can change
+            the folder) and adds Start menu and desktop shortcuts. Double-clicking a <code>.mcp</code> project can open it in S12 Studio.</li>
+        </ol>
+        <div class="callout">
+          <p><strong>Smart App Control.</strong> On some new Windows 11 PCs, Smart App Control is turned on and
+            blocks unsigned apps completely, with no <span class="ui">Run anyway</span> button. Check
+            <span class="ui">Windows Security &rarr; App &amp; browser control &rarr; Smart App Control</span>. If it is
+            <em>On</em>, use a lab PC until a signed release is available. (Turning Smart App Control off cannot be
+            undone without reinstalling Windows, so we do not ask you to.)</p>
+        </div>
+        <p><strong>Updates:</strong> on Windows, S12 Studio checks for a new version when it starts and offers
+          <span class="ui">Restart to update</span>.</p>
+        <p><strong>Uninstall:</strong> <span class="ui">Settings &rarr; Apps &rarr; Installed apps &rarr; S12 Studio
+          &rarr; Uninstall</span>. Your projects are not touched.</p>
+      </div>
+    </section>
+
+    <section id="mac" aria-labelledby="mac-h">
+      <div class="wrap">
+        <h2 id="mac-h">macOS</h2>
+        <p>Pick the right download: <strong>Apple Silicon</strong> (arm64) for M1/M2/M3/M4 Macs,
+          <strong>Intel</strong> (x64) for older Macs. Apple menu &rarr; <span class="ui">About This Mac</span> tells
+          you which you have.</p>
+        <ol>
+          <li>Open the <code>.dmg</code> (<code>S12Studio-&hellip;-mac-arm64.dmg</code> or <code>&hellip;-mac-x64.dmg</code>) and drag <span class="ui">S12 Studio</span> into
+            <span class="ui">Applications</span>.</li>
+          <li>Open S12 Studio from Applications. macOS says <strong>"Apple could not verify &ldquo;S12 Studio&rdquo; is
+            free of malware&hellip;"</strong> (older versions: "can't be opened because it is from an unidentified
+            developer"). Click <span class="ui">Done</span> (or <span class="ui">OK</span>). Do not move it to the
+            Trash.</li>
+          <li>Open <span class="ui">System Settings &rarr; Privacy &amp; Security</span> and scroll down to
+            <span class="ui">Security</span>. Next to "S12 Studio was blocked to protect your Mac", click
+            <span class="ui">Open Anyway</span>.</li>
+          <li>Confirm with <span class="ui">Open Anyway</span> again and enter your Mac password or use Touch ID.
+            From now on S12 Studio opens normally.</li>
+        </ol>
+        <div class="callout">
+          <p><strong>"S12 Studio is damaged and can't be opened"?</strong> Make sure you downloaded the build for
+            your Mac's chip. If it still appears, open Terminal and run
+            <code>xattr -dr com.apple.quarantine "/Applications/S12 Studio.app"</code>, then open the app again.</p>
+        </div>
+        <p><strong>Updates:</strong> the Mac beta cannot update itself. When a new version is out, S12 Studio tells
+          you and opens the download page; install it the same way (replace the app in Applications).</p>
+        <p><strong>Real board:</strong> the Mac version is simulator only. The lab's P&amp;E pod only has Windows
+          drivers.</p>
+      </div>
+    </section>
+
+    <section class="alt" id="linux" aria-labelledby="linux-h">
+      <div class="wrap">
+        <h2 id="linux-h">Linux</h2>
+        <ol>
+          <li>Download the <code>.AppImage</code>.</li>
+          <li>Make it executable and run it:
+            <pre><code>chmod +x S12Studio-*.AppImage
+./S12Studio-*.AppImage</code></pre></li>
+          <li>If it does not start, install FUSE 2: Ubuntu 24.04 and later
+            <code>sudo apt install libfuse2t64</code>; Ubuntu 22.04 <code>sudo apt install libfuse2</code>.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="first-run" aria-labelledby="first-run-h">
+      <div class="wrap">
+        <h2 id="first-run-h">First run</h2>
+        <p>Open your lab project: copy the <code>blank_project</code> folder ME 305 gives you (course page)
+          somewhere you can write (building writes <code>bin/</code> and object files next to the project, as
+          CodeWarrior does), then <span class="ui">File &rarr; Open&hellip;</span> and pick its <code>.mcp</code>.
+          S12 Studio does not include the course library or template; they come with your course's project folder.
+          Then follow the <a href="index.html#quickstart">quick start</a>: <kbd>F7</kbd> to build, <kbd>F5</kbd> to
+          debug (the ME305 Board opens on the right), <kbd>F5</kbd> to run.</p>
+        <p>No course project yet? Open the demo project (<span class="ui">Help &rarr; Open Demo Project</span>, or
+          from the startup dialog), or <span class="ui">File &rarr; New Project&hellip;</span> for an empty assembly
+          project (without the ME 305 library).</p>
+        <p>Problems? <a href="https://github.com/bigPowder1/s12studio/issues">Open an issue</a> with your OS and
+          what you saw.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p><a href="index.html">S12 Studio home</a> &middot;
+        <a href="https://github.com/bigPowder1/s12studio">Source code</a> &middot;
+        <a href="https://github.com/bigPowder1/s12studio/issues">Report a bug</a></p>
+      <p>CodeWarrior is a trademark of NXP B.V. S12 Studio is not affiliated with or endorsed by NXP.</p>
+    </div>
+  </footer>
+</body>
+</html>

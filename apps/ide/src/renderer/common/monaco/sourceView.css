@@ -1,0 +1,80 @@
+/* hiwave Source view decorations (SourceView.tsx). */
+.s12-source-view {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--cw-window, #fff);
+}
+.s12-source-host {
+  position: absolute;
+  inset: 0;
+}
+/* current PC statement: blue bar, white text (THEME.pcLine / pcLineText) */
+.monaco-editor .s12-pc-line {
+  background: var(--cw-pc-line, #0000ff);
+}
+.monaco-editor .s12-pc-text {
+  color: var(--cw-pc-line-text, #fff) !important;
+}
+/* breakpoints: red disc; disabled = hollow ring; kinds carry a letter */
+.monaco-editor .s12-bp {
+  position: relative;
+  cursor: pointer;
+}
+.monaco-editor .s12-bp::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: var(--cw-breakpoint, #f00);
+  border: 1px solid #800000;
+  color: #fff;
+  font: bold 8px/8px Tahoma, Arial, sans-serif;
+  text-align: center;
+}
+.monaco-editor .s12-bp.s12-bp-disabled::before {
+  background: transparent;
+  border: 2px solid var(--cw-breakpoint, #f00);
+  color: var(--cw-breakpoint, #f00);
+  line-height: 6px;
+}
+.monaco-editor .s12-bp-temporary::before {
+  content: 'T';
+}
+.monaco-editor .s12-bp-conditional::before {
+  content: '?';
+}
+.monaco-editor .s12-bp-counting::before {
+  content: '#';
+}
+/* PC arrow (drawn over a breakpoint disc when both apply) */
+.monaco-editor .s12-pc-arrow::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -5px 0 0 -3px;
+  border-style: solid;
+  border-width: 5px 0 5px 7px;
+  border-color: transparent transparent transparent #ffd800;
+  filter: drop-shadow(0 0 0.5px #000);
+}
+.monaco-editor .s12-pc-arrow {
+  position: relative;
+}
+/* code-line marks: small red triangle where a breakpoint can go (hiwave "Marks") */
+.monaco-editor .s12-code-mark {
+  margin-left: 2px;
+  width: 0 !important;
+  height: 0 !important;
+  margin-top: 5px;
+  border-style: solid;
+  border-width: 3px 0 3px 4px;
+  border-color: transparent transparent transparent #d00000;
+}

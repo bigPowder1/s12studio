@@ -1,0 +1,77 @@
+/* hiwave Memory component */
+.mem-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--cw-window);
+  outline: none;
+}
+
+.mem-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.mem-rows {
+  position: absolute;
+  left: 0;
+  right: 0;
+  white-space: pre;
+  user-select: none;
+  cursor: default;
+}
+
+.mem-row {
+  height: 16px;
+  line-height: 16px;
+  padding-left: 2px;
+}
+
+.mem-addr {
+  color: var(--cw-window-text);
+  margin-right: 1ch;
+}
+
+.mem-cell {
+  display: inline-block;
+}
+
+.mem-cell + .mem-cell {
+  margin-left: 1ch;
+}
+
+.mem-cell.changed {
+  color: var(--cw-changed);
+}
+
+.mem-cell.selected {
+  background: var(--cw-highlight);
+  color: var(--cw-highlight-text);
+}
+
+.mem-cell.watch {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.mem-cell.watch.disabled {
+  text-decoration-style: dotted;
+}
+
+.mem-ascii {
+  margin-left: 2ch;
+}
+
+.mem-edit {
+  font: inherit;
+  padding: 0;
+  margin: 0;
+  border: none;
+  outline: 1px solid var(--cw-highlight);
+  background: var(--cw-window);
+  color: var(--cw-window-text);
+  height: 15px;
+}

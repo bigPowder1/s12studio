@@ -1,0 +1,544 @@
+/*
+ * Classic Win2000/XP-era CodeWarrior / hiwave look: grey 3D chrome, bevels, Tahoma/MS Sans Serif UI font,
+ * Courier New for code. Token names match src/shared/theme/tokens.ts (--cw-<key>).
+ * Utility classes are prefixed `cw-`; components may add their own CSS modules/files next to them.
+ */
+:root {
+  --cw-face: #d4d0c8;
+  --cw-face-light: #ffffff;
+  --cw-face-shadow: #808080;
+  --cw-face-dark-shadow: #404040;
+  --cw-window: #ffffff;
+  --cw-window-text: #000000;
+  --cw-gray-text: #808080;
+  --cw-highlight: #0a246a;
+  --cw-highlight-text: #ffffff;
+  --cw-active-caption: #0a246a;
+  --cw-active-caption-gradient: #a6caf0;
+  --cw-inactive-caption: #808080;
+  --cw-inactive-caption-gradient: #c0c0c0;
+  --cw-caption-text: #ffffff;
+  --cw-changed: #ff0000;
+  --cw-pc-line: #0000ff;
+  --cw-pc-line-text: #ffffff;
+  --cw-breakpoint: #ff0000;
+  --cw-syntax-keyword: #0000ff;
+  --cw-syntax-comment: #008000;
+  --cw-syntax-string: #ff0000;
+  --cw-cmd-echo: #0000ff;
+  --cw-cmd-error: #ff0000;
+  --cw-cmd-warning: #008000;
+  --cw-ui-font: Tahoma, 'MS Sans Serif', 'Microsoft Sans Serif', 'Segoe UI', Arial, sans-serif;
+  --cw-ui-font-size: 11px;
+  --cw-mono-font: 'Courier New', Courier, 'Liberation Mono', monospace;
+  --cw-mono-font-size: 12px;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--cw-face);
+  color: var(--cw-window-text);
+  font-family: var(--cw-ui-font);
+  font-size: var(--cw-ui-font-size);
+  user-select: none;
+  -webkit-font-smoothing: none;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.cw-mono {
+  font-family: var(--cw-mono-font);
+  font-size: var(--cw-mono-font-size);
+}
+
+/* ---------------------------------------------------------------- bevels */
+.cw-raised {
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+  box-shadow: inset -1px -1px 0 var(--cw-face-shadow);
+}
+
+.cw-sunken {
+  border: 1px solid;
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+  box-shadow: inset 1px 1px 0 var(--cw-face-dark-shadow);
+  background: var(--cw-window);
+}
+
+.cw-etched {
+  border: 1px solid var(--cw-face-shadow);
+  box-shadow: 1px 1px 0 var(--cw-face-light), inset 1px 1px 0 var(--cw-face-light);
+}
+
+/* ---------------------------------------------------------------- app frame */
+.cw-frame {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.cw-frame-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+}
+
+/* ---------------------------------------------------------------- menu bar */
+.cw-menubar {
+  display: flex;
+  align-items: stretch;
+  height: 20px;
+  padding: 0 2px;
+  background: var(--cw-face);
+  border-bottom: 1px solid var(--cw-face-shadow);
+  box-shadow: 0 1px 0 var(--cw-face-light);
+  position: relative;
+  z-index: 1000;
+}
+
+.cw-menubar-item {
+  padding: 2px 7px;
+  cursor: default;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.cw-menubar-item.hot {
+  border-color: var(--cw-face-light) var(--cw-face-shadow) var(--cw-face-shadow) var(--cw-face-light);
+}
+
+.cw-menubar-item.open {
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+}
+
+.cw-menu {
+  position: absolute;
+  min-width: 160px;
+  /* context menus open inside Courier views (Assembly, Memory, Command...): always the UI font */
+  font-family: var(--cw-ui-font);
+  font-size: var(--cw-ui-font-size);
+  font-weight: normal;
+  font-style: normal;
+  padding: 2px;
+  background: var(--cw-face);
+  /* a cascading submenu is a DOM child of its highlighted parent item: do not inherit the highlight text color */
+  color: var(--cw-window-text);
+  border: 1px solid;
+  border-color: var(--cw-face) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face);
+  box-shadow: inset 1px 1px 0 var(--cw-face-light), inset -1px -1px 0 var(--cw-face-shadow), 2px 2px 3px rgba(0, 0, 0, 0.25);
+  z-index: 1001;
+}
+
+.cw-menu-item {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 4px 0 0;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.cw-menu-item .check {
+  width: 18px;
+  text-align: center;
+}
+
+.cw-menu-item .label {
+  flex: 1;
+  padding-right: 24px;
+}
+
+.cw-menu-item .shortcut {
+  padding-right: 8px;
+}
+
+.cw-menu-item .arrow {
+  width: 10px;
+}
+
+.cw-menu-item.active {
+  background: var(--cw-highlight);
+  color: var(--cw-highlight-text);
+}
+
+.cw-menu-item.disabled {
+  color: var(--cw-gray-text);
+  text-shadow: 1px 1px 0 var(--cw-face-light);
+}
+
+.cw-menu-item.disabled.active {
+  text-shadow: none;
+}
+
+.cw-menu-sep {
+  height: 0;
+  margin: 3px 1px;
+  border-top: 1px solid var(--cw-face-shadow);
+  border-bottom: 1px solid var(--cw-face-light);
+}
+
+.cw-mnemonic {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- toolbar */
+.cw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 2px 3px;
+  min-height: 28px;
+  background: var(--cw-face);
+  border-top: 1px solid var(--cw-face-light);
+  border-bottom: 1px solid var(--cw-face-shadow);
+}
+
+.cw-tool-btn {
+  min-width: 23px;
+  height: 22px;
+  padding: 0 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: var(--cw-face);
+  border: 1px solid transparent;
+  cursor: default;
+}
+
+.cw-tool-btn:hover:not(:disabled) {
+  border-color: var(--cw-face-light) var(--cw-face-shadow) var(--cw-face-shadow) var(--cw-face-light);
+}
+
+.cw-tool-btn:active:not(:disabled),
+.cw-tool-btn.pressed {
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+}
+
+.cw-tool-btn:disabled {
+  opacity: 0.45;
+}
+
+.cw-tool-sep {
+  width: 2px;
+  height: 20px;
+  margin: 0 3px;
+  border-left: 1px solid var(--cw-face-shadow);
+  border-right: 1px solid var(--cw-face-light);
+}
+
+/* ---------------------------------------------------------------- buttons, fields */
+.cw-button {
+  min-width: 75px;
+  height: 23px;
+  padding: 0 8px;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+  box-shadow: inset -1px -1px 0 var(--cw-face-shadow);
+}
+
+.cw-button:active:not(:disabled) {
+  border-color: var(--cw-face-dark-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-dark-shadow);
+  box-shadow: inset 1px 1px 0 var(--cw-face-shadow);
+}
+
+.cw-button.default {
+  outline: 1px solid var(--cw-window-text);
+}
+
+.cw-button:focus-visible {
+  outline: 1px dotted var(--cw-window-text);
+  outline-offset: -4px;
+}
+
+.cw-field {
+  height: 21px;
+  padding: 1px 3px;
+  border: 1px solid;
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+  box-shadow: inset 1px 1px 0 var(--cw-face-dark-shadow);
+  background: var(--cw-window);
+  outline: none;
+  user-select: text;
+}
+
+/* ---------------------------------------------------------------- status bar */
+.cw-statusbar {
+  display: flex;
+  gap: 2px;
+  height: 22px;
+  padding: 2px;
+  background: var(--cw-face);
+  border-top: 1px solid var(--cw-face-light);
+}
+
+.cw-status-pane {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 1px solid;
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+}
+
+.cw-status-pane.grow {
+  flex: 1;
+}
+
+/* ---------------------------------------------------------------- caption (component/MDI title bars) */
+.cw-caption {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 3px;
+  color: var(--cw-caption-text);
+  font-weight: bold;
+  background: linear-gradient(to right, var(--cw-inactive-caption), var(--cw-inactive-caption-gradient));
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.cw-caption.active {
+  background: linear-gradient(to right, var(--cw-active-caption), var(--cw-active-caption-gradient));
+}
+
+/* ---------------------------------------------------------------- tabs */
+.cw-tabs {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.cw-tab-strip {
+  display: flex;
+  align-items: flex-end;
+  height: 22px;
+  padding-left: 2px;
+}
+
+.cw-tab {
+  padding: 2px 8px;
+  margin-right: -1px;
+  border: 1px solid;
+  border-bottom: none;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) transparent var(--cw-face-light);
+  border-radius: 2px 2px 0 0;
+  cursor: default;
+}
+
+.cw-tab.selected {
+  position: relative;
+  top: 1px;
+  padding-bottom: 4px;
+  background: var(--cw-face);
+  z-index: 1;
+}
+
+.cw-tab-page {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------------------------------------------- list / tree views */
+.cw-listview {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--cw-window);
+}
+
+.cw-listview table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.cw-listview th {
+  position: sticky;
+  top: 0;
+  height: 18px;
+  padding: 0 4px;
+  font-weight: normal;
+  text-align: left;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-shadow) var(--cw-face-shadow) var(--cw-face-light);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.cw-listview td {
+  height: 17px;
+  padding: 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cw-row.selected td {
+  background: var(--cw-highlight);
+  color: var(--cw-highlight-text);
+}
+
+.cw-tree-toggle {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 3px;
+  line-height: 7px;
+  font-size: 9px;
+  text-align: center;
+  border: 1px solid var(--cw-face-shadow);
+  background: var(--cw-window);
+  color: var(--cw-window-text);
+  vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------- splitter */
+.cw-split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.cw-split.vertical {
+  flex-direction: column;
+}
+
+.cw-split-pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cw-split-bar {
+  flex: 0 0 4px;
+  background: var(--cw-face);
+  cursor: col-resize;
+}
+
+.cw-split.vertical > .cw-split-bar {
+  cursor: row-resize;
+}
+
+/* ---------------------------------------------------------------- dialogs */
+.cw-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.05);
+  z-index: 2000;
+}
+
+.cw-dialog {
+  min-width: 260px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face);
+  box-shadow: inset 1px 1px 0 var(--cw-face-light), inset -1px -1px 0 var(--cw-face-shadow), 3px 3px 6px rgba(0, 0, 0, 0.3);
+  padding: 2px;
+}
+
+.cw-dialog-body {
+  padding: 10px;
+  overflow: auto;
+}
+
+.cw-dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 0 10px 10px;
+}
+
+.cw-groupbox {
+  position: relative;
+  margin: 8px 0;
+  padding: 10px 8px 8px;
+  border: 1px solid var(--cw-face-shadow);
+  box-shadow: inset 1px 1px 0 var(--cw-face-light), 1px 1px 0 var(--cw-face-light);
+}
+
+.cw-groupbox > .legend {
+  position: absolute;
+  top: -7px;
+  left: 6px;
+  padding: 0 2px;
+  background: var(--cw-face);
+}
+
+/* ---------------------------------------------------------------- placeholders (removed as components land) */
+.cw-placeholder {
+  padding: 6px;
+  color: var(--cw-gray-text);
+  font-style: italic;
+}
+
+/* ---------------------------------------------------------------- check boxes (IDE shell track) */
+.cw-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 18px;
+}
+
+.cw-check.disabled {
+  color: var(--cw-gray-text);
+}
+
+.cw-check input {
+  margin: 0;
+}
+
+/* drag-and-drop insertion marks in list/tree views (IDE shell track) */
+.cw-row.drop-before td {
+  box-shadow: inset 0 2px 0 var(--cw-window-text);
+}
+
+.cw-row.drop-into td {
+  outline: 1px dotted var(--cw-window-text);
+  outline-offset: -1px;
+}
+
+.cw-row.drop-after td {
+  box-shadow: inset 0 -2px 0 var(--cw-window-text);
+}

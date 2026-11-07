@@ -1,0 +1,1 @@
+export { CommandComponent } from './CommandComponent';

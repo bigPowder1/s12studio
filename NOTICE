@@ -1,0 +1,33 @@
+S12 Studio
+Copyright 2026 S12 Studio contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+Third-party material and its terms are listed in THIRD_PARTY_NOTICES.md.
+
+Trademarks
+----------
+CodeWarrior is a trademark of NXP B.V. Freescale is a trademark of NXP B.V.
+Other product and company names (including HI-WAVE, P&E Multilink and
+PEmicro) are trademarks of their respective owners.
+
+S12 Studio is an independent project. It is not affiliated with, sponsored
+by, or endorsed by NXP B.V., Freescale, PEmicro, or any other trademark
+owner. These names are used only to describe compatibility: S12 Studio opens
+and builds CodeWarrior-format (CodeWarrior S12(X) v5.1) projects and follows
+that tool's workflow so that course materials written for it keep working.
+
+The S12 Studio source code contains no NXP, Freescale, Metrowerks or PEmicro
+source code, binaries, header/include files or project templates. Register
+definitions are generated from the MC9S12XDP512 data sheet.
+
+Listing files (.lst) written by S12 Studio's assembler reproduce the header
+lines of CodeWarrior's listings, including its "(c) Copyright Freescale"
+line, so that they are byte-for-byte comparable with listings made on a lab
+PC. That line is reproduced for compatibility only: the listings are output
+of S12 Studio, not a work of Freescale or NXP. Likewise, the assembler and
+linker print CodeWarrior's message numbers and texts so that build output
+matches what course material describes.
+
+S12 Studio contains no ME 305 course material; the course's project files
+and library belong to their authors. Students open the project folder their
+course gives them.

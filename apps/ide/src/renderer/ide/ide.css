@@ -1,0 +1,206 @@
+/* IDE window (CodeWarrior 5.1 look): project window, MDI area, Target Settings and other dialogs. IDE shell track. */
+
+.ide-frame {
+  background: var(--cw-face);
+}
+
+.ide-mdi {
+  padding: 2px;
+  background: var(--cw-face-shadow);
+}
+
+.ide-mdi > .cw-split > .cw-split-pane {
+  background: var(--cw-face);
+}
+
+.ide-docs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #808080;
+}
+
+.ide-editor-host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--cw-face-shadow);
+}
+
+.ide-editor-host > * {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- project window ---- */
+.ide-projwin {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 2px;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+}
+
+.ide-projwin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 3px 2px;
+}
+
+.ide-target-select {
+  min-width: 120px;
+  max-width: 200px;
+  margin-right: 4px;
+}
+
+.ide-projwin-footer {
+  display: flex;
+  gap: 4px;
+  padding: 2px 4px;
+  height: 18px;
+  align-items: center;
+}
+
+.ide-num {
+  width: 52px;
+  text-align: right;
+}
+
+.ide-fill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+
+.ide-click-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 15px;
+  cursor: default;
+}
+
+.ide-dot {
+  font-size: 9px;
+}
+
+.cw-row.selected .ide-click-cell svg path {
+  stroke: #ff6060;
+}
+
+/* ---- forms / dialogs ---- */
+.ide-form-row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.ide-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ide-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ide-hint {
+  color: var(--cw-gray-text);
+  margin: 4px 0;
+  white-space: normal;
+}
+
+.ide-error {
+  color: var(--cw-changed);
+  margin: 4px 0;
+}
+
+.ide-settings {
+  display: flex;
+  gap: 8px;
+  height: 440px;
+}
+
+.ide-settings-tree {
+  width: 210px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ide-settings-tree-title,
+.ide-settings-panel-title {
+  height: 20px;
+  line-height: 20px;
+  font-weight: bold;
+}
+
+.ide-settings-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ide-settings-panel-title {
+  border-bottom: 1px solid var(--cw-face-shadow);
+  box-shadow: 0 1px 0 var(--cw-face-light);
+  margin-bottom: 6px;
+}
+
+.ide-settings-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.ide-settings-buttons {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.ide-opt-page {
+  overflow: auto;
+  padding: 2px 4px;
+}
+
+.ide-about {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ide-about-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--cw-active-caption);
+}
+
+.ide-about-legal {
+  padding: 6px;
+  border: 1px solid var(--cw-face-shadow);
+  background: var(--cw-window);
+}
+
+.ide-startup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+}

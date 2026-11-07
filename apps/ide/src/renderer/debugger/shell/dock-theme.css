@@ -1,0 +1,296 @@
+/* hiwave MDI client area and child windows (classic Windows 2000 chrome: grey frame, blue active caption).
+   Owned by the debugger shell track; imported by debugger/main.tsx. */
+.s12-mdi {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--cw-face-shadow);
+  font-family: var(--cw-ui-font);
+  font-size: var(--cw-ui-font-size);
+}
+
+.s12-mdi-child {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face);
+  box-shadow:
+    inset 1px 1px 0 var(--cw-face-light),
+    inset -1px -1px 0 var(--cw-face-shadow);
+  padding: 2px;
+  min-width: 120px;
+  min-height: 22px;
+}
+
+.s12-mdi-child.maximized {
+  padding: 0;
+  border-width: 0;
+}
+
+.s12-mdi-caption {
+  flex: none;
+  gap: 3px;
+  cursor: default;
+  user-select: none;
+}
+
+.s12-mdi-sysicon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.s12-mdi-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s12-mdi-capbtn {
+  flex: none;
+  width: 16px;
+  height: 14px;
+  padding: 0;
+  font: bold 10px/12px var(--cw-ui-font);
+  color: #000;
+  background: var(--cw-face);
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+}
+
+.s12-mdi-capbtn:active {
+  border-color: var(--cw-face-dark-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-dark-shadow);
+}
+
+.s12-mdi-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.s12-mdi-headline {
+  flex: none;
+  height: 16px;
+  line-height: 14px;
+  padding: 0 4px;
+  margin: 1px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: var(--cw-face);
+}
+
+.s12-mdi-headline {
+  display: flex;
+  gap: 12px;
+}
+
+.s12-mdi-headline-main {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s12-mdi-headline-side {
+  flex: none;
+}
+
+.s12-mdi-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--cw-window);
+  border: 1px solid;
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+}
+
+.s12-mdi-body > * {
+  flex: 1;
+  min-height: 0;
+}
+
+.s12-mdi-grip {
+  position: absolute;
+  z-index: 2;
+}
+.s12-mdi-grip.n,
+.s12-mdi-grip.s {
+  left: 6px;
+  right: 6px;
+  height: 4px;
+  cursor: ns-resize;
+}
+.s12-mdi-grip.n {
+  top: -2px;
+}
+.s12-mdi-grip.s {
+  bottom: -2px;
+}
+.s12-mdi-grip.e,
+.s12-mdi-grip.w {
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  cursor: ew-resize;
+}
+.s12-mdi-grip.e {
+  right: -2px;
+}
+.s12-mdi-grip.w {
+  left: -2px;
+}
+.s12-mdi-grip.ne,
+.s12-mdi-grip.nw,
+.s12-mdi-grip.se,
+.s12-mdi-grip.sw {
+  width: 8px;
+  height: 8px;
+}
+.s12-mdi-grip.ne {
+  top: -2px;
+  right: -2px;
+  cursor: nesw-resize;
+}
+.s12-mdi-grip.sw {
+  bottom: -2px;
+  left: -2px;
+  cursor: nesw-resize;
+}
+.s12-mdi-grip.nw {
+  top: -2px;
+  left: -2px;
+  cursor: nwse-resize;
+}
+.s12-mdi-grip.se {
+  bottom: -2px;
+  right: -2px;
+  cursor: nwse-resize;
+}
+
+/* ---------------------------------------------------------------- code views (Source / Assembly) */
+.s12-code {
+  position: relative;
+  overflow: auto;
+  white-space: pre;
+  background: var(--cw-window);
+  color: var(--cw-window-text);
+  outline: none;
+  cursor: default;
+}
+
+.s12-code-line {
+  display: flex;
+  height: 1.25em;
+  line-height: 1.25em;
+}
+
+.s12-code-line.pc {
+  background: var(--cw-pc-line);
+  color: var(--cw-pc-line-text);
+}
+
+.s12-code-line.sel:not(.pc) {
+  background: #c0d8f0;
+}
+
+.s12-code-line.label {
+  font-weight: bold;
+}
+
+.s12-gutter {
+  flex: none;
+  width: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cw-window);
+  border-right: 1px solid var(--cw-face);
+  cursor: pointer;
+}
+
+.s12-code-line.pc .s12-gutter {
+  background: var(--cw-window);
+}
+
+/* Assembly margin marks (scoped: the Monaco Source view has its own .s12-bp glyphs in common/monaco/sourceView.css) */
+.s12-gutter .s12-bp {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cw-breakpoint);
+  border: 1px solid #800000;
+  box-sizing: border-box;
+}
+
+.s12-gutter .s12-bp.disabled {
+  background: transparent;
+  border: 2px solid var(--cw-breakpoint);
+}
+
+.s12-gutter .s12-bp.temporary {
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------- register component */
+.s12-regs {
+  padding: 2px 4px;
+  overflow: auto;
+  background: var(--cw-window);
+  user-select: none;
+}
+
+.s12-reg-grid {
+  display: grid;
+  /* name (6ch) + gap + widest value of the format (set by the component as --reg-val-ch) */
+  grid-template-columns: repeat(auto-fill, minmax(calc(7ch + var(--reg-val-ch, 6) * 1ch + 4px), 1fr));
+  column-gap: 8px;
+}
+
+.s12-reg {
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+  line-height: 1.35em;
+}
+
+.s12-reg-name {
+  display: inline-block;
+  min-width: 6ch;
+  flex: none;
+}
+
+.s12-reg-value {
+  cursor: text;
+}
+
+.s12-reg-value.changed {
+  color: var(--cw-changed);
+}
+
+.s12-reg-edit {
+  font: inherit;
+  width: calc(max(6, var(--reg-val-ch, 6)) * 1ch + 3ch);
+  padding: 0 1px;
+  border: 1px solid #000;
+}
+
+.s12-ccr-bit {
+  display: inline-block;
+  width: 1.2em;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.s12-ccr-bit.clear {
+  color: var(--cw-gray-text);
+  font-weight: normal;
+}

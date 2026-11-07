@@ -1,0 +1,22 @@
+/* Linker parameter file for the MC9S12XDP512 (non-paged memory only). Created by S12 Studio. */
+
+NAMES
+    /* object files and libraries are passed by the IDE */
+END
+
+SEGMENTS
+    RAM       = READ_WRITE  DATA_NEAR             0x2000 TO 0x3FFF;
+    ROM_4000  = READ_ONLY   DATA_NEAR IBCC_NEAR   0x4000 TO 0x7FFF;
+    ROM_C000  = READ_ONLY   DATA_NEAR IBCC_NEAR   0xC000 TO 0xFEFF;
+END
+
+PLACEMENT
+    _PRESTART, STARTUP, ROM_VAR, STRINGS, NON_BANKED, COPY   INTO ROM_C000;
+    DEFAULT_ROM, MyCode                                       INTO ROM_4000;
+    SSTACK, DEFAULT_RAM                                       INTO RAM;
+END
+
+STACKSIZE 0x100
+
+VECTOR 0 Entry   /* reset vector */
+INIT Entry

@@ -1,0 +1,1 @@
+export { MemoryComponent } from './MemoryComponent';

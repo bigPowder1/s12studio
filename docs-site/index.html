@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S12 Studio: HCS12X assembly IDE and simulator for ME 305</title>
+  <meta name="description" content="Free desktop app for Cal Poly ME 305: write, build and debug MC9S12XDP512 assembly with a CodeWarrior-style IDE, a full-chip simulator and an on-screen ME 305 board.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script src="js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">S12 Studio</a>
+      <nav class="site" aria-label="Main">
+        <ul>
+          <li><a href="#download">Download</a></li>
+          <li><a href="#quickstart">Quick start</a></li>
+          <li><a href="install.html">Install guide</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="https://github.com/bigPowder1/s12studio">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap hero">
+      <h1>ME 305 lab work on your own laptop</h1>
+      <p class="lead">S12 Studio is a free app for writing, building and debugging MC9S12XDP512 assembly. It works like
+        the lab's CodeWarrior IDE and debugger, opens your lab projects, and runs them on a simulated ME 305 board
+        in real time, on Windows and Mac.</p>
+      <div class="actions">
+        <a class="button" href="#download">Download</a>
+        <a class="button secondary" href="install.html">How to install</a>
+      </div>
+      <figure class="shot">
+        <img src="img/ide.png" width="1280" height="800" alt="The S12 Studio IDE with the blinky demo project: project window with the sources and their code sizes, main.asm in the editor, and &quot;Build done: 0 error(s)&quot; in the status bar.">
+        <figcaption>The IDE after Make (F7) on the blinky demo: project window and editor, laid out like CodeWarrior 5.1.</figcaption>
+      </figure>
+    </div>
+
+    <section class="alt" id="download" aria-labelledby="download-h">
+      <div class="wrap">
+        <h2 id="download-h">Download</h2>
+        <p class="note"><span data-os-note>Pick your system.</span> All files are on the
+          <a href="https://github.com/bigPowder1/s12studio/releases/latest">latest release page</a>.</p>
+        <ul class="downloads" data-downloads>
+          <li data-os="windows">
+            <span class="os">Windows 10 / 11</span>
+            <p class="detail">64-bit installer (.exe). Updates itself.</p>
+            <a class="download" href="https://github.com/bigPowder1/s12studio/releases/latest">Download for Windows</a>
+          </li>
+          <li data-os="mac" data-arch="arm64">
+            <span class="os">macOS, Apple Silicon</span>
+            <p class="detail">M1, M2, M3, M4... Macs (.dmg, arm64). Simulator only.</p>
+            <a class="download" href="https://github.com/bigPowder1/s12studio/releases/latest">Download for Apple Silicon</a>
+          </li>
+          <li data-os="mac" data-arch="x64">
+            <span class="os">macOS, Intel</span>
+            <p class="detail">Intel Macs (.dmg, x64). Simulator only.</p>
+            <a class="download" href="https://github.com/bigPowder1/s12studio/releases/latest">Download for Intel Mac</a>
+          </li>
+          <li data-os="linux">
+            <span class="os">Linux</span>
+            <p class="detail">64-bit AppImage. Make it executable, then run it.</p>
+            <a class="download" href="https://github.com/bigPowder1/s12studio/releases/latest">Download for Linux</a>
+          </li>
+        </ul>
+        <p class="note" data-version></p>
+        <div class="callout">
+          <p><strong>Beta builds are not code-signed yet,</strong> so Windows and macOS warn you the first time you
+            open S12 Studio. That is expected. The <a href="install.html">install guide</a> shows what to click
+            (Windows: <span class="ui">More info</span> &rarr; <span class="ui">Run anyway</span>; Mac:
+            <span class="ui">System Settings &rarr; Privacy &amp; Security &rarr; Open Anyway</span>).</p>
+        </div>
+        <p class="note">Not sure which Mac you have? Apple menu &rarr; <span class="ui">About This Mac</span>:
+          "Chip: Apple M&hellip;" means Apple Silicon, "Processor: Intel" means Intel.</p>
+      </div>
+    </section>
+
+    <section id="quickstart" aria-labelledby="quickstart-h">
+      <div class="wrap">
+        <h2 id="quickstart-h">Quick start</h2>
+        <ol class="steps">
+          <li>
+            <h3>Open your lab project</h3>
+            <p>Copy the <code>blank_project</code> folder ME 305 gives you (course page), then
+              <span class="ui">File &rarr; Open&hellip;</span> and pick its <code>.mcp</code>. S12 Studio does not
+              include the course library or template; they come with your course's project folder.</p>
+          </li>
+          <li>
+            <h3>Build</h3>
+            <p>Press <kbd>F7</kbd> (Make). Errors show up in the Errors &amp; Warnings window; double-click one to
+              jump to the line.</p>
+          </li>
+          <li>
+            <h3>Debug on the board</h3>
+            <p>Press <kbd>F5</kbd> to open the debugger; the ME305 Board opens on the right. Press <kbd>F5</kbd>
+              again to run. Click the keypad to type; <kbd>F6</kbd> halts,
+              <kbd>F11</kbd> steps.</p>
+          </li>
+        </ol>
+        <p class="note">No course project yet? Open the demo project (<span class="ui">Help &rarr; Open Demo
+          Project</span>, or from the startup dialog), or <span class="ui">File &rarr; New Project</span> for an empty
+          assembly project (without the ME 305 library).</p>
+        <figure class="shot">
+          <img src="img/debugger.png" width="1280" height="800" alt="The debugger running the blinky demo: Source, Assembly, Data, Command and Memory windows, and the ME 305 board panel with the demo message on the LCD, two LEDs lit, the keypad and the motor.">
+          <figcaption>The debugger with the simulated ME 305 board: LCD, keypad, LEDs and motor.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="alt" id="faq" aria-labelledby="faq-h">
+      <div class="wrap">
+        <h2 id="faq-h">FAQ</h2>
+        <details>
+          <summary>Is this CodeWarrior?</summary>
+          <p>No. S12 Studio is an independent, open-source program written from scratch by a student. It looks and
+            works like CodeWarrior for S12(X) 5.1 so that lab handouts apply, opens the same project files, and its
+            assembler and linker produce the same output files. It is not made, endorsed or supported by NXP.
+            CodeWarrior is a trademark of NXP B.V.</p>
+        </details>
+        <details>
+          <summary>Where do I get the ME 305 library / blank project?</summary>
+          <p>From your course: the library and the template are in the <code>blank_project</code> folder ME 305
+            gives you (course page). S12 Studio does not include any course material. Copy that folder and open its
+            <code>.mcp</code> with <span class="ui">File &rarr; Open&hellip;</span>.</p>
+        </details>
+        <details>
+          <summary>Does it work with the lab board and the P&amp;E pod?</summary>
+          <p>Not yet. This release is the <strong>simulator edition</strong>: your program runs on a simulated
+            MC9S12XDP512 and ME 305 board. To run on the real board, use a lab PC for now. Real-board support on
+            Windows is planned for the next release.</p>
+        </details>
+        <details>
+          <summary>Does it work on a Mac?</summary>
+          <p>Yes, as a simulator, on Apple Silicon and Intel Macs. The P&amp;E pod's driver only exists for Windows,
+            so real-board debugging will stay Windows-only.</p>
+        </details>
+        <details>
+          <summary>Is my code uploaded anywhere?</summary>
+          <p>No. Everything runs on your computer: editing, building and simulation. There is no account, no
+            telemetry and no cloud. The only network request is the check for a new version on GitHub.</p>
+        </details>
+        <details>
+          <summary>Will my build match the lab PC?</summary>
+          <p>That is the goal: the assembler, linker and S-record output are tested byte for byte against
+            CodeWarrior's. If you find a difference, please report it with a small example.</p>
+        </details>
+        <details>
+          <summary>Why does my computer warn me when I install it?</summary>
+          <p>Code-signing certificates cost money, and this beta is not signed yet. The
+            <a href="install.html">install guide</a> explains each warning and what to click.</p>
+        </details>
+        <details>
+          <summary>Something is wrong. Where do I report it?</summary>
+          <p>Open an issue on <a href="https://github.com/bigPowder1/s12studio/issues">GitHub</a> with your OS, the
+            version (<span class="ui">Help &rarr; About</span>) and what happened. Please do not post graded lab
+            solutions; a small example that shows the problem is best.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p>S12 Studio is open source under the Apache License 2.0. It contains no ME 305 course material; the
+        course's project files and library belong to their authors.
+        <a href="https://github.com/bigPowder1/s12studio">Source code</a> &middot;
+        <a href="https://github.com/bigPowder1/s12studio/issues">Report a bug</a> &middot;
+        <a href="install.html">Install guide</a></p>
+      <p>CodeWarrior is a trademark of NXP B.V. S12 Studio is not affiliated with or endorsed by NXP.</p>
+    </div>
+  </footer>
+</body>
+</html>

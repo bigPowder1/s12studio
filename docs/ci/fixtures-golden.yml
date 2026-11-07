@@ -1,0 +1,85 @@
+# Golden CI for S12 Studio. INSTALL THIS IN THE PRIVATE FIXTURES REPOSITORY (s12studio-fixtures) as
+# .github/workflows/golden.yml -- not in the public repository (docs/RELEASING.md, "Golden tests in CI").
+#
+# Why here: the logs and artifacts of a public repository are world-readable, and a failing golden test prints
+# diffs of the fixture sources and listings (a student's graded lab). Run from the private repository, the logs
+# stay private.
+#
+# It checks out the PUBLIC repository (no credentials needed) and this repository into its fixtures/ directory,
+# then runs the full unit/golden suite and the Electron E2E specs (fixture specs included).
+name: Golden
+
+on:
+  push:                       # new or changed fixtures
+  schedule:
+    - cron: '17 9 * * *'      # nightly, against the public repository's default branch
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or commit of the public repository to test (default: its default branch)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: golden-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  # The public repository; override with the repository variable PUBLIC_REPOSITORY (owner/name).
+  PUBLIC_REPOSITORY: ${{ vars.PUBLIC_REPOSITORY || format('{0}/s12studio', github.repository_owner) }}
+
+jobs:
+  golden:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      S12_FIXTURES: ${{ github.workspace }}/fixtures
+    steps:
+      - name: Check out the public S12 Studio repository
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.PUBLIC_REPOSITORY }}
+          ref: ${{ github.event.inputs.ref || '' }}
+          persist-credentials: false
+      - name: Check out these fixtures into fixtures/
+        uses: actions/checkout@v5
+        with:
+          path: fixtures
+          persist-credentials: false
+      - name: Verify fixtures layout
+        run: test -f fixtures/Lab3/Lab3.mcp && test -d fixtures/blank_project && test -d fixtures/tests && test -d fixtures/e2e
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Full test suite (golden tests included)
+        run: npx vitest run
+      - name: Linux GUI dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libasound2t64 libgbm1 libnss3 libgtk-3-0
+          # Ubuntu 24.04 restricts unprivileged user namespaces, which breaks Chromium's sandbox.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Build the app
+        run: npm run build -w @s12/ide
+      - name: E2E with fixtures
+        working-directory: apps/ide
+        env:
+          S12_SCREENS_DIR: ${{ runner.temp }}/screens
+        run: xvfb-run -a npx playwright test -c e2e/playwright.config.ts
+      # Private repository: screenshots of the fixtures may be kept as an artifact.
+      - name: Upload screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-e2e
+          path: |
+            ${{ runner.temp }}/screens
+            apps/ide/test-results
+          if-no-files-found: ignore
+          retention-days: 7

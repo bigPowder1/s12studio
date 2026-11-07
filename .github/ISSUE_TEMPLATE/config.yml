@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Install help (Windows SmartScreen / macOS "Open Anyway")
+    url: https://bigpowder1.github.io/s12studio/install.html
+    about: The beta is not code-signed yet; the install guide explains the warnings.

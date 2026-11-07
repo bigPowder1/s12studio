@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@s12/formats": ["packages/formats/src/index.ts"],
+      "@s12/asm": ["packages/asm/src/index.ts"],
+      "@s12/link": ["packages/link/src/index.ts"],
+      "@s12/sim": ["packages/sim/src/index.ts"],
+      "@s12/debug": ["packages/debug/src/index.ts"],
+      "@s12/hw": ["packages/hw/src/index.ts"],
+      "@s12/project": ["packages/project/src/index.ts"],
+      "@s12/devices": ["packages/devices/src/index.ts"],
+      "@s12/isa": ["packages/isa/src/index.ts"]
+    }
+  }
+}

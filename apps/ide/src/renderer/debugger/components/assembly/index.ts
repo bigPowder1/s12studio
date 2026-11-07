@@ -1,0 +1,1 @@
+export { AssemblyComponent } from './AssemblyComponent';

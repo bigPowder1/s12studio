@@ -1,0 +1,50 @@
+node_modules/
+dist/
+out/
+*.log
+.vite/
+coverage/
+
+# The owner's original lab copy (never committed)
+/Lab3/
+/blank_project/
+
+# Private fixtures repo (s12studio-fixtures) checked out here, or set S12_FIXTURES.
+# Note: files already tracked under fixtures/ stay tracked until they are removed from the index.
+/fixtures/
+
+# Electron app (apps/ide)
+.local-libs/
+test-results/
+playwright-report/
+blob-report/
+
+# electron-builder output
+apps/ide/dist/
+apps/ide/release/
+release/
+*.AppImage
+*.dmg
+*.exe
+*.blockmap
+*.snap
+*.deb
+*.rpm
+latest*.yml
+builder-debug.yml
+builder-effective-config.yaml
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Local secrets (signing, tokens)
+.env
+.env.*
+*.p12
+*.pfx
+*.pem

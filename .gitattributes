@@ -1,0 +1,52 @@
+# Text is stored with LF in the repository and checked out with LF on every OS
+# (tests and tools handle LF and CRLF input; CodeWarrior outputs are written with CRLF by our code).
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF in the working tree (hiwave .cmd files are not batch files: left as text).
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# Byte-compared inputs/goldens: never convert. The assembler conformance sources are CRLF on purpose
+# (they mirror files assembled on a lab PC; listings carry byte positions).
+packages/asm/conformance/** -text
+**/test/data/** -text
+**/test/golden/** -text
+
+# CodeWarrior project files and build products: binary or byte-exact text.
+*.mcp  binary
+*.tdt  binary
+*.stg  binary
+*.lib  binary
+*.abs  binary
+*.o    binary
+*.elf  binary
+*.phy  binary
+*.s19  -text
+*.sx   -text
+*.lst  -text
+*.dbg  -text
+*.map  -text
+*.glo  -text
+*.xpr  -text
+*.hwl  -text
+*.hwc  -text
+*.ini  -text
+*.prm  -text
+*.bbl  -text
+
+# Demo projects are byte-exact inputs for E2E/golden tests: keep sources as authored.
+examples/** -text
+
+# Private fixtures (a separate repo checked out at fixtures/; see CLAUDE.md). Kept for any copy still tracked here.
+fixtures/** -text
+
+# Binary assets
+*.png  binary
+*.ico  binary
+*.icns binary
+*.jpg  binary
+*.gif  binary
+*.woff binary
+*.woff2 binary
+*.zip  binary
+*.pdf  binary

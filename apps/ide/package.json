@@ -1,0 +1,63 @@
+{
+  "name": "@s12/ide",
+  "productName": "S12 Studio",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "description": "S12 Studio: CodeWarrior S12(X) v5.1-style IDE and hiwave-style debugger (Electron)",
+  "author": {
+    "name": "S12 Studio contributors"
+  },
+  "homepage": "https://github.com/bigPowder1/s12studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigPowder1/s12studio.git"
+  },
+  "s12studio": {
+    "appId": "io.github.bigpowder1.s12studio"
+  },
+  "desktopName": "s12studio.desktop",
+  "type": "module",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "node scripts/launch.mjs dev",
+    "build": "electron-vite build",
+    "start": "node scripts/launch.mjs start",
+    "preview": "node scripts/launch.mjs preview",
+    "typecheck": "tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.web.json --noEmit",
+    "test": "vitest run --config vitest.config.ts",
+    "e2e": "electron-vite build && playwright test -c e2e/playwright.config.ts",
+    "e2e:nobuild": "playwright test -c e2e/playwright.config.ts",
+    "icon": "node scripts/make-icon.mjs",
+    "licenses": "node scripts/collect-licenses.mjs",
+    "dist": "npm run build && npm run licenses && electron-builder --config electron-builder.config.cjs --publish never",
+    "dist:dir": "npm run build && npm run licenses && electron-builder --config electron-builder.config.cjs --dir --publish never",
+    "dist:linux": "npm run build && npm run licenses && electron-builder --config electron-builder.config.cjs --linux --publish never",
+    "dist:win": "npm run build && npm run licenses && electron-builder --config electron-builder.config.cjs --win --publish never",
+    "dist:mac": "npm run build && npm run licenses && electron-builder --config electron-builder.config.cjs --mac --publish never",
+    "e2e:packaged": "playwright test -c e2e/playwright.config.ts packaged.spec.ts"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "electron": "^45.1.0",
+    "electron-builder": "26.18.0",
+    "electron-vite": "^4.0.1",
+    "jsdom": "^26.1.0",
+    "monaco-editor": "^0.57.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vite": "^5.4.21"
+  }
+}

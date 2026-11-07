@@ -1,0 +1,152 @@
+/* CodeWarrior editor windows (S12 Studio). Classic grey chrome around a white Monaco text area. */
+.s12-editor-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--cw-face-shadow); /* MDI client area */
+}
+.s12-mdi-empty {
+  flex: 1;
+  background: var(--cw-face-shadow);
+}
+.s12-editor-tabs {
+  display: flex;
+  flex: none;
+  gap: 1px;
+  padding: 2px 2px 0;
+  background: var(--cw-face);
+  border-bottom: 1px solid var(--cw-face-shadow);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.s12-editor-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid var(--cw-face-shadow);
+  border-bottom: none;
+  border-radius: 2px 2px 0 0;
+  background: var(--cw-face);
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+.s12-editor-tab.active {
+  background: var(--cw-window);
+  border-color: var(--cw-face-dark-shadow);
+  font-weight: bold;
+}
+.s12-editor-tab-close {
+  border: none;
+  background: transparent;
+  padding: 0 2px;
+  font-size: 11px;
+  line-height: 11px;
+  color: var(--cw-gray-text);
+}
+.s12-editor-tab-close:hover {
+  color: var(--cw-window-text);
+  background: var(--cw-face-light);
+}
+.s12-editor-window {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--cw-face);
+}
+.s12-editor-toolbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  height: 22px;
+  padding: 0 3px;
+  border-bottom: 1px solid var(--cw-face-shadow);
+  background: var(--cw-face);
+}
+.s12-popup-btn {
+  min-width: 26px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid;
+  border-color: var(--cw-face-light) var(--cw-face-dark-shadow) var(--cw-face-dark-shadow) var(--cw-face-light);
+  background: var(--cw-face);
+  font-family: var(--cw-mono-font);
+  font-size: 11px;
+  font-weight: bold;
+}
+.s12-popup-btn:active:not(:disabled) {
+  border-color: var(--cw-face-dark-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-dark-shadow);
+}
+.s12-popup-btn:disabled {
+  color: var(--cw-gray-text);
+}
+.s12-editor-path {
+  flex: 1;
+  min-width: 0;
+  margin-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.s12-editor-external {
+  color: var(--cw-changed);
+  margin: 0 6px;
+  white-space: nowrap;
+}
+.s12-editor-lock {
+  display: inline-flex;
+  margin: 0 3px;
+}
+.s12-editor-modified {
+  display: inline-flex;
+  width: 18px;
+  justify-content: center;
+  color: var(--cw-face);
+}
+.s12-editor-modified.dirty {
+  color: #e8c000;
+}
+.s12-monaco-host {
+  flex: 1;
+  min-height: 0;
+  background: var(--cw-window);
+  border: 1px solid var(--cw-face-shadow);
+  border-left: none;
+  border-right: none;
+  overflow: hidden;
+}
+.s12-editor-status {
+  display: flex;
+  flex: none;
+  gap: 12px;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  background: var(--cw-face);
+  white-space: nowrap;
+}
+.s12-search-results {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  height: 160px;
+  border-top: 2px solid var(--cw-face);
+  background: var(--cw-face);
+}
+.s12-search-head {
+  padding: 2px 4px;
+}
+.s12-search-results .cw-listview {
+  flex: 1;
+  min-height: 0;
+}
+/* Monaco: classic look */
+.s12-monaco-host .monaco-editor .margin,
+.s12-monaco-host .monaco-editor-background {
+  background: var(--cw-window);
+}

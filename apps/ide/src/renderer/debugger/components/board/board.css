@@ -1,0 +1,310 @@
+/* ME305 Board component: drawing of the benchtop unit. Classes are prefixed me305-. */
+.me305-board {
+  height: 100%;
+  overflow: auto;
+  background: var(--cw-face);
+  padding: 6px;
+  box-sizing: border-box;
+  outline: none;
+  font-family: var(--cw-ui-font);
+  font-size: var(--cw-ui-font-size);
+}
+.me305-board.focused .me305-unit {
+  box-shadow: 0 0 0 2px var(--cw-highlight);
+}
+.me305-unit {
+  background: linear-gradient(#2d4a6b, #1f3550);
+  border: 2px solid #10202f;
+  border-radius: 6px;
+  padding: 8px 10px 10px;
+  color: #e8eef5;
+  min-width: 420px;
+}
+.me305-title {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.me305-status {
+  font-weight: normal;
+  color: #b9c9da;
+  font-family: var(--cw-mono-font);
+}
+.me305-caption {
+  font-size: 10px;
+  color: #b9c9da;
+  letter-spacing: 1px;
+  margin: 6px 0 3px;
+}
+.me305-caption:first-child {
+  margin-top: 0;
+}
+
+/* LCD */
+.me305-lcd-bezel {
+  background: #111;
+  border-radius: 4px;
+  padding: 8px;
+  border: 1px solid #000;
+  box-shadow: inset 0 0 0 2px #2a2a2a;
+}
+.me305-lcd svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.me305-lcd-glass {
+  fill: #b6cf2a;
+}
+.me305-lcd-dot-off {
+  fill: #a6bf22;
+}
+.me305-lcd-dot-on {
+  fill: #1e2a08;
+}
+.me305-lcd.off .me305-lcd-dot-off {
+  fill: #a9c225;
+}
+.me305-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: pre;
+}
+
+.me305-lower {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: flex-start;
+}
+.me305-section {
+  flex: 0 0 auto;
+}
+
+/* Keypad */
+.me305-keypad {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #15283c;
+  padding: 6px;
+  border-radius: 4px;
+  user-select: none;
+}
+.me305-keypad-row {
+  display: flex;
+  gap: 4px;
+}
+.me305-key {
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  font-family: var(--cw-ui-font);
+  font-size: 12px;
+  font-weight: bold;
+  color: #111;
+  background: linear-gradient(#f4f4f4, #c9c9c9);
+  border: 1px solid #555;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 #333;
+  cursor: pointer;
+}
+.me305-key.fn {
+  width: 42px;
+  font-size: 10px;
+  background: linear-gradient(#ffe9a8, #e2bd4e);
+}
+.me305-key.down {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #333;
+  background: linear-gradient(#bdbdbd, #e0e0e0);
+}
+.me305-key.fn.down {
+  background: linear-gradient(#cfa83b, #f0d989);
+}
+
+/* LEDs */
+.me305-leds {
+  display: flex;
+  gap: 10px;
+}
+.me305-led-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.me305-led {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #000;
+}
+.me305-led.red {
+  background: radial-gradient(circle at 35% 35%, #6a2a2a, #3a0d0d);
+}
+.me305-led.green {
+  background: radial-gradient(circle at 35% 35%, #2a5a2a, #0d300d);
+}
+.me305-led-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+.me305-led.lit .me305-led-glow {
+  transition: none;
+}
+.me305-led.red .me305-led-glow {
+  background: radial-gradient(circle at 40% 40%, #fff2f2 0%, #ff4040 40%, #c00000 100%);
+  box-shadow: 0 0 10px 3px rgba(255, 40, 40, 0.75);
+}
+.me305-led.green .me305-led-glow {
+  background: radial-gradient(circle at 40% 40%, #f2fff2 0%, #40ff40 40%, #00a000 100%);
+  box-shadow: 0 0 10px 3px rgba(40, 255, 40, 0.7);
+}
+.me305-led-label {
+  font-size: 9px;
+  color: #b9c9da;
+}
+
+/* Encoder, DAC */
+.me305-encoder {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-family: var(--cw-mono-font);
+}
+.me305-encoder-value {
+  min-width: 56px;
+  text-align: right;
+  background: #0b1a0b;
+  color: #6aff6a;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.me305-encoder-hex {
+  color: #b9c9da;
+}
+.me305-dac {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+  font-family: var(--cw-mono-font);
+}
+.me305-dac-name {
+  width: 40px;
+}
+.me305-dac-bar {
+  position: relative;
+  width: 110px;
+  height: 10px;
+  background: #0b1a2b;
+  border: 1px solid #000;
+}
+.me305-dac-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2c7fd8, #7cc0ff);
+}
+.me305-dac-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+.me305-dac-value {
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Motor */
+.me305-motor {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.me305-motor-svg {
+  width: 96px;
+  height: 96px;
+}
+.me305-motor-housing {
+  fill: #3b3b3b;
+  stroke: #111;
+  stroke-width: 2;
+}
+.me305-motor-disc {
+  fill: #9aa3ad;
+  stroke: #5a636d;
+  stroke-width: 1.5;
+}
+.me305-motor-spoke {
+  stroke: #5a636d;
+  stroke-width: 2;
+}
+.me305-motor-marker {
+  fill: #e04040;
+}
+.me305-motor-blur {
+  fill: none;
+  stroke: rgba(224, 64, 64, 0.45);
+  stroke-width: 10;
+}
+.me305-motor-shaft {
+  fill: #222;
+  stroke: #ccc;
+  stroke-width: 1;
+}
+.me305-readout {
+  border-collapse: collapse;
+  font-family: var(--cw-mono-font);
+}
+.me305-readout th {
+  text-align: left;
+  font-weight: normal;
+  color: #b9c9da;
+  padding: 1px 6px 1px 0;
+}
+.me305-readout td {
+  padding: 1px 0;
+  white-space: nowrap;
+}
+.me305-flag {
+  display: inline-block;
+  padding: 0 3px;
+  border: 1px solid #5a6b7d;
+  border-radius: 2px;
+  color: #8a9bad;
+  font-size: 10px;
+}
+.me305-flag.on {
+  color: #0b1a0b;
+  background: #6aff6a;
+  border-color: #6aff6a;
+}
+
+/* Fit-to-window: the unit keeps its natural one-row layout and is scaled (BoardComponent + fit.ts); the wrapper
+   takes the scaled size so the panel scrolls only below the minimum scale. */
+.me305-fit {
+  position: relative;
+  overflow: hidden;
+}
+.me305-unit.scaled {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: max-content;
+  transform-origin: 0 0;
+}
+.me305-unit.scaled .me305-lower {
+  flex-wrap: nowrap;
+}

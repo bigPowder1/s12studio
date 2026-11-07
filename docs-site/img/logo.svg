@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- S12 Studio application icon (original artwork for this project): a stylised QFP microcontroller with "S12".
+     A copy of apps/ide/build/icon.svg; scripts/make-icon.mjs renders that file to build/icon.png, icon.ico and icon.icns. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f5f8b"/>
+      <stop offset="1" stop-color="#0f2f4f"/>
+    </linearGradient>
+    <linearGradient id="die" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a3f46"/>
+      <stop offset="1" stop-color="#1c1f24"/>
+    </linearGradient>
+    <linearGradient id="pin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2d27a"/>
+      <stop offset="1" stop-color="#c9982f"/>
+    </linearGradient>
+    <g id="pins-h">
+      <rect x="0" y="-14" width="74" height="28" rx="6" fill="url(#pin)"/>
+    </g>
+  </defs>
+  <!-- rounded-square tile (macOS-style safe area: 824px tile centred in 1024) -->
+  <rect x="100" y="100" width="824" height="824" rx="180" fill="url(#bg)"/>
+  <!-- circuit traces -->
+  <g stroke="#4fa3d1" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.55">
+    <path d="M170 300 H230 L260 330"/>
+    <path d="M170 724 H230 L260 694"/>
+    <path d="M854 300 H794 L764 330"/>
+    <path d="M854 724 H794 L764 694"/>
+  </g>
+  <g fill="#4fa3d1" opacity="0.55">
+    <circle cx="170" cy="300" r="14"/>
+    <circle cx="170" cy="724" r="14"/>
+    <circle cx="854" cy="300" r="14"/>
+    <circle cx="854" cy="724" r="14"/>
+  </g>
+  <!-- pins: 5 per side -->
+  <g>
+    <!-- left -->
+    <rect x="232" y="366" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="232" y="434" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="232" y="498" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="232" y="562" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="232" y="630" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <!-- right -->
+    <rect x="718" y="366" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="718" y="434" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="718" y="498" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="718" y="562" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <rect x="718" y="630" width="74" height="28" rx="6" fill="url(#pin)"/>
+    <!-- top -->
+    <rect x="366" y="232" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="434" y="232" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="498" y="232" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="562" y="232" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="630" y="232" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <!-- bottom -->
+    <rect x="366" y="718" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="434" y="718" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="498" y="718" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="562" y="718" width="28" height="74" rx="6" fill="url(#pin)"/>
+    <rect x="630" y="718" width="28" height="74" rx="6" fill="url(#pin)"/>
+  </g>
+  <!-- package body -->
+  <rect x="290" y="290" width="444" height="444" rx="36" fill="url(#die)" stroke="#5c636d" stroke-width="6"/>
+  <!-- pin-1 mark -->
+  <circle cx="345" cy="345" r="18" fill="#5c636d"/>
+  <!-- label -->
+  <text x="512" y="566" text-anchor="middle" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-weight="bold" font-size="168" letter-spacing="-4" fill="#ffffff">S12</text>
+  <rect x="372" y="608" width="280" height="14" rx="7" fill="#57c785"/>
+</svg>

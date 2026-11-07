@@ -1,0 +1,143 @@
+{
+  "format": "s12studio-project",
+  "version": 1,
+  "addedFiles": [],
+  "removedFiles": [],
+  "targets": {},
+  "base": {
+    "targets": [
+      {
+        "name": "Standard",
+        "linker": "Linker for HC12",
+        "outputDir": "{Project}bin",
+        "outputFile": "Project.abs",
+        "accessPaths": {
+          "user": [
+            "{Project}",
+            "{Project}bin",
+            "{Project}prm",
+            "{Project}cmd",
+            "{Project}Sources",
+            "{Compiler}lib\\HC12c\\lib",
+            "{Compiler}lib\\HC12c\\src",
+            "{Project}Sources\\Libraries"
+          ],
+          "system": [
+            "{Compiler}lib\\HC12c\\include"
+          ]
+        },
+        "options": {
+          "assembler": "-CPUHCS12X -L=%(TEXTPATH)\\%n.lst -Li"
+        },
+        "files": [
+          "main.asm",
+          "derivative.inc",
+          "Project.prm",
+          "burner.bbl",
+          "Project.map"
+        ],
+        "linkOrder": [
+          "derivative.inc",
+          "burner.bbl",
+          "Project.prm",
+          "Project.map",
+          "main.asm"
+        ],
+        "debugger": {
+          "app": "{Compiler}prog\\hiwave.exe",
+          "args": "%targetFilePath -Prod=%projectFileDir\\Full_Chip_Simulation.ini -instance=sim",
+          "initialDir": "{Project}"
+        }
+      }
+    ],
+    "files": [
+      {
+        "name": "main.asm",
+        "kind": "asm",
+        "tool": "Assembler for HC12",
+        "ignoredByMake": false,
+        "debug": true
+      },
+      {
+        "name": "derivative.inc",
+        "kind": "inc",
+        "tool": "Assembler for HC12",
+        "ignoredByMake": true,
+        "debug": true
+      },
+      {
+        "name": "Project.prm",
+        "kind": "prm",
+        "tool": "",
+        "ignoredByMake": false,
+        "debug": true
+      },
+      {
+        "name": "burner.bbl",
+        "kind": "bbl",
+        "tool": "",
+        "ignoredByMake": false,
+        "debug": true
+      },
+      {
+        "name": "Project.map",
+        "kind": "map",
+        "tool": "",
+        "ignoredByMake": true,
+        "debug": true
+      }
+    ],
+    "groups": [
+      {
+        "type": "group",
+        "name": "Sources",
+        "children": [
+          {
+            "type": "file",
+            "name": "main.asm"
+          }
+        ]
+      },
+      {
+        "type": "group",
+        "name": "Includes",
+        "children": [
+          {
+            "type": "file",
+            "name": "derivative.inc"
+          }
+        ]
+      },
+      {
+        "type": "group",
+        "name": "Project Settings",
+        "children": [
+          {
+            "type": "group",
+            "name": "Linker Files",
+            "children": [
+              {
+                "type": "file",
+                "name": "burner.bbl"
+              },
+              {
+                "type": "file",
+                "name": "Project.map"
+              },
+              {
+                "type": "file",
+                "name": "Project.prm"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "wizard": {
+      "chip": "MC9S12XDP512",
+      "language": "Relocatable assembly",
+      "connection": "Full Chip Simulation"
+    }
+  },
+  "currentTarget": "Standard"
+}

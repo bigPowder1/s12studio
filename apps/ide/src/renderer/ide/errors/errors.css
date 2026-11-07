@@ -1,0 +1,115 @@
+/* CodeWarrior "Errors & Warnings" window. */
+.s12-errors-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  min-height: 90px;
+  border-top: 1px solid var(--cw-face-shadow);
+  background: var(--cw-face);
+}
+.s12-errors-resize {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -3px;
+  height: 6px;
+  cursor: ns-resize;
+  z-index: 2;
+}
+.s12-errors-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.s12-errors-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+  padding: 0 3px;
+  flex: none;
+}
+.s12-errors-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  min-width: 22px;
+  padding: 0 4px;
+  border: 1px solid transparent;
+  background: var(--cw-face);
+}
+.s12-errors-toggle:hover:not(:disabled) {
+  border-color: var(--cw-face-light) var(--cw-face-shadow) var(--cw-face-shadow) var(--cw-face-light);
+}
+.s12-errors-toggle.pressed {
+  border-color: var(--cw-face-shadow) var(--cw-face-light) var(--cw-face-light) var(--cw-face-shadow);
+  background: #e8e6e0;
+}
+.s12-errors-toggle:disabled {
+  color: var(--cw-gray-text);
+}
+.s12-errors-sep {
+  width: 1px;
+  height: 16px;
+  margin: 0 4px;
+  border-left: 1px solid var(--cw-face-shadow);
+  border-right: 1px solid var(--cw-face-light);
+}
+.s12-errors-summary {
+  margin-left: 8px;
+  color: var(--cw-window-text);
+}
+.s12-errors-list {
+  flex: 3;
+  min-height: 0;
+  overflow: auto;
+  background: var(--cw-window);
+  outline: none;
+}
+.s12-errors-row {
+  display: flex;
+  gap: 6px;
+  padding: 2px 4px;
+  border-bottom: 1px dotted #d0d0d0;
+  cursor: default;
+  user-select: none;
+}
+.s12-errors-row.selected {
+  background: var(--cw-highlight);
+  color: var(--cw-highlight-text);
+}
+.s12-errors-icon {
+  flex: none;
+  padding-top: 1px;
+}
+.s12-errors-text {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--cw-mono-font);
+  font-size: var(--cw-mono-font-size);
+  white-space: pre;
+}
+.s12-errors-where {
+  padding-left: 2ch;
+}
+.s12-errors-none {
+  padding: 6px;
+  color: var(--cw-gray-text);
+}
+.s12-errors-source {
+  flex: 2;
+  min-height: 0;
+  overflow: auto;
+  margin-top: 2px;
+  background: var(--cw-window);
+  white-space: pre;
+}
+.s12-errors-source-line {
+  padding: 0 4px;
+}
+.s12-errors-source-line.current {
+  background: #ffff80;
+}
