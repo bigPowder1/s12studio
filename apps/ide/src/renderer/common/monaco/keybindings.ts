@@ -27,6 +27,13 @@ export const REMOVED_MONACO_KEYS: readonly RemovedMonacoKey[] = [
     owner: 'File > Find and Open File...',
     keybinding: (m) => m.KeyMod.CtrlCmd | m.KeyCode.KeyD,
   },
+  {
+    // macOS only (Cmd+G = Find Next there; F3 still is); elsewhere Monaco has no such binding and the rule is a no-op
+    shortcut: 'Ctrl+G',
+    command: 'editor.action.nextMatchFindAction',
+    owner: 'Search > Go to Line...',
+    keybinding: (m) => m.KeyMod.CtrlCmd | m.KeyCode.KeyG,
+  },
 ];
 
 const applied = new WeakSet<object>();

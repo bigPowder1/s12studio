@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readSRecords } from '@s12/formats';
+import { normPath } from '@s12/project';
 import { copyFixture, FIXTURES, hasFixtures, describeFx, itFx } from '../../../test/fixtures';
 import type { BuildMessageInfo, BuildProgressInfo, BuildResultInfo } from '../../shared/api/build';
 import type { ProjectInfo } from '../../shared/api/project';
@@ -55,7 +56,7 @@ describeFx('ProjectService + BuildService on a Lab3 copy', () => {
     info = await svc.open(mcpPath);
     expect(info.name).toBe('Lab3');
     expect(info.mcpPath).toBe(mcpPath);
-    expect(info.sidecarPath).toBe(join(lab3.dir, 'Lab3.s12studio.json'));
+    expect(info.sidecarPath).toBe(normPath(join(lab3.dir, 'Lab3.s12studio.json')));
     expect(info.targets.map((t) => t.name)).toEqual(['Standard']);
     expect(info.targets[0].linkOrder).toContain('main.asm');
     expect(info.connections.map((c) => c.target)).toEqual(expect.arrayContaining(['sim', 'icd12']));
@@ -69,7 +70,7 @@ describeFx('ProjectService + BuildService on a Lab3 copy', () => {
     expect(r.errors).toBe(0);
     expect(r.compiled).toContain('main.asm');
     expect(r.linked).toBe(true);
-    expect(r.absPath).toBe(join(lab3.dir, 'bin/Project.abs'));
+    expect(r.absPath).toBe(normPath(join(lab3.dir, 'bin/Project.abs')));
     expect(of('build', 'started')).toEqual([{ kind: 'make', target: 'Standard' }]);
     expect(of<BuildProgressInfo>('build', 'progress').map((p) => p.step)).toEqual(expect.arrayContaining(['assemble', 'link', 'done']));
     expect(of<BuildResultInfo>('build', 'finished')[0].ok).toBe(true);
@@ -224,7 +225,7 @@ describeFx('ProjectService + BuildService on a Lab3 copy', () => {
   it('Project > Debug on the icd12 connection falls back to Full Chip Simulation and says so', async () => {
     await svc.edit((p) => p.setConnection('P&E_Multilink_USB'));
     const r = await resolveLaunch(svc, {});
-    expect(r.iniPath).toBe(join(lab3.dir, 'Full_Chip_Simulation.ini'));
+    expect(r.iniPath).toBe(normPath(join(lab3.dir, 'Full_Chip_Simulation.ini')));
     expect(r.fallbackFrom).toMatchObject({ name: 'P&E_Multilink_USB', target: 'icd12' });
     await svc.edit((p) => p.setConnection('Full_Chip_Simulation'));
     expect((await resolveLaunch(svc, {})).fallbackFrom).toBeUndefined();
@@ -261,7 +262,7 @@ describe('New Project', () => {
   itFx('from blank_project: copies the tree, renames .mcp + _Data, opens it and it builds', async () => {
     const info = await svc.newProject({ template: 'blank_project', dir: work, name: 'MyLab' });
     expect(info.name).toBe('MyLab');
-    expect(info.mcpPath).toBe(join(work, 'MyLab', 'MyLab.mcp'));
+    expect(info.mcpPath).toBe(normPath(join(work, 'MyLab', 'MyLab.mcp')));
     expect(existsSync(join(work, 'MyLab', 'MyLab_Data'))).toBe(true);
     expect(existsSync(join(work, 'MyLab', 'bin', 'Project.abs'))).toBe(false); // template outputs not copied
     const r = await builds.make();
@@ -274,7 +275,7 @@ describe('New Project', () => {
   it('from the generic template: a sidecar-only project that builds', async () => {
     const info = await svc.newProject({ template: 'minimal', dir: work, name: 'Generic' });
     expect(info.mcpPath).toBeUndefined();
-    expect(info.sidecarPath).toBe(join(work, 'Generic', 'Generic.s12studio.json'));
+    expect(info.sidecarPath).toBe(normPath(join(work, 'Generic', 'Generic.s12studio.json')));
     const r = await builds.make();
     expect(r.errors).toBe(0);
     expect(r.ok).toBe(true);
