@@ -66,9 +66,11 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libasound2t64 libgbm1 libnss3 libgtk-3-0
+          sudo apt-get install -y xvfb openbox libasound2t64 libgbm1 libnss3 libgtk-3-0
           # Ubuntu 24.04 restricts unprivileged user namespaces, which breaks Chromium's sandbox.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          # xvfb-run's default screen is 640x480 with no window manager: menus fall off-screen and windows cannot be
+          # maximized. The E2E steps run on a 1920x1080 screen with openbox.
       - name: Build the app
         run: npm run build -w @s12/ide
       # Playwright exits 0 when every test is skipped (all fixture specs skip in a public checkout), so the json
@@ -79,7 +81,7 @@ jobs:
         env:
           S12_SCREENS_DIR: ${{ runner.temp }}/screens
           PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/e2e-report.json
-        run: xvfb-run -a npx playwright test -c e2e/playwright.config.ts --reporter=list,json
+        run: xvfb-run -a -s '-screen 0 1920x1080x24' sh -c 'openbox & sleep 1; npx playwright test -c e2e/playwright.config.ts --reporter=list,json'
       - name: E2E (Windows)
         if: runner.os == 'Windows'
         working-directory: apps/ide
@@ -106,7 +108,7 @@ jobs:
         working-directory: apps/ide
         env:
           S12_PACKAGED_APP: ${{ github.workspace }}/apps/ide/dist/linux-unpacked/s12studio
-        run: xvfb-run -a npx playwright test -c e2e/playwright.config.ts packaged.spec.ts
+        run: xvfb-run -a -s '-screen 0 1920x1080x24' sh -c 'openbox & sleep 1; npx playwright test -c e2e/playwright.config.ts packaged.spec.ts'
       - name: Packaged-app E2E (Windows)
         if: runner.os == 'Windows'
         working-directory: apps/ide
