@@ -107,6 +107,20 @@ describe('object file', () => {
     expect(r.listing!.text).toContain('000006 1820 xxxx');
   });
 
+  it('a label alone on its line before unlabelled DC data is an alias of the VARnnnnn (no symbol of its own)', () => {
+    const r = asmSource('C: SECTION\n LDX #tbl\n LDY #code\n RTS\ntbl:     ; table\n DC.B 2\n DC.W 0\ncode:\n NOP');
+    expect(r.messages).toEqual([]);
+    const elf = readElf(r.objectBytes!);
+    const syms = readSymbols(elf);
+    const names = syms.map((s) => s.name);
+    expect(names).not.toContain('tbl');
+    expect(names).toContain('code'); // a bare label before an instruction is still a FUNC symbol
+    expect(syms.find((s) => s.name === 'VAR00001')).toMatchObject({ type: STT_FUNC, value: 7, size: 1 });
+    expect(syms.find((s) => s.name === 'VAR00002')).toMatchObject({ type: STT_FUNC, value: 8, size: 2 });
+    expect(relocs(elf, 'C').map((x) => syms[x.sym].name)).toEqual(['VAR00001', 'code']);
+    expect(info(elf).entries.map((e) => e.name)).not.toContain('tbl');
+  });
+
   it('CALL page via PAGE() gives a PAGE8 relocation', () => {
     const r = asmSource('F: SECTION\nfar: RTC\nC: SECTION\n CALL far,PAGE(far)\n LDAB #PAGE(far)');
     expect(r.ok).toBe(true);

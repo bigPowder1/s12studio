@@ -241,6 +241,7 @@ export class Assembler {
   }
 
   private labelValue(s: Sym): Value {
+    if (s.aliasOf) return this.labelValue(s.aliasOf);
     const sec = s.section!;
     if (sec.kind === 'org' || sec.kind === 'offset') {
       const v: Value = { kind: 'abs', v: s.value, absLabel: sec.kind === 'org' };
@@ -625,13 +626,22 @@ export class Assembler {
   private dataAt(st: Stmt, elem: 1 | 2 | 4, count: number, initialized: boolean): void {
     if (this.cur.kind === 'offset') return;
     const labels = this.labelsAt.get(this.cur)?.get(this.cur.pc) ?? [];
-    for (const s of labels) {
-      if (s.dataElem === undefined) {
-        s.dataElem = elem;
-        s.dataCount = count;
+    // Labels alone on an earlier line at this address (`tbl:` then `DC.B 2` on the next line). For initialised data
+    // CW does not treat them as labelling the data: the line gets a VARnnnnn and the bare labels become aliases of it
+    // (observed in a CW 5.1 object: `LDX #tbl` relocates against VAR00001 and tbl is not in the symbol table).
+    // UNCERTAIN: a bare label followed by DS, or by a data line with its own label, keeps the old behaviour (unseen).
+    const own = labels.filter((s) => s.defStmt === st);
+    const bare = labels.filter((s) => s.defStmt !== st && s.dataElem === undefined && !s.aliasOf);
+    const aliasBare = initialized && !own.length && bare.length > 0 && bare.length === labels.length;
+    if (!aliasBare) {
+      for (const s of labels) {
+        if (s.dataElem === undefined) {
+          s.dataElem = elem;
+          s.dataCount = count;
+        }
       }
     }
-    if (!labels.length && initialized) {
+    if ((!labels.length || aliasBare) && initialized) {
       // UNCERTAIN: every unlabelled initialised-data line (DC/DCB/FCC/RAD50) gets its own VARnnnnn symbol
       // (e.g. a vector table: consecutive DC.W lines -> VAR00001, VAR00002, ...).
       const name = `VAR${String(++this.varCount).padStart(5, '0')}`;
@@ -640,6 +650,7 @@ export class Assembler {
         s.isVar = true;
         s.dataElem = elem;
         s.dataCount = count;
+        if (aliasBare) for (const b of bare) b.aliasOf = s;
       }
     }
   }

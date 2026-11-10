@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatMessage, messageText, MESSAGES, type AsmMessage } from '../src/index.js';
-import { asmSource } from './helpers.js';
+import { asmSource, hex, sectionBytes } from './helpers.js';
 
 const codes = (src: string, opts = '-CpuHCS12X -L') => asmSource(src, opts).messages.map((m) => m.code);
 
@@ -23,7 +23,7 @@ describe('CodeWarrior messages', () => {
     ['complex relocatable', 'S1: SECTION\na1: NOP\na2: NOP\n DC.W a1+a2', ['A2401']],
     ['EQU forward reference', 'k: EQU later\nlater: EQU 1', ['A2333']],
     ['immediate not allowed', ' MOVB #1,#2', ['A12105']],
-    ['immediate expected for the mask', ' BSET $40,$01', ['A12104']],
+    ['immediate expected for the BRSET mask', 'l: BRSET $40,$01,l', ['A12104']],
     ['auto increment range', ' LDAA 9,X+', ['A12005']],
     ['register expected', ' LDAB 0,Z', ['A12010']],
     ['illegal addressing mode', ' LEAX $1234', ['A12001']],
@@ -50,6 +50,13 @@ describe('CodeWarrior messages', () => {
       expect(codes(src, opts)).toEqual(want);
     });
   }
+
+  it('BSET/BCLR accept the mask with or without #', () => {
+    const src = 'REG: EQU $40\nM1: EQU $01\nHI: EQU $80\nM5: EQU $20\nC: SECTION\n bset REG, M1\n bclr REG,#M1\n bset REG, HI|M5\n bset 2,X,$01';
+    const r = asmSource(src);
+    expect(r.messages).toEqual([]);
+    expect(hex(sectionBytes(r, 'C'))).toBe('4C 40 01 4D 40 01 4C 40 A0 0C 02 01');
+  });
 
   it('8-bit relocations are rejected (object writer limitation, A9001)', () => {
     expect(codes(' XREF.B dp\n LDAA dp')).toEqual(['A9001']);

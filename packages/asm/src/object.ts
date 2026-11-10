@@ -154,7 +154,7 @@ function sectionShape(s: Section): { type: number; flags: number } {
 
 /** True for symbols that appear in the object symbol table. */
 export function isObjectSymbol(s: Sym): boolean {
-  if (s.kind === 'label') return !!s.section && s.section.kind !== 'offset' && s.defined;
+  if (s.kind === 'label') return !!s.section && s.section.kind !== 'offset' && s.defined && !s.aliasOf;
   if (s.kind === 'xref') return true;
   if (s.kind === 'equ') {
     if (s.xdef && !s.equValue && s.defined) return true; // exported absolute constant
@@ -167,7 +167,7 @@ export function isObjectSymbol(s: Sym): boolean {
 export function computeSizes(symbols: Sym[]): void {
   const bySec = new Map<Section, Sym[]>();
   for (const s of symbols) {
-    if (s.kind !== 'label' || !s.section || s.section.kind === 'offset' || !s.defined) continue;
+    if (s.kind !== 'label' || !s.section || s.section.kind === 'offset' || !s.defined || s.aliasOf) continue;
     let a = bySec.get(s.section);
     if (!a) bySec.set(s.section, (a = []));
     a.push(s);

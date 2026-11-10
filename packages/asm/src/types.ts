@@ -54,6 +54,11 @@ export interface Sym {
   dataCount?: number;
   /** Assembler-generated VARnnnnn symbol for unlabelled data. */
   isVar?: boolean;
+  /**
+   * Label alone on its line, directly followed by unlabelled initialised data at the same address: CW emits no
+   * object symbol for it, and references relocate against that data's VARnnnnn symbol instead.
+   */
+  aliasOf?: Sym;
   /** Statement defining the symbol. */
   defStmt?: Stmt;
   /** Object symbol allocation order (see object.ts). */

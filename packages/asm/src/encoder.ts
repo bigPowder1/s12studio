@@ -597,10 +597,14 @@ export class InstructionEncoder {
     if (op.k === 'imm') this.fail('A12105', op.col - 1);
     const maskItem = items[next];
     if (!maskItem) this.fail('A2402', col0);
-    // CW requires '#' before the mask: the manual's A12104 "Immediate value expected" entry gives exactly this case for
-    // BRCLR/BRSET (`BRCLR var, maskValue, endCode`). UNCERTAIN only for BSET/BCLR, which follow the same rule here.
-    if (!maskItem.text.startsWith('#')) this.fail('A12104', maskItem.col);
-    const mask = this.value(maskItem.text.slice(1), maskItem.col + 1);
+    // BSET/BCLR take the mask with or without '#': CW 5.1 assembles `BSET $40,MASK` (MASK an EQU constant, no '#')
+    // to `4C 40 mm` with no message (observed in CW listings; r1 critique G3 `BCLR LCD_CTRL,RS` → `4D 32 01`).
+    // BRCLR/BRSET require the '#': the manual's A12104 "Immediate value expected" entry gives exactly this case
+    // (`BRCLR var, maskValue, endCode`). UNCERTAIN: not yet checked against a CW build.
+    const hasHash = maskItem.text.startsWith('#');
+    if (isBr && !hasHash) this.fail('A12104', maskItem.col);
+    const maskCol = hasHash ? maskItem.col + 1 : maskItem.col;
+    const mask = this.value(hasHash ? maskItem.text.slice(1) : maskItem.text, maskCol);
     let target: Item | undefined;
     if (isBr) {
       target = items[next + 1];
@@ -610,7 +614,7 @@ export class InstructionEncoder {
     const by = (m: string) => forms.find((f) => f.mode === prefix + m);
     if (op.k === 'addr') {
       this.dirExtOperand(by('DIR'), by('EXT'), op);
-      this.field8(mask, maskItem.col + 1, 'mask');
+      this.field8(mask, maskCol, 'mask');
       if (target) this.rel8(target);
       return;
     }
@@ -619,7 +623,7 @@ export class InstructionEncoder {
     this.emitOp(f);
     this.idx(f, op);
     // xb [ff|ee ff] mm [rr]: the mask and branch offset follow the indexed bytes.
-    this.field8(mask, maskItem.col + 1, 'mask');
+    this.field8(mask, maskCol, 'mask');
     if (target) this.rel8(target);
   }
 
