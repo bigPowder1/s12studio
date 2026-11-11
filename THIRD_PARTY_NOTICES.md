@@ -3,7 +3,7 @@
 S12 Studio's own code is licensed under the Apache License 2.0 (see `LICENSE` and `NOTICE`). This file lists
 material in this repository, or bundled into the installers, that comes from somewhere else.
 
-S12 Studio contains no ME 305 course material; the course's project files and library belong to their authors.
+S12 Studio contains no ME 3305 course material; the course's project files and library belong to their authors.
 Neither this repository nor the installers include them: students open the `blank_project` folder their course gives
 them. The demo project shipped in the installers (`examples/blinky`) is S12 Studio's own code (Apache-2.0).
 

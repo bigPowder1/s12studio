@@ -1,5 +1,5 @@
 /**
- * 40x2 HD44780-style character LCD of the ME305 benchtop unit, drawn as an SVG dot matrix (5x8 dots per character,
+ * 40x2 HD44780-style character LCD of the ME3305 benchtop unit, drawn as an SVG dot matrix (5x8 dots per character,
  * yellow-green backlight, dark dots). One <g> per character cell with two paths (dark dots, faint unlit dots); cells
  * are memoized so a snapshot only redraws the characters that changed.
  *
@@ -64,8 +64,8 @@ const Cell = memo(function Cell({ ch, row, col, rows, underline, block }: CellPr
   const [lit, unlit] = paths(shown);
   return (
     <g transform={`translate(${MARGIN + col * CELL_W} ${MARGIN + row * CELL_H})`} data-char={ch} data-row={row} data-col={col} data-cursor={underline || block ? (block ? 'block' : 'underline') : undefined}>
-      <path d={unlit} className="me305-lcd-dot-off" />
-      <path d={lit} className="me305-lcd-dot-on" />
+      <path d={unlit} className="me3305-lcd-dot-off" />
+      <path d={lit} className="me3305-lcd-dot-on" />
     </g>
   );
 });
@@ -86,9 +86,9 @@ export function Lcd({ lcd, cursorOn }: { lcd: LcdState | null; cursorOn?: boolea
   const underlineOn = cursorOn ?? lcd?.cursorOn ?? !lcd?.blinkOn;
   const cg = lcd?.cgram ?? null;
   return (
-    <div className={`me305-lcd${lcd?.displayOn ? '' : ' off'}`} data-testid="me305-lcd" data-display={lcd ? (lcd.displayOn ? 'on' : 'off') : 'none'}>
+    <div className={`me3305-lcd${lcd?.displayOn ? '' : ' off'}`} data-testid="me3305-lcd" data-display={lcd ? (lcd.displayOn ? 'on' : 'off') : 'none'}>
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={lines.map((l) => l.join('').trimEnd()).join('\n')}>
-        <rect x={0} y={0} width={W} height={H} className="me305-lcd-glass" />
+        <rect x={0} y={0} width={W} height={H} className="me3305-lcd-glass" />
         {lines.map((chars, r) =>
           chars.map((ch, c) => {
             const here = !!cursor && cursor.row === r && cursor.col === c;
@@ -98,7 +98,7 @@ export function Lcd({ lcd, cursorOn }: { lcd: LcdState | null; cursorOn?: boolea
       </svg>
       {/* plain-text copy of the display (screen readers, copy, tests) */}
       {lines.map((chars, r) => (
-        <div key={r} className="me305-sr-only" data-testid={`lcd-row-${r}`}>
+        <div key={r} className="me3305-sr-only" data-testid={`lcd-row-${r}`}>
           {chars.join('')}
         </div>
       ))}

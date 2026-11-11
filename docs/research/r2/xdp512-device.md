@@ -48,7 +48,7 @@ How the course library drives the chip and the board, and what the golden binari
 |---|---|
 | 40×2 HD44780 LCD | Data on PORTB ($0001, DDRB=$FF). PM4=RS, PM5=R/W, PM6=E. |
 | LCD busy-flag polling | Course code polls the busy flag after each write. **The LCD model must answer status reads with BF=0, otherwise the code hangs.** |
-| Keypad (encoder chip with DA line) | PK0–4 = key code (inputs), PK5 = output (driven 0), PJ7 = DA, falling-edge interrupt with pull-up. Key table in `packages/devices/src/me305.ts` (codes 0..19). **PJ7 must still be low when a key ISR waits on it, otherwise it spins.** |
+| Keypad (encoder chip with DA line) | PK0–4 = key code (inputs), PK5 = output (driven 0), PJ7 = DA, falling-edge interrupt with pull-up. Key table in `packages/devices/src/me3305.ts` (codes 0..19). **PJ7 must still be low when a key ISR waits on it, otherwise it spins.** |
 | Quadrature counter (LS7366R) | SPI0, chip select PH0 (active low). |
 | 12-bit dual DAC (MCP4922-style; part UNCERTAIN) | SPI0, chip select PH1 (active low). One 16-bit word per write: config nibble + 12-bit data. |
 | DC motor | PWM ch0:1 concatenated, output on **PP1**. PA4 = direction, PA6 = enable (PA5/PA7 inputs). |
@@ -471,7 +471,7 @@ Validate addresses against [S1] Appendix G, which is the full list above.
 1. **No copy of the stock `mc9s12xdp512.inc` was found online.** Exact symbol spellings (byte halves of 16-bit registers, vector EQU names, the memory-map EQUs trailer) are UNCERTAIN.
    - Mitigation: generate the file from [S1] plus the [S5] names.
    - Better: get the real file from any CW 5.1 install, e.g. a Cal Poly lab PC.
-2. **The 16 MHz crystal is inferred** from the timing the course code expects, not from a schematic. Confirm against the Cal Poly ME305 board documentation.
+2. **The 16 MHz crystal is inferred** from the timing the course code expects, not from a schematic. Confirm against the Cal Poly ME3305 board documentation.
 3. **COP reset configuration** (the $FF0E → COPCTL mapping on S12XD) and the reset MODE under hiwave FCS or a BDM connection are not verified. The defaults chosen are: COP off, special single-chip.
 4. **Illegal or unimplemented-page access behaviour** differs between MMCV2 and MMCV3 maskset chapters in [S1]. Which maskset the lab boards use (PARTIDL) is unknown.
 5. **The PLL lock time** and the exact PLLSEL-gating rule are from memory. A wrong model could make start-up code hang (LOCK never set) or behave unrealistically.

@@ -41,11 +41,12 @@ export const COMPONENTS: readonly ComponentEntry[] = [
   { name: 'Data', component: DataComponent, multiInstance: true, infoBar: true, description: 'Global, local and user variables' },
   { name: 'Command', component: CommandComponent, multiInstance: false, description: 'Command line' },
   { name: 'Terminal', component: TerminalComponent, multiInstance: false, description: 'Terminal (SCI)' },
-  { name: 'ME305 Board', component: BoardComponent, multiInstance: false, description: 'ME305 board: LCD, keypad, LEDs, motor', aliases: ['me305', 'board', 'me305board'] },
+  // the course was renumbered ME 305 -> ME 3305: layouts saved with the old name ("ME305 Board") still open the board
+  { name: 'ME3305 Board', component: BoardComponent, multiInstance: false, description: 'ME3305 board: LCD, keypad, LEDs, motor', aliases: ['me3305', 'board', 'me3305board', 'me305 board', 'me305', 'me305board'] },
   { name: 'VisualizationTool', component: VisualizationComponent, multiInstance: true, description: 'Visualization instruments', aliases: ['visualization'] },
 ];
 
-/** Case-insensitive lookup by name or alias ("source", "ME305 Board", "me305"). */
+/** Case-insensitive lookup by name or alias ("source", "ME3305 Board", "me3305"). */
 export function findComponent(name: string): ComponentEntry | undefined {
   const n = name.trim().toLowerCase();
   const compact = n.replace(/[\s_]/g, '');

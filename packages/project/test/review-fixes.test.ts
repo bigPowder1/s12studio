@@ -223,12 +223,12 @@ describe('model (findings 6, 10) and API additions', () => {
   }
 
   itFx('debugger arguments are normalised, split into argv and quoted when they contain spaces', async () => {
-    const { proj } = await lab3At('C:/Users/Jane Doe/ME 305/Lab3');
+    const { proj } = await lab3At('C:/Users/Jane Doe/ME 3305/Lab3');
     const d = await proj.debuggerConfig();
-    expect(d.argv).toEqual(['C:/Users/Jane Doe/ME 305/Lab3/bin/Project.abs', '-Prod=C:/Users/Jane Doe/ME 305/Lab3/P&E_Multilink_USB.ini', '-instance=icd12']);
-    expect(d.args).toBe('"C:/Users/Jane Doe/ME 305/Lab3/bin/Project.abs" "-Prod=C:/Users/Jane Doe/ME 305/Lab3/P&E_Multilink_USB.ini" -instance=icd12');
+    expect(d.argv).toEqual(['C:/Users/Jane Doe/ME 3305/Lab3/bin/Project.abs', '-Prod=C:/Users/Jane Doe/ME 3305/Lab3/P&E_Multilink_USB.ini', '-instance=icd12']);
+    expect(d.args).toBe('"C:/Users/Jane Doe/ME 3305/Lab3/bin/Project.abs" "-Prod=C:/Users/Jane Doe/ME 3305/Lab3/P&E_Multilink_USB.ini" -instance=icd12');
     const env = await proj.debuggerEnvironment(d.iniPath!);
-    expect(env.GENPATH.split(';')).toContain('C:/Users/Jane Doe/ME 305/Lab3/Sources');
+    expect(env.GENPATH.split(';')).toContain('C:/Users/Jane Doe/ME 3305/Lab3/Sources');
     expect(env.LIBPATH).toBe('/cw/lib/HC12c/include;/cw/lib/xgatec/include');
   });
 

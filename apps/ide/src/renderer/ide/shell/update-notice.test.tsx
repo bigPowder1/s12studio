@@ -83,7 +83,7 @@ describe('update notice: restart and window reloads', () => {
 });
 
 describe('New Project without a blank_project in the templates folder', () => {
-  it('selects the generic stationery and points ME 305 students to File > Open', async () => {
+  it('selects the generic stationery and points ME 3305 students to File > Open', async () => {
     const tdir = '/home/u/.config/S12 Studio/templates';
     const m = createMockS12({
       app: { info: async () => ({ name: 'S12 Studio', version: '0', platform: 'linux', electron: '0', windowKind: 'ide', e2e: false, courseTemplate: false, userTemplatesDir: tdir }) },
@@ -96,12 +96,12 @@ describe('New Project without a blank_project in the templates folder', () => {
     fireEvent.click(screen.getByTestId('np-next'));
     await waitFor(() => expect(screen.getByTestId('np-template-hint').getAttribute('data-course')).toBe('false'));
     expect(screen.getByTestId('np-no-course').textContent).toBe(
-      `ME 305 labs: use File > Open... on a copy of the blank_project folder from your course. (To list it here, copy that folder into ${tdir}.)`,
+      `ME 3305 labs: use File > Open... on a copy of the blank_project folder from your course. (To list it here, copy that folder into ${tdir}.)`,
     );
     expect(screen.getByTestId('np-template-hint').textContent).toContain('A minimal relocatable-assembly project');
-    expect(screen.getByText(/ME 305 blank_project \(from your course\) - not found/)).toBeTruthy();
+    expect(screen.getByText(/ME 3305 blank_project \(from your course\) - not found/)).toBeTruthy();
     expect(TEMPLATES.map((t) => t.description).join(' ')).not.toMatch(/P&E|Cyclone/);
-    fireEvent.mouseDown(screen.getByText(/ME 305 blank_project/));
+    fireEvent.mouseDown(screen.getByText(/ME 3305 blank_project/));
     // the greyed row stays unselected; the hint above already explains (no second copy of the message)
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getAllByText(/use File > Open\.\.\. on a copy/)).toHaveLength(1);
@@ -111,7 +111,7 @@ describe('New Project without a blank_project in the templates folder', () => {
     expect(noCourseTemplateText()).toContain('<user data folder>/templates');
   });
 
-  it('keeps the ME 305 blank_project as the default when one is in the templates folder', async () => {
+  it('keeps the ME 3305 blank_project as the default when one is in the templates folder', async () => {
     const m = createMockS12({ app: { info: async () => ({ name: 'S12 Studio', version: '0', platform: 'linux', electron: '0', windowKind: 'ide', e2e: false, courseTemplate: true }) } });
     render(
       <S12Provider api={m.api}>

@@ -200,7 +200,7 @@ function PanelView({ panel, ...p }: PanelProps & { panel: PanelId }) {
     case 'compiler':
       return <ToolOptionsPanel {...p} tool="compiler" label="Compiler command line arguments:" note="S12 Studio builds assembly-only projects; the compiler options are kept for the .mcp but not used." />;
     case 'importer':
-      return <ToolOptionsPanel {...p} tool="importer" label="Importer command line arguments:" note="The importer converts .abs/.lib files added to the project (used for ME305 libraries)." />;
+      return <ToolOptionsPanel {...p} tool="importer" label="Importer command line arguments:" note="The importer converts .abs/.lib files added to the project (used for ME3305 libraries)." />;
     case 'runtimeSettings':
       return (
         <NotUsed text="Runtime Settings (host application, working directory, program arguments, environment) are not used by the HC12 tools: the debugger is started through Build Extras." />

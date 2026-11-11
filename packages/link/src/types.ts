@@ -59,7 +59,7 @@ export interface LinkInput {
   /**
    * Explicit link order mixing objects and libraries (CodeWarrior `mtlo` order). When given, `objects` and
    * `libraries` are appended after it. When absent the order is: libraries first, then objects — the order of
-   * every CodeWarrior ME305 project (the .lib precedes main.asm in the link order). UNCERTAIN as a general default.
+   * every CodeWarrior ME3305 project (the .lib precedes main.asm in the link order). UNCERTAIN as a general default.
    */
   inputs?: LinkInputEntry[];
   prmText: string;

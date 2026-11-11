@@ -19,6 +19,8 @@ export interface WindowsPort {
   /** Create (or focus) the debugger window; resolves once its renderer has loaded. */
   openDebugger(): Promise<void>;
   focus(kind: WindowKind): Promise<void>;
+  /** Show the ME3305 board window over the debugger (no-op without a debugger window); focus it when asked. */
+  showBoard(focus: boolean): Promise<void>;
   close(senderId: number): void;
   minimize(senderId: number): void;
   toggleMaximize(senderId: number): void;

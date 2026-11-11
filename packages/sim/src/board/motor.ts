@@ -1,5 +1,5 @@
 /**
- * Brushed DC motor + H-bridge driver (ME305: PWM magnitude on PP1, direction PA4, enable PA6, fault inputs PA5/PA7,
+ * Brushed DC motor + H-bridge driver (ME3305: PWM magnitude on PP1, direction PA4, enable PA6, fault inputs PA5/PA7,
  * current sense on ATD1 AN0 = PAD08, shaft encoder into the LS7366R).
  *
  * Averaged sign-magnitude drive (LMD18200-style, UNCERTAIN part): V = Vsupply * duty * (PA4 ? +1 : -1) when PA6 = 1.
@@ -11,7 +11,7 @@
  * piecewise-constant inputs (unconditionally stable), in sub-steps when Coulomb friction is non-zero.
  * Every parameter is UNCERTAIN (no board documentation) and user-tunable via `configure()`.
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { BoardNets, Level, PinNet, PwmOutputState } from '../pins.js';
 import { Emitter, drivenLevel, makeBoardClock, watchDriven, type BoardClock } from './clock.js';
 
@@ -175,7 +175,7 @@ export class DcMotor {
   constructor(nets: BoardNets, opts: Partial<MotorOptions> = {}) {
     this.nets = nets;
     this.pins = nets.pins;
-    const m = ME305.motor;
+    const m = ME3305.motor;
     this.opts = {
       params: opts.params ?? {},
       pins: opts.pins ?? { pwm: m.pwm, dir: m.dir, enable: m.enable, faults: m.faultInputs, sense: m.current.pin },

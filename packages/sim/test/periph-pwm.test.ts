@@ -212,7 +212,7 @@ describe('PWM double buffering', () => {
   });
 });
 
-describe('PWM concatenation (16-bit PWM01 on PP1, the ME305 motor drive pin)', () => {
+describe('PWM concatenation (16-bit PWM01 on PP1, the ME3305 motor drive pin)', () => {
   it('PWM01 on PP1: period 500 bus clocks, 16-bit duty, coherent 16-bit counter reads', () => {
     const { s, nets, pwm } = rig();
     const sym = load(

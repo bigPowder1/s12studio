@@ -1,13 +1,13 @@
 /**
- * Cal Poly ME 305 benchtop board: wires the LCD, keypad encoder, LS7366R, MCP4922, DC motor and LEDs onto the
- * `BoardNets` glue using the @s12/devices ME305 profile pin assignments. Works with any MCU model that drives the
+ * Cal Poly ME 3305 benchtop board: wires the LCD, keypad encoder, LS7366R, MCP4922, DC motor and LEDs onto the
+ * `BoardNets` glue using the @s12/devices ME3305 profile pin assignments. Works with any MCU model that drives the
  * PinNet / SpiBus / PwmBus / AnalogBus.
  *
  * Integration with an S12XSystem (done by the integrator):
- *   const board = createMe305Board(nets, { clock: { busHz: () => sys.busHz, seconds: (c) => sys.bus.seconds(c) } });
+ *   const board = createMe3305Board(nets, { clock: { busHz: () => sys.busHz, seconds: (c) => sys.bus.seconds(c) } });
  *   sys.addPeripheral(board.peripheral, []);   // fires timed board events (key tap release, debounce) on time
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { BoardNets } from '../../pins.js';
 import type { Peripheral } from '../../types.js';
 import { BoardScheduler, makeBoardClock, type BoardClock, type BoardClockOptions } from '../clock.js';
@@ -18,7 +18,7 @@ import { Ls7366r, type Ls7366rOptions, type Ls7366rSnapshot } from '../ls7366r.j
 import { Mcp4922, type Mcp4922Options, type Mcp4922Snapshot } from '../mcp4922.js';
 import { DcMotor, type MotorOptions, type MotorSnapshot } from '../motor.js';
 
-export interface Me305BoardOptions {
+export interface Me3305BoardOptions {
   clock?: BoardClockOptions;
   lcd?: Partial<Omit<Hd44780Options, 'clock'>>;
   keypad?: Partial<Omit<KeypadOptions, 'clock' | 'scheduler'>>;
@@ -30,7 +30,7 @@ export interface Me305BoardOptions {
   motorDrivesEncoder?: boolean;
 }
 
-export interface Me305BoardSnapshot {
+export interface Me3305BoardSnapshot {
   lcd: Hd44780Snapshot;
   keypad: KeypadSnapshot;
   encoder: Ls7366rSnapshot;
@@ -38,7 +38,7 @@ export interface Me305BoardSnapshot {
   motor: MotorSnapshot;
 }
 
-export interface Me305BoardModel {
+export interface Me3305BoardModel {
   readonly nets: BoardNets;
   readonly clock: BoardClock;
   readonly scheduler: BoardScheduler;
@@ -57,8 +57,8 @@ export interface Me305BoardModel {
    * the LED edge history cleared. An MCU reset does NOT call this. Call from outside the CPU loop.
    */
   powerOn(): void;
-  snapshot(): Me305BoardSnapshot;
-  restore(s: Me305BoardSnapshot): void;
+  snapshot(): Me3305BoardSnapshot;
+  restore(s: Me3305BoardSnapshot): void;
   dispose(): void;
 }
 
@@ -69,10 +69,10 @@ export function portPrefix(reg: string): string {
   return `P${m[1]}`;
 }
 
-export function createMe305Board(nets: BoardNets, opts: Me305BoardOptions = {}): Me305BoardModel {
+export function createMe3305Board(nets: BoardNets, opts: Me3305BoardOptions = {}): Me3305BoardModel {
   const clock = makeBoardClock(nets.pins, opts.clock);
   const scheduler = new BoardScheduler();
-  const L = ME305.lcd;
+  const L = ME3305.lcd;
   const lcd = new Hd44780(nets, {
     pins: { data: portPrefix(L.data), rs: L.rs, rw: L.rw, e: L.e },
     cols: L.cols,
@@ -89,14 +89,14 @@ export function createMe305Board(nets: BoardNets, opts: Me305BoardOptions = {}):
   });
   const dac = new Mcp4922(nets, { ...opts.dac, clock });
   const leds = new Leds(nets, { ...opts.leds, clock });
-  const spi = nets.spi[ME305.encoder.bus];
+  const spi = nets.spi[ME3305.encoder.bus];
   spi.attach(encoder);
-  nets.spi[ME305.dac.bus].attach(dac);
+  nets.spi[ME3305.dac.bus].attach(dac);
   // SpiBus has no detach: disposed slaves are muted by a wrapper flag.
   let disposed = false;
-  const peripheral = scheduler.asPeripheral('ME305 board');
+  const peripheral = scheduler.asPeripheral('ME3305 board');
 
-  const model: Me305BoardModel = {
+  const model: Me3305BoardModel = {
     nets,
     clock,
     scheduler,

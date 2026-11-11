@@ -50,7 +50,7 @@ const STAT1 = 0x0b;
 const DR = (n: number) => 0x10 + 2 * n;
 
 describe('ATD register map', () => {
-  it('bases, ranges, vectors and pins come from @s12/devices / the ME305 wiring', () => {
+  it('bases, ranges, vectors and pins come from @s12/devices / the ME3305 wiring', () => {
     expect(ATD_BASES).toEqual([addr('ATD0CTL0'), addr('ATD1CTL0')]);
     expect(ATD_BASES).toEqual([0x2c0, 0x80]);
     expect(ATD_RANGES).toEqual([
@@ -303,7 +303,7 @@ isr: LDD ATD1DR0            ; AFFC: clears SCF -> request drops
   });
 });
 
-describe('ATD1 polled 8-conversion sequence (the ME305 motor current input)', () => {
+describe('ATD1 polled 8-conversion sequence (the ME3305 motor current input)', () => {
   it('sums 8 right-justified samples of AN0 (PAD08) after polling SCF', () => {
     const { s, nets } = rig();
     nets.analog.set('PAD08', 0.75);

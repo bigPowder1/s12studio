@@ -16,6 +16,7 @@ export function appHandlers(s: MainServices): DomainHandlers<'app'> {
     toggleMaximize: { args: [], run: (ctx) => s.windows.toggleMaximize(ctx.senderId) },
     setTitle: { args: [v.string({ max: 1024 })], run: (ctx, title) => s.windows.setTitle(ctx.senderId, title) },
     focusWindow: { args: [v.literal('ide', 'debugger')], run: (_ctx, kind) => s.windows.focus(kind) },
+    showBoard: { args: [v.optional(v.object({ focus: v.optional(v.boolean()) }))], run: (_ctx, o) => s.windows.showBoard(!!o?.focus) },
     toggleDevTools: { args: [], run: (ctx) => s.windows.toggleDevTools(ctx.senderId) },
     quit: { args: [], run: () => s.windows.quit() },
     openExternal: { args: [v.string({ max: 2048, pattern: /^https?:\/\//i })], run: (_ctx, url) => s.windows.openExternal(url) },

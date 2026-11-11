@@ -70,7 +70,7 @@ export interface OptionsPage {
 const exact = (f: string) => new RegExp(`^${f}$`, 'i');
 
 export const LISTING_MATCH = /^-L(=.*)?$/i;
-/** Default listing destination: next to the source in the object/text path (as the ME305 projects use). */
+/** Default listing destination: next to the source in the object/text path (as the ME3305 projects use). */
 export const DEFAULT_LISTING = '-L=%(TEXTPATH)\\%n.lst';
 
 export const ASM_OPTION_PAGES: OptionsPage[] = [

@@ -28,6 +28,6 @@ of S12 Studio, not a work of Freescale or NXP. Likewise, the assembler and
 linker print CodeWarrior's message numbers and texts so that build output
 matches what course material describes.
 
-S12 Studio contains no ME 305 course material; the course's project files
+S12 Studio contains no ME 3305 course material; the course's project files
 and library belong to their authors. Students open the project folder their
 course gives them.

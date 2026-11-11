@@ -10,7 +10,7 @@
  * without build outputs) and NO course content (no <resources>/templates); the app starts from app.asar, the demo
  * project builds (Make 0 errors), the debugger opens and the ESM debug-engine worker thread
  * (out/main/debug-worker.js inside app.asar) simulates: state RUNNING and the cycle counter advances; File > New offers
- * the ME 305 blank_project only from the user's templates folder (none here: it points to File > Open) and the
+ * the ME 3305 blank_project only from the user's templates folder (none here: it points to File > Open) and the
  * generic project builds.
  */
 import { _electron, expect, test, type ElectronApplication, type Page } from '@playwright/test';
@@ -80,7 +80,7 @@ async function launchPackaged(args: string[]): Promise<{ a: ElectronApplication;
   return { a, ide: await ideWindow(a) };
 }
 
-/** File > New...: no blank_project in the (fresh) templates folder, so the generic project; checks the ME 305 note. */
+/** File > New...: no blank_project in the (fresh) templates folder, so the generic project; checks the ME 3305 note. */
 async function newGenericProject(ide: Page): Promise<void> {
   await ide.keyboard.press('Control+Shift+N');
   const np = ide.getByTestId('new-project-dialog');

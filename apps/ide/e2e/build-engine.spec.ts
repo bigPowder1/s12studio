@@ -1,6 +1,6 @@
 /**
  * Engine track E2E: Make in the IDE window (streamed build events, Code/Data columns), Project > Debug on Lab3's
- * P&E (icd12) connection falls back to Full Chip Simulation with a notice, Go runs true-time and the ME305 LCD shows
+ * P&E (icd12) connection falls back to Full Chip Simulation with a notice, Go runs true-time and the ME3305 LCD shows
  * the lab's first prompt, a keypad tap, and Make while debugging sends `applicationRebuilt`.
  * Screenshots: $S12_SCREENS_DIR/build-engine-*.png.
  */

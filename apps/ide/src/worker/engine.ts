@@ -1,6 +1,6 @@
 /**
  * DebugEngine: the debugger back end hosted in the worker thread. Owns one DebugSession over a SimTarget on the full
- * MC9S12XDP512 + ME305 model, implements the DebugApi/BoardApi methods (minus main-only ones) and pushes events.
+ * MC9S12XDP512 + ME3305 model, implements the DebugApi/BoardApi methods (minus main-only ones) and pushes events.
  *
  * Transport-agnostic: `call(method, args)` + an `emit` callback, so it is unit-tested directly (no thread).
  * Snapshot policy: while running (go or any step), a timer emits `debug.snapshot` + `board.state` at `snapshotHz`; every halt,

@@ -6,7 +6,7 @@ import type { MainServices } from '../../services';
 const bounds = v.object({ x: v.number(), y: v.number(), width: v.number({ min: 0 }), height: v.number({ min: 0 }), maximized: v.boolean() });
 
 const patchV = v.object({
-  version: v.optional(v.literal(2)),
+  version: v.optional(v.literal(3)),
   showStartupDialog: v.optional(v.boolean()),
   recentProjects: v.optional(v.array(v.path(), 50)),
   recentFiles: v.optional(v.array(v.path(), 50)),
@@ -26,7 +26,7 @@ const patchV = v.object({
       keyboardToKeypad: v.optional(v.boolean()),
     }),
   ),
-  windows: v.optional(v.object({ ide: v.optional(bounds), debugger: v.optional(bounds) })),
+  windows: v.optional(v.object({ ide: v.optional(bounds), debugger: v.optional(bounds), board: v.optional(bounds) })),
 });
 
 export function settingsHandlers(s: MainServices): DomainHandlers<'settings'> {

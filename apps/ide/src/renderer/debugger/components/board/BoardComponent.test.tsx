@@ -49,7 +49,7 @@ const board = (over: Partial<BoardState> = {}): BoardState => ({
 function setup(m: MockS12 = createMockS12()) {
   const r = render(
     <S12Provider api={m.api}>
-      <BoardComponent instanceId="ME305 Board" title="ME305 Board" instance={1} attributes={[]} active />
+      <BoardComponent instanceId="ME3305 Board" title="ME3305 Board" instance={1} attributes={[]} active />
     </S12Provider>,
   );
   return { m, ...r };
@@ -57,30 +57,30 @@ function setup(m: MockS12 = createMockS12()) {
 
 const boardCalls = (m: MockS12) => m.log.filter((c) => c.domain === 'board' && /Key$/.test(c.method)).map((c) => `${c.method}:${c.args[0]}`);
 
-describe('ME305 LCD', () => {
+describe('ME3305 LCD', () => {
   it('renders the 80 characters of a board state as 5x8 dot cells', () => {
     const { m, container } = setup();
     act(() => m.emit('board', 'state', board()));
     expect(screen.getByTestId('lcd-row-0').textContent).toBe(pad(L1));
     expect(screen.getByTestId('lcd-row-1').textContent).toBe(pad(L2));
-    const cells = container.querySelectorAll('[data-testid="me305-lcd"] g[data-char]');
+    const cells = container.querySelectorAll('[data-testid="me3305-lcd"] g[data-char]');
     expect(cells).toHaveLength(80);
     const text = [...cells].map((c) => c.getAttribute('data-char')).join('');
     expect(text).toBe(pad(L1) + pad(L2));
     // every printable character of the splash has a drawn glyph
     for (const ch of L1 + L2) expect(hasGlyph(ch)).toBe(true);
     // the first cell has dark dots, a space cell has none
-    const m0 = container.querySelector('g[data-row="0"][data-col="0"] path.me305-lcd-dot-on');
+    const m0 = container.querySelector('g[data-row="0"][data-col="0"] path.me3305-lcd-dot-on');
     expect(m0?.getAttribute('d')).toMatch(/^M/);
-    const sp = container.querySelector(`g[data-row="0"][data-col="${L1.indexOf(' ')}"] path.me305-lcd-dot-on`);
+    const sp = container.querySelector(`g[data-row="0"][data-col="${L1.indexOf(' ')}"] path.me3305-lcd-dot-on`);
     expect(sp?.getAttribute('d')).toBe('');
   });
 
   it('shows a blank glass when the display is off and the underline cursor when on', () => {
     const m = createMockS12();
     const { container, rerender } = render(<Lcd lcd={lcd({ displayOn: false, lines: [pad(''), pad('')] })} />);
-    expect(screen.getByTestId('me305-lcd')).toHaveAttribute('data-display', 'off');
-    expect([...container.querySelectorAll('path.me305-lcd-dot-on')].every((p) => p.getAttribute('d') === '')).toBe(true);
+    expect(screen.getByTestId('me3305-lcd')).toHaveAttribute('data-display', 'off');
+    expect([...container.querySelectorAll('path.me3305-lcd-dot-on')].every((p) => p.getAttribute('d') === '')).toBe(true);
     rerender(<Lcd lcd={lcd({ cursor: { row: 1, col: 3 }, cursorVisible: true })} />);
     const cur = container.querySelector('g[data-cursor]');
     expect(cur).toHaveAttribute('data-row', '1');
@@ -119,7 +119,7 @@ describe('ME305 LCD', () => {
   });
 });
 
-describe('ME305 keypad', () => {
+describe('ME3305 keypad', () => {
   it('lays out the 20 keys in 4 rows of 5 (0-F + F1, F2, BKSP, ENT)', () => {
     const rows = keyRows(defaultKeys());
     expect(rows.map((r) => r.map((k) => k.label))).toEqual([
@@ -174,7 +174,7 @@ describe('ME305 keypad', () => {
     const onWin = (e: KeyboardEvent) => winKeys.push(e.key);
     window.addEventListener('keydown', onWin);
     try {
-      const panel = screen.getByTestId('me305-board');
+      const panel = screen.getByTestId('me3305-board');
       panel.focus();
       const tap = (key: string, code: string) => {
         const down = fireEvent.keyDown(panel, { key, code });
@@ -216,7 +216,7 @@ describe('ME305 keypad', () => {
 
   it('losing focus releases keyboard-held keys; mapping can be turned off in settings', async () => {
     const { m } = setup();
-    const panel = screen.getByTestId('me305-board');
+    const panel = screen.getByTestId('me3305-board');
     panel.focus();
     fireEvent.keyDown(panel, { key: '3', code: 'Digit3' });
     fireEvent.blur(panel);
@@ -231,7 +231,7 @@ describe('ME305 keypad', () => {
     const m = createMockS12();
     const { unmount } = setup(m);
     fireEvent.mouseDown(screen.getByTestId('key-7'), { button: 0 });
-    const panel = screen.getByTestId('me305-board');
+    const panel = screen.getByTestId('me3305-board');
     fireEvent.keyDown(panel, { key: 'F2', code: 'F2' });
     await waitFor(() => expect(boardCalls(m)).toEqual(['pressKey:7', 'pressKey:F2']));
     unmount();
@@ -248,7 +248,7 @@ describe('ME305 keypad', () => {
   });
 });
 
-describe('ME305 LEDs and readouts', () => {
+describe('ME3305 LEDs and readouts', () => {
   it('shows PP7..PP4 (R G R G) with the on/off state of the board', () => {
     const { m } = setup();
     act(() => m.emit('board', 'state', board({ leds: leds(['PP4', 'PP7']) })));
@@ -300,7 +300,7 @@ describe('ME305 LEDs and readouts', () => {
     expect(screen.getByTestId('motor-rpm')).toHaveTextContent('95.5 rpm');
     expect(screen.getByTestId('motor-current')).toHaveTextContent('123.4 mA');
     expect(screen.getByTestId('motor-enabled')).toHaveTextContent('ENABLED');
-    expect(screen.getByTestId('me305-motor-disc')).toHaveAttribute('data-angle', '90.0');
+    expect(screen.getByTestId('me3305-motor-disc')).toHaveAttribute('data-angle', '90.0');
   });
 
   it('pulls the board state on mount and reports when there is no board', async () => {
@@ -308,11 +308,11 @@ describe('ME305 LEDs and readouts', () => {
     setup(m);
     await waitFor(() => expect(screen.getByTestId('encoder-count')).toHaveTextContent('42'));
     act(() => m.emit('board', 'state', board({ present: false })));
-    expect(screen.getByTestId('me305-status')).toHaveTextContent('no simulated board');
+    expect(screen.getByTestId('me3305-status')).toHaveTextContent('no simulated board');
   });
 });
 
-describe('ME305 board fit-to-window', () => {
+describe('ME3305 board fit-to-window', () => {
   it('scales the natural layout to the window, clamped; unknown sizes keep 1:1', () => {
     expect(fitScale({ w: 700, h: 330 }, { w: 800, h: 400 })).toBe(0.825);
     expect(fitScale({ w: 1600, h: 1200 }, { w: 800, h: 400 })).toBe(MAX_SCALE);
@@ -323,6 +323,6 @@ describe('ME305 board fit-to-window', () => {
 
   it('without ResizeObserver (jsdom) the board is drawn unscaled', () => {
     setup();
-    expect(document.querySelector('.me305-unit')).toHaveAttribute('data-scale', '1');
+    expect(document.querySelector('.me3305-unit')).toHaveAttribute('data-scale', '1');
   });
 });

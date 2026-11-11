@@ -28,7 +28,7 @@ export function AboutDialog({ open, onClose }: { open: boolean; onClose: () => v
         <div>Version {info?.version ?? '-'}</div>
         <p>
           An IDE, full-chip simulator and debugger compatible with CodeWarrior for S12(X) v5.1 projects, made for Cal Poly
-          ME 305 (MC9S12XDP512, assembly language).
+          ME 3305 (MC9S12XDP512, assembly language).
         </p>
         <p className="ide-about-legal" data-testid="about-not-affiliated">
           S12 Studio is an independent project. It is not affiliated with, endorsed by, or sponsored by NXP

@@ -15,7 +15,7 @@ import type { MenuEntry } from '../../common/menu/model';
 import type { HwlAttributeInfo, UiCommandInfo } from '../../../shared/api';
 
 /** hiwave component names (Component > Open list; `OPEN <name>` in .hwl, case-insensitive). */
-export type HiwaveComponentName = 'Source' | 'Assembly' | 'Register' | 'Procedure' | 'Memory' | 'Data' | 'Command' | 'Terminal' | 'ME305 Board' | 'VisualizationTool';
+export type HiwaveComponentName = 'Source' | 'Assembly' | 'Register' | 'Procedure' | 'Memory' | 'Data' | 'Command' | 'Terminal' | 'ME3305 Board' | 'VisualizationTool';
 
 export interface DebuggerComponentProps {
   /** Unique panel id ("Data:2"). */

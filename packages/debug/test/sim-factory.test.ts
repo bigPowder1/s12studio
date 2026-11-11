@@ -1,6 +1,6 @@
 /**
  * sim-factory.ts: the MCU system factory behind the debugger's Full Chip Simulation. The Lab3 acceptance run through
- * SimTarget + the full MC9S12XDP512/ME305 model is private (s12studio-fixtures: tests/debug/integration-lab3.test.ts).
+ * SimTarget + the full MC9S12XDP512/ME3305 model is private (s12studio-fixtures: tests/debug/integration-lab3.test.ts).
  */
 import { describe, expect, it } from 'vitest';
 import { mcuSystemFactory, runForSeconds } from '../src/sim-factory';

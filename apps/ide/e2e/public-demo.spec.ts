@@ -1,7 +1,7 @@
 /**
  * Public E2E (no private fixtures needed): the own-authored demo project examples/blinky and a new generic project.
  *   1. File > Open a temp copy of examples/blinky/blinky.s12studio.json -> F7 Make (0 errors) -> F5 Project > Debug ->
- *      Component > Open > ME305 Board -> F5 run -> the LCD shows the program's message, the LEDs toggle, a click on
+ *      Component > Open > ME3305 Board -> F5 run -> the LCD shows the program's message, the LEDs toggle, a click on
  *      keypad '2' changes the rate digit -> F6 halts.
  *   2. File > New > "MC9S12XDP512 assembly (generic)" -> Make -> Debug -> run -> halt.
  * Runs in both modes (`S12_FIXTURES=/nonexistent npm run app:e2e` and normally).
@@ -37,7 +37,7 @@ function asmStrings(dir: string): Record<string, string> {
   return Object.fromEntries([...src.matchAll(/^(\w+):\s+DC\.B\s+'([^']*)'/gm)].map((m) => [m[1], m[2]]));
 }
 
-test('public demo: open examples/blinky, Make, debug on the ME305 board, LEDs + LCD + keypad, halt', async () => {
+test('public demo: open examples/blinky, Make, debug on the ME3305 board, LEDs + LCD + keypad, halt', async () => {
   test.setTimeout(180_000);
   const dir = copyExample('blinky');
   const project = join(dir, 'blinky.s12studio.json');
@@ -68,20 +68,23 @@ test('public demo: open examples/blinky, Make, debug on the ME305 board, LEDs + 
   const pc = dbg.getByTestId('reg-PC');
   await expect(pc).toHaveText(/^[0-9A-F]{4}$/, { timeout: 60_000 });
 
-  // Component > Open > ME305 Board
+  // the ME3305 board opens in its own window with the session; Component > Open > ME3305 Board brings it to the front
+  const bw = await s.boardWindow();
+  await expect(bw).toHaveTitle('ME3305 Board');
   await dbg.locator('[data-menu="Component"]').click();
   await dbg.locator('[data-menu-id="component.open"]').click();
-  await dbg.getByTestId('component-option-ME305 Board').click();
+  await dbg.getByTestId('component-option-ME3305 Board').click();
   await dbg.getByTestId('component-open-ok').click();
-  const board = dbg.getByTestId('me305-board');
+  await expect(dbg.getByTestId('mdi-window-ME3305 Board')).toHaveCount(0);
+  const board = bw.getByTestId('me3305-board');
   await expect(board).toBeVisible();
 
   // F5 run: the LCD shows the message, the LEDs toggle
   await dbg.keyboard.press('F5');
   await expect(dbg.getByTestId('debugger-status')).toContainText('RUNNING');
-  await expect(dbg.getByTestId('lcd-row-0')).toContainText(msgs.msg1, { timeout: 30_000 });
-  await expect(dbg.getByTestId('lcd-row-1')).toContainText(msgs.msg2);
-  const pp4 = dbg.getByTestId('led-PP4');
+  await expect(bw.getByTestId('lcd-row-0')).toContainText(msgs.msg1, { timeout: 30_000 });
+  await expect(bw.getByTestId('lcd-row-1')).toContainText(msgs.msg2);
+  const pp4 = bw.getByTestId('led-PP4');
   const seen = new Set<string>();
   await expect
     .poll(
@@ -93,18 +96,18 @@ test('public demo: open examples/blinky, Make, debug on the ME305 board, LEDs + 
     )
     .toBe(true);
   // PP4/PP6 and PP5/PP7 are opposite pairs
-  const on = async (pin: string) => (await dbg.getByTestId(`led-${pin}`).getAttribute('data-on')) === '1';
+  const on = async (pin: string) => (await bw.getByTestId(`led-${pin}`).getAttribute('data-on')) === '1';
   await expect.poll(async () => (await on('PP4')) !== (await on('PP5')), { timeout: 5_000 }).toBe(true);
-  await s.screenshot(dbg, 'public-blinky-running');
+  await s.screenshot(bw, 'public-blinky-running');
 
   // keypad '2' (mouse): the rate digit on line 2 changes
-  const key2 = dbg.getByTestId('key-2');
+  const key2 = bw.getByTestId('key-2');
   await key2.hover();
-  await dbg.mouse.down();
-  await dbg.waitForTimeout(150);
-  await dbg.mouse.up();
-  await expect(dbg.getByTestId('lcd-row-1')).toContainText(msgs.msg2.replace('500', '200'), { timeout: 10_000 });
-  await s.screenshot(dbg, 'public-blinky-rate');
+  await bw.mouse.down();
+  await bw.waitForTimeout(150);
+  await bw.mouse.up();
+  await expect(bw.getByTestId('lcd-row-1')).toContainText(msgs.msg2.replace('500', '200'), { timeout: 10_000 });
+  await s.screenshot(bw, 'public-blinky-rate');
 
   // F6 halt
   await dbg.keyboard.press('F6');

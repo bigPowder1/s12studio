@@ -21,7 +21,7 @@ import type {
 
 export interface SystemOptions extends Partial<CpuOptions>, Partial<BusOptions> {
   device?: DeviceDescription;
-  /** Oscillator frequency (Hz). Default 16 MHz (ME305 board, inferred). Bus clock starts at oscHz / 2. */
+  /** Oscillator frequency (Hz). Default 16 MHz (ME3305 board, inferred). Bus clock starts at oscHz / 2. */
   oscHz?: number;
   /** Power-on RAM content. Default 'uninitialized' (reads 0, shown as `uu`). */
   ramInit?: RamInit;

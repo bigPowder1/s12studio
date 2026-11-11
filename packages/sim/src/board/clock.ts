@@ -21,7 +21,7 @@ export interface BoardClock {
 }
 
 export interface BoardClockOptions {
-  /** Bus clock in Hz, fixed or live. Default 10 MHz (ME305 after PLL lock). */
+  /** Bus clock in Hz, fixed or live. Default 10 MHz (ME3305 after PLL lock). */
   busHz?: number | (() => number);
   /** Exact cycle -> seconds mapping (e.g. `c => sys.bus.seconds(c)`). Default `cycle / busHz()`. */
   seconds?: (cycle: number) => number;
@@ -96,7 +96,7 @@ export class BoardScheduler {
    * Register it with `sys.addPeripheral(p, [])`. MCU resets do not cancel board timers (the board has its own
    * power). `onAttach` receives the context (e.g. to read `ctx.busHz`).
    */
-  asPeripheral(name = 'ME305 board', onAttach?: (ctx: PeripheralContext) => void): Peripheral {
+  asPeripheral(name = 'ME3305 board', onAttach?: (ctx: PeripheralContext) => void): Peripheral {
     let ctx: PeripheralContext | null = null;
     let local = 0;
     const self = this;

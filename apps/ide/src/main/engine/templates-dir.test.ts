@@ -1,4 +1,4 @@
-/** File > New's ME 305 blank_project lookup: candidate order and the first directory holding a usable blank_project/. */
+/** File > New's ME 3305 blank_project lookup: candidate order and the first directory holding a usable blank_project/. */
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';

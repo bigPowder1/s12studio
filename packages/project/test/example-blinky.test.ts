@@ -1,6 +1,6 @@
 /**
  * The public demo project examples/blinky (our own code, no private fixtures): Make it with the project engine, then
- * run it on the full MC9S12XDP512 + ME305 board model. LEDs step at the default 500 ms, the LCD shows the message,
+ * run it on the full MC9S12XDP512 + ME3305 board model. LEDs step at the default 500 ms, the LCD shows the message,
  * and key '2' changes the step to 200 ms.
  */
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -65,7 +65,7 @@ describe('examples/blinky (public demo project)', () => {
   });
 
   it('runs on the full MCU model: PLL to 10 MHz, LCD message on both lines', () => {
-    m = createMc9s12xdp512({ board: 'me305', ramInit: 'zero' });
+    m = createMc9s12xdp512({ board: 'me3305', ramInit: 'zero' });
     const { symbols } = m.loadAbs(abs);
     expect(m.system.registers.pc).toBe(symbols.get('Entry'));
     expect(m.runSeconds(0.2)).toBe('limit');

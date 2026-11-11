@@ -1,5 +1,5 @@
 /**
- * ME305 20-key keypad. Mouse down presses the key, mouse up (or leaving the key while held) releases it, so a
+ * ME3305 20-key keypad. Mouse down presses the key, mouse up (or leaving the key while held) releases it, so a
  * key can be held as long as the button is down. Keys shown pressed: held by this panel or reported held by the
  * board model (board.state keysDown, e.g. after a `tapKey` from the Command window).
  */
@@ -26,15 +26,15 @@ export function Keypad({ keys, down, onPress, onRelease }: KeypadProps) {
     onRelease(l);
   };
   return (
-    <div className="me305-keypad" data-testid="me305-keypad" role="group" aria-label="Keypad" onMouseLeave={release}>
+    <div className="me3305-keypad" data-testid="me3305-keypad" role="group" aria-label="Keypad" onMouseLeave={release}>
       {keyRows(keys).map((row, r) => (
-        <div key={r} className="me305-keypad-row">
+        <div key={r} className="me3305-keypad-row">
           {row.map((k) => (
             <button
               key={k.label}
               type="button"
               tabIndex={-1}
-              className={`me305-key${isFn(k.label) ? ' fn' : ''}${down.has(k.label) ? ' down' : ''}`}
+              className={`me3305-key${isFn(k.label) ? ' fn' : ''}${down.has(k.label) ? ' down' : ''}`}
               data-testid={`key-${k.label}`}
               aria-pressed={down.has(k.label)}
               title={`${k.label} (code ${k.code}; PC key ${k.pcKeys.join(' / ')})`}

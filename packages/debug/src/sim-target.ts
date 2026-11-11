@@ -44,7 +44,7 @@ import {
 
 export interface SimTargetOptions {
   /**
-   * Builds the simulated system (the integrator supplies one with peripherals and the ME305 board; peripherals
+   * Builds the simulated system (the integrator supplies one with peripherals and the ME3305 board; peripherals
    * must already be registered and the system reset). Default: a bare S12XSystem.
    */
   createSystem?: () => S12XSystem;

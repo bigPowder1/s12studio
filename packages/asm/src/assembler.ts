@@ -17,7 +17,7 @@ import type { Section, Stmt, Sym } from './types.js';
 
 /**
  * UNCERTAIN: with -Li, lines of included files are left out of the .dbg file and of the Abs. line numbering
- * (not only of the listing). Evidence: every ME305 library member was assembled with -Li, includes the
+ * (not only of the listing). Evidence: every ME3305 library member was assembled with -Li, includes the
  * derivative .inc (its symbol table carries the .inc's deprecated-name aliases), yet its first instruction is at
  * Abs. line 45..135. The manual's -Li example still counts the included lines; flip this to follow the manual.
  */

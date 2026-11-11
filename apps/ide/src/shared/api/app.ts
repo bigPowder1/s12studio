@@ -11,7 +11,7 @@ export interface AppInfo {
   /** True when started by the E2E harness (S12_E2E=1). */
   e2e: boolean;
   /**
-   * A copy of the ME 305 `blank_project` (a CodeWarrior project folder) was found in the templates folder, so
+   * A copy of the ME 3305 `blank_project` (a CodeWarrior project folder) was found in the templates folder, so
    * File > New... can list it. Undefined from older mains / test doubles: treat as available.
    */
   courseTemplate?: boolean;
@@ -61,7 +61,13 @@ export interface AppApi {
   /** Set the calling window's title. */
   setTitle(title: string): Promise<void>;
   /** Bring a window kind to the front (opens the debugger window empty if it does not exist). */
-  focusWindow(kind: WindowKind): Promise<void>;
+  focusWindow(kind: 'ide' | 'debugger'): Promise<void>;
+  /**
+   * Show the ME3305 board window (a separate window that floats over the debugger; created on first use, closed with
+   * the debugger). `focus` brings it to the front and focuses it; otherwise it is shown without taking focus. Does
+   * nothing without a debugger window.
+   */
+  showBoard(opts?: { focus?: boolean }): Promise<void>;
   toggleDevTools(): Promise<void>;
   /** File > Exit in either window. */
   quit(): Promise<void>;
@@ -88,4 +94,4 @@ export interface AppEvents {
   update: UpdateNotice;
 }
 
-export const APP_METHODS = ['info', 'ready', 'closeWindow', 'minimizeWindow', 'toggleMaximize', 'setTitle', 'focusWindow', 'toggleDevTools', 'quit', 'openExternal', 'installUpdate', 'prepareDemo', 'showMessage'] as const;
+export const APP_METHODS = ['info', 'ready', 'closeWindow', 'minimizeWindow', 'toggleMaximize', 'setTitle', 'focusWindow', 'showBoard', 'toggleDevTools', 'quit', 'openExternal', 'installUpdate', 'prepareDemo', 'showMessage'] as const;

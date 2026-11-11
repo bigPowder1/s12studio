@@ -7,7 +7,7 @@
  * (first visible line). When the PC is in code without source (library), shows "no source" and leaves it to Assembly.
  *
  * No-source halts keep the file already shown. When nothing has been shown yet (NORUNAFTERLOAD: the load stops at the
- * reset entry, which is in the ME305 library's start-up code whose `.dbg` is not on the student's PC), the window
+ * reset entry, which is in the ME3305 library's start-up code whose `.dbg` is not on the student's PC), the window
  * shows the application's main module instead (the file of `main`, scrolled to `main:`) with no PC line, so a
  * student never faces an empty Source window (owner decision; hiwave itself would leave it empty, final fidelity
  * F11). Normal PC following resumes at the first halt in code that has source.

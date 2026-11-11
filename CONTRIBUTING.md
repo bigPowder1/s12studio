@@ -11,7 +11,7 @@ runs differently from the lab PC is gold.
 - **No NXP/Freescale/Metrowerks/PEmicro files.** Do not commit stock `.inc` files, wizard templates, manuals, DLLs or
   text copied from them. Generate equivalents from data sheets and describe behaviour in your own words.
 - **GPL code** (binutils, the gdb simulator, USBDM) may be read for reference only; do not copy from it.
-- **No course content or student work.** Never commit graded lab solutions, the ME 305 library or the instructor's
+- **No course content or student work.** Never commit graded lab solutions, the ME 3305 library or the instructor's
   template, and never bundle them into the installers: students open the `blank_project` folder their course gives
   them. Public demo projects in `examples/` must be written by us (`examples/blinky` ships in the installers).
 - Engine packages (`packages/*`) are pure TypeScript with no Electron or DOM dependency; they must run under plain

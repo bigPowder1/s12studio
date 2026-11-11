@@ -6,7 +6,7 @@ import { PortBench, SPLASH_TEXT } from './board-helpers';
 function setup(timing: 'realistic' | 'zero' = 'realistic') {
   const nets: BoardNets = createBoardNets();
   const bench = new PortBench(nets);
-  // ME305 board pulls: B up, M down.
+  // ME3305 board pulls: B up, M down.
   for (let i = 0; i < 8; i++) {
     nets.pins.setPull(`PB${i}`, 'up');
     nets.pins.setPull(`PM${i}`, 'down');

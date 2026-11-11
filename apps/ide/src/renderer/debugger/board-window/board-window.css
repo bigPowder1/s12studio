@@ -1,0 +1,11 @@
+/* ME3305 board window: a one-menu bar over the board drawing, which scales to fit the window (board/fit.ts). */
+.board-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--cw-face);
+}
+.board-window-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}

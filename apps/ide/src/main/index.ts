@@ -4,7 +4,7 @@
  * Environment:
  *   S12_USER_DATA=<dir>   use this userData directory (E2E isolation)
  *   S12_E2E=1             started by the Playwright harness (no single-instance lock, no startup dialog, no updates)
- *   S12_TEMPLATES_DIR     directory holding a course blank_project/ (with its .mcp) for New Project's ME 305 entry,
+ *   S12_TEMPLATES_DIR     directory holding a course blank_project/ (with its .mcp) for New Project's ME 3305 entry,
  *                         searched before <userData>/templates; S12 Studio ships none
  *   S12_FIXTURES          private fixtures checkout (dev runs only: last fallback for that blank_project)
  *   S12_EXAMPLES_DIR      directory holding blinky/ (the demo project), searched instead of the bundled examples
@@ -149,9 +149,26 @@ async function main(): Promise<void> {
     });
   }
 
+  // the ME3305 board window remembers where the student put it
+  void services.settings.get().then(
+    (st) => {
+      windows.boardBounds ??= st.windows.board;
+    },
+    () => undefined,
+  );
+  windows.onBoardBounds = (b) => {
+    windows.boardBounds = b;
+    void services.settings.update({ windows: { board: { ...b, maximized: false } } }).catch(() => undefined);
+  };
+
   windows.onClosed = (kind) => {
     // closing hiwave ends its session (the simulation must not keep running headless)
     if (kind === 'debugger' && services.debug.running) void services.debug.call('debug.closeSession').catch(() => undefined);
+    // closing the board window while a keypad key is held (mouse still down on it) must not leave it pressed
+    if (kind === 'board' && services.debug.running)
+      void (services.debug.call('board.state') as Promise<{ keysDown?: string[] } | null>)
+        .then((b) => Promise.all((b?.keysDown ?? []).map((k) => services.debug.call('board.releaseKey', [k]))))
+        .catch(() => undefined);
   };
   windows.onAllClosed = () => {
     void services.debug.dispose().finally(() => app.quit());

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createBoardNets } from '@s12/sim';
-import { BoardScheduler, Mm74c923Keypad, makeBoardClock, me305Keys } from '../src/board/index.js';
+import { BoardScheduler, Mm74c923Keypad, makeBoardClock, me3305Keys } from '../src/board/index.js';
 import { PortBench } from './board-helpers';
 
 function setup(daPolarity: 'activeHigh' | 'activeLow' = 'activeHigh', debounceSeconds = 0) {
@@ -26,16 +26,16 @@ function setup(daPolarity: 'activeHigh' | 'activeLow' = 'activeHigh', debounceSe
     bench.bclr('K', 0x20);
     nets.pins.setPull('PJ7', 'up');
   };
-  /** What the keypad ISR does with the code: PORTK & $1F indexes the key-value table (the ME305 profile's values). */
+  /** What the keypad ISR does with the code: PORTK & $1F indexes the key-value table (the ME3305 profile's values). */
   const TABLE: number[] = [];
-  for (const k of me305Keys()) TABLE[k.code] = k.value;
+  for (const k of me3305Keys()) TABLE[k.code] = k.value;
   const isrChar = () => TABLE[bench.read('K') & 0x1f];
   return { nets, bench, kp, scheduler, initKey, isrChar, sync };
 }
 
 describe('MM74C923 keypad encoder', () => {
-  it('key table matches the ME305 profile (code order and values)', () => {
-    const keys = me305Keys();
+  it('key table matches the ME3305 profile (code order and values)', () => {
+    const keys = me3305Keys();
     expect(keys).toHaveLength(20);
     const byCode = keys.slice().sort((a, b) => a.code - b.code).map((k) => k.label);
     expect(byCode).toEqual(['C', '8', '4', '0', 'D', '9', '5', '1', 'E', 'A', '6', '2', 'F', 'B', '7', '3', 'ENT', 'BKSP', 'F2', 'F1']);

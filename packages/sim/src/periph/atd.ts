@@ -70,7 +70,7 @@ export function atdDefaultPins(index: AtdIndex): string[] {
 }
 
 export interface AtdOptions {
-  /** Module number (default 1: ATD1, the one the ME305 library uses). */
+  /** Module number (default 1: ATD1, the one the ME3305 library uses). */
   index?: AtdIndex;
   /** Analog input pin per channel (default `atdDefaultPins(index)`). */
   pins?: readonly string[];

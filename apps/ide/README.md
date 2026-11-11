@@ -12,14 +12,14 @@ Specs: `docs/research/r1/ide.md` §1-5 (IDE) and §6-7 (hiwave + `.ini`). Plan: 
 
 ## Quick start (students)
 
-1. **Open your lab project:** copy the `blank_project` folder ME 305 gives you (course page), then File > Open... and
+1. **Open your lab project:** copy the `blank_project` folder ME 3305 gives you (course page), then File > Open... and
    pick its `.mcp`. S12 Studio does not include the course library or template; they come with your course's project
    folder.
-2. F7 builds, F5 opens the debugger (building first if needed) with the ME305 Board docked on the right, F5 again
+2. F7 builds, F5 opens the debugger (building first if needed) with the ME3305 Board in its own floating window, F5 again
    runs.
 
 No course project yet? Open the demo project (Help > Open Demo Project / startup dialog), or File > New Project for an
-empty assembly project (without the ME 305 library). Where do I get the ME 305 library / blank project? From your
+empty assembly project (without the ME 3305 library). Where do I get the ME 3305 library / blank project? From your
 course: they are in its `blank_project` folder. A copy of that folder in `<userData>/templates/blank_project` (or
 `$S12_TEMPLATES_DIR/blank_project`) is also listed by File > New Project.
 
@@ -80,7 +80,7 @@ renderer (sandboxed, contextIsolation)  --window.s12 (preload)-->  main  --worke
   file per domain), `engine/` (ProjectService over `@s12/project`, BuildService (`make`...), DebugHost (worker proxy),
   SettingsStore, FileWatchers, debug-launch). `events.ts` = EventBus (services emit, windows receive).
 - **debug engine worker** (`src/worker`): `DebugEngine` owns `DebugSession` + `SimTarget` + `createMc9s12xdp512()`
-  (ME305 board) from `@s12/debug`/`@s12/sim`; runs the true-time simulation off the main thread. `protocol.ts` =
+  (ME3305 board) from `@s12/debug`/`@s12/sim`; runs the true-time simulation off the main thread. `protocol.ts` =
   messages; `debug-worker.ts` = thread entry (built to `out/main/debug-worker.js`).
 - **preload** (`src/preload/index.ts`, CommonJS because sandboxed): builds `window.s12` from the method lists in
   `src/shared/api`. No Node APIs reach the renderer.
@@ -104,7 +104,7 @@ One namespace per domain; every method returns a Promise; arguments/results are 
 | `project` | `project.ts` | open/close/current/reload/newProject, file/group/link-order/target/connection/debug-flag/options/access-path/output edits (sidecar only), debuggerConfig; events `changed`, `closed`, `externalChange` |
 | `build` | `build.ts` | make, bringUpToDate, compile, stop, removeObjectCode, isBuilding, lastResult; events `started`, `progress`, `message`, `finished` |
 | `debug` | `debug.ts` | launch (main), session lifecycle, run control (go/halt/step/reset/restart/runTo/resetCycles/setPacing), registers, memory read/write/fill/watch, disassemble, sources/lines/symbols/resolve, breakpoints/watchpoints, command exec/execFile/answerPrompt, expressions/evaluate/globals/callStack, sciSend; events `session`, `snapshot`, `running`, `halted`, `loaded`, `output`, `clearOutput`, `breakpoints`, `watchpoints`, `expressions`, `uiCommand`, `prompt`, `sciOutput`, `engineError` |
-| `board` | `board.ts` | ME305 board state, keys, press/release/tap key, motor params/load torque, analog input, pins, power cycle; event `state` |
+| `board` | `board.ts` | ME3305 board state, keys, press/release/tap key, motor params/load torque, analog input, pins, power cycle; event `state` |
 | `layout` | `layout.ts` | read/write `.hwl`, session layout path, default layout |
 | `settings` | `settings.ts` | app settings get/update (userData/settings.json), raw sidecar; event `changed` |
 
@@ -153,13 +153,13 @@ drag-and-drop payloads `DND_MIME`/`setDnd`/`getDnd`).
 | `src/renderer/debugger/components/{contract,registry}.ts`, `Placeholder.tsx` | debugger shell track | registry by hiwave name |
 | `src/renderer/debugger/components/{source,assembly,register,procedure}/**` | components track A | |
 | `src/renderer/debugger/components/{memory,data,command,terminal}/**` | components track B | |
-| `src/renderer/debugger/components/{board,visualization}/**` | board track | ME305 board panel, VisualizationTool-lite |
+| `src/renderer/debugger/components/{board,visualization}/**` | board track | ME3305 board panel, VisualizationTool-lite |
 | `e2e/**`, `scripts/**`, configs | scaffold | add new `e2e/*.spec.ts` files freely |
 
 Tests live next to the code (`*.test.ts(x)`); files under `src/renderer/**` run in jsdom, everything else in Node.
 Fixtures are private and read-only: they come from the private fixtures checkout (`<repo>/fixtures` or `$S12_FIXTURES`),
 and tests copy them (`test/fixtures.ts` `copyFixture()`, E2E `copyFixture()` in `e2e/harness.ts`); fixture-dependent
-tests and specs skip when the fixtures are absent. Never put fixture content (Lab3 code, the ME305 library) into
+tests and specs skip when the fixtures are absent. Never put fixture content (Lab3 code, the ME3305 library) into
 non-fixture test data or screenshots that leave this machine.
 
 ## Libraries (all installed; do not add new dependencies without the scaffold owner)
@@ -186,7 +186,7 @@ non-fixture test data or screenshots that leave this machine.
 debugger, Project.abs loads (PC = C000), Assembly Step changes PC.
 `e2e/plan-flows.spec.ts`: the PLAN.md student flows end to end through menus/keys/mouse (File > Open with the native
 dialog answered from main, Make vs CodeWarrior's outputs, error -> jump -> fix, hwl layout, Source-margin breakpoint,
-register/memory edits, F10/F11/Shift+F11, ME305 board at true time, Command `bs`/`g`/`rd`/`db`, New Project -> spin).
+register/memory edits, F10/F11/Shift+F11, ME3305 board at true time, Command `bs`/`g`/`rd`/`db`, New Project -> spin).
 `e2e/m6c-fix.spec.ts`: keys typed right after a dialog opens (Assembly/Memory Address, halted and running), Procedure
 after a reset, the "rebuilt" notice after Make while debugging, File > Exit with a modified document: Cancel keeps the
 debugger and its session, Don't Save quits.

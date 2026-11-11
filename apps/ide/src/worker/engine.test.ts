@@ -66,7 +66,7 @@ describeFx('DebugEngine (worker side) on Lab3', () => {
     expect(out.some((l) => /PC/.test(l.text))).toBe(true);
   });
 
-  it('reports the ME305 board', async () => {
+  it('reports the ME3305 board', async () => {
     const b = await call<BoardState>('board.state');
     expect(b.present).toBe(true);
     expect(b.lcd?.lines).toHaveLength(2);

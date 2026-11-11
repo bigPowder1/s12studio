@@ -90,7 +90,7 @@ test('IDE shell: project window, menus, target settings, make', async () => {
   await expect(dbg.getByTestId('reg-PC')).toHaveText('C000', { timeout: 60_000 });
   await s.screenshot(ide, 'build-ide-shell-after-debug');
 
-  // File > New...: create a blank ME305 project next to the Lab3 copy and open it
+  // File > New...: create a blank ME3305 project next to the Lab3 copy and open it
   await ide.bringToFront();
   await ide.keyboard.press('Control+Shift+N');
   const np = ide.getByTestId('new-project-dialog');

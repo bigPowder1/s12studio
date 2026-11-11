@@ -4,10 +4,10 @@
  * plus S12 Studio's stationery choice), Add Additional Files. Finish creates <location>/<name>/ (a standalone
  * <name>.s12studio.json project; <name>.mcp only from a copy of the course's blank_project in <userData>/templates)
  * through ProjectApi.newProject and opens it. What S12 Studio cannot do is shown greyed out: other derivatives,
- * hardware connections other than the ME305 lab's, C/C++ and absolute assembly, adding extra files.
- * S12 Studio ships no course content: the ME 305 entry is available only when the user copied the course's
+ * hardware connections other than the ME3305 lab's, C/C++ and absolute assembly, adding extra files.
+ * S12 Studio ships no course content: the ME 3305 entry is available only when the user copied the course's
  * blank_project folder into the templates folder. Otherwise (AppInfo.courseTemplate === false) the generic
- * stationery is selected and the ME 305 entry is greyed with a note pointing to File > Open... .
+ * stationery is selected and the ME 3305 entry is greyed with a note pointing to File > Open... .
  * UNCERTAIN: page titles/wording from ide.md §2 (no screenshot of the 5.1 S12X wizard); XGATE Setup page omitted
  * (assembly-only course). Finish is allowed on every page, as in CodeWarrior's wizards.
  */
@@ -20,9 +20,9 @@ import { parseApiError, type ProjectTemplate } from '../../../shared/api';
 export const TEMPLATES: { id: ProjectTemplate; label: string; description: string }[] = [
   {
     id: 'blank_project',
-    label: 'ME 305 blank_project (from your course)',
+    label: 'ME 3305 blank_project (from your course)',
     description:
-      'A copy of the blank_project folder from your course (found in your templates folder): its .mcp, sources, ME 305 library and settings are copied as they are and renamed to the new project name.',
+      'A copy of the blank_project folder from your course (found in your templates folder): its .mcp, sources, ME 3305 library and settings are copied as they are and renamed to the new project name.',
   },
   {
     id: 'minimal',
@@ -47,7 +47,7 @@ const parentDir = (p: string) => p.replace(/[\\/][^\\/]*$/, '');
  * <userData>/templates path of this OS), else a placeholder.
  */
 export function noCourseTemplateText(templatesDir?: string): string {
-  return `ME 305 labs: use File > Open... on a copy of the blank_project folder from your course. (To list it here, copy that folder into ${templatesDir || '<user data folder>/templates'}.)`;
+  return `ME 3305 labs: use File > Open... on a copy of the blank_project folder from your course. (To list it here, copy that folder into ${templatesDir || '<user data folder>/templates'}.)`;
 }
 
 export const WIZARD_PAGES = ['Device and Connection', 'Project Parameters', 'Add Additional Files'] as const;
@@ -61,8 +61,8 @@ const DERIVATIVES: { family: string; group: string; parts: { name: string; ok: b
 
 /** Connections of page 1 (ide.md §2). The course's blank_project has Full Chip Simulation and P&E Multilink connections. */
 const CONNECTIONS: { name: string; ok: boolean; description: string }[] = [
-  { name: 'Full Chip Simulation', ok: true, description: 'Simulates the MC9S12XDP512 and the ME305 board on the PC (no hardware needed).' },
-  { name: 'P&E Multilink/Cyclone Pro', ok: true, description: 'BDM pod used in the ME305 lab. Debugging real hardware arrives later; until then the project debugs on Full Chip Simulation.' },
+  { name: 'Full Chip Simulation', ok: true, description: 'Simulates the MC9S12XDP512 and the ME3305 board on the PC (no hardware needed).' },
+  { name: 'P&E Multilink/Cyclone Pro', ok: true, description: 'BDM pod used in the ME3305 lab. Debugging real hardware arrives later; until then the project debugs on Full Chip Simulation.' },
   { name: 'SofTec HCS12', ok: false, description: 'Not supported by S12 Studio.' },
   { name: 'Abatron BDI', ok: false, description: 'Not supported by S12 Studio.' },
   { name: 'HCS12 Serial Monitor', ok: false, description: 'Not supported by S12 Studio.' },
@@ -182,8 +182,8 @@ export function NewProjectDialog({ open, onClose }: { open: boolean; onClose: ()
           label="Please choose the set of languages to be supported initially"
           style={{ flex: 1, paddingTop: 24, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}
         >
-          {/* UNCERTAIN: lab handouts tick "Absolute assembly"; ME 305 projects are relocatable assembly */}
-          <Checkbox label="Absolute assembly" checked={false} disabled title="Not offered: ME 305 projects are relocatable assembly" />
+          {/* UNCERTAIN: lab handouts tick "Absolute assembly"; ME 3305 projects are relocatable assembly */}
+          <Checkbox label="Absolute assembly" checked={false} disabled title="Not offered: ME 3305 projects are relocatable assembly" />
           <Checkbox label="Relocatable assembly" checked disabled />
           <Checkbox label="C" checked={false} disabled title="S12 Studio has no C compiler" />
           <Checkbox label="C++" checked={false} disabled title="S12 Studio has no C++ compiler" />

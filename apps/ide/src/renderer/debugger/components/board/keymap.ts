@@ -1,13 +1,13 @@
 /**
- * ME305 keypad layout and PC keyboard mapping.
+ * ME3305 keypad layout and PC keyboard mapping.
  *
- * Labels and codes are certain (the keypad table, private me305-board.md §4). The physical layout is
- * UNCERTAIN: we use ME305.keypad.layout from @s12/devices (hex grid read row by row, function keys in a fifth
+ * Labels and codes are certain (the keypad table, private me3305-board.md §4). The physical layout is
+ * UNCERTAIN: we use ME3305.keypad.layout from @s12/devices (hex grid read row by row, function keys in a fifth
  * column), the same rows the simulator reports through board.keys().
  *
  * PC keys (panel focused): 0-9, A-F (either case), Enter = ENT, Backspace/Delete = BKSP, F1, F2.
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { KeyDef } from '../../../../shared/api';
 
 const PC_KEYS: Record<string, string[]> = {
@@ -20,9 +20,9 @@ const PC_KEYS: Record<string, string[]> = {
 /** Keys from the device description (used before a session exists, or when board.keys() returns nothing). */
 export function defaultKeys(): KeyDef[] {
   const out: KeyDef[] = [];
-  ME305.keypad.layout.forEach((row, r) =>
+  ME3305.keypad.layout.forEach((row, r) =>
     row.forEach((label, c) => {
-      const k = ME305.keypad.table.find((t) => t.label === label);
+      const k = ME3305.keypad.table.find((t) => t.label === label);
       out.push({ label, code: k?.code ?? -1, row: r, col: c, pcKeys: PC_KEYS[label] ?? [...new Set([label.toLowerCase(), label.toUpperCase()])] });
     }),
   );

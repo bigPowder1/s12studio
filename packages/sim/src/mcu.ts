@@ -1,9 +1,9 @@
 /**
  * MC9S12XDP512 full-chip model: an `S12XSystem` with every peripheral model registered on its register block and
- * wired to the shared `BoardNets` (PinNet / SpiBus / AnalogBus / PwmBus), optionally with the ME305 board on the
+ * wired to the shared `BoardNets` (PinNet / SpiBus / AnalogBus / PwmBus), optionally with the ME3305 board on the
  * same nets.
  *
- *   const mcu = createMc9s12xdp512({ board: 'me305' });
+ *   const mcu = createMc9s12xdp512({ board: 'me3305' });
  *   mcu.loadAbs(absBytes);           // ELF PT_LOAD + power-on reset (the CRG reads FCTL from the loaded flash)
  *   mcu.runSeconds(3.5);              // simulated time
  *   mcu.board!.lcd.lines;             // ['<LCD line 1>', '<LCD line 2>']
@@ -18,12 +18,12 @@
  * - PIM MODRR -> SPI pin routing; SPI/SCI input pins (MISO, RXD...) disconnect the GPIO output driver
  *   (`Pim.setPeripheralInputs`); ATD DIEN -> PIM port-AD digital input enables.
  * - CPU writes to the flash/EEPROM arrays -> FTX512K4/EETX4K command controllers (`createNvmRomWriteHandler`).
- * - ME305 board clock = the system's exact cycle->seconds mapping; board timers fire inside `run()`.
+ * - ME3305 board clock = the system's exact cycle->seconds mapping; board timers fire inside `run()`.
  * Finally the system is power-on reset (addPeripheral does not reset).
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import { BoardScheduler } from './board/clock.js';
-import { createMe305Board, type Me305BoardModel, type Me305BoardOptions } from './board/me305/index.js';
+import { createMe3305Board, type Me3305BoardModel, type Me3305BoardOptions } from './board/me3305/index.js';
 import type { LoadResult, SrecLoadOptions } from './loader.js';
 import { createBoardNets, type BoardNets } from './pins.js';
 import { ATD_RANGES, AtdModule, type AtdOptions } from './periph/atd.js';
@@ -53,12 +53,12 @@ import { S12XSystem, type SystemOptions } from './system.js';
 import type { HaltReason, Peripheral, PeripheralContext, RamInit, RegisterRange } from './types.js';
 
 export interface Mc9s12xdp512Options extends Omit<SystemOptions, 'oscHz' | 'ramInit' | 'ramSeed'> {
-  /** Oscillator (Hz). Default 16 MHz (ME305, UNCERTAIN: inferred from the library's PLL/delay math). */
+  /** Oscillator (Hz). Default 16 MHz (ME3305, UNCERTAIN: inferred from the library's PLL/delay math). */
   oscHz?: number;
-  /** Board on the nets: 'me305' (default) or 'none' (bare MCU; pins float / pulls only). */
-  board?: 'me305' | 'none';
-  /** ME305 board model options (the board clock is always wired to the system). */
-  boardOptions?: Omit<Me305BoardOptions, 'clock'>;
+  /** Board on the nets: 'me3305' (default) or 'none' (bare MCU; pins float / pulls only). */
+  board?: 'me3305' | 'none';
+  /** ME3305 board model options (the board clock is always wired to the system). */
+  boardOptions?: Omit<Me3305BoardOptions, 'clock'>;
   ramInit?: RamInit;
   ramSeed?: number;
   /** Use these nets instead of fresh ones (e.g. a board model built elsewhere). */
@@ -107,8 +107,8 @@ export interface Mc9s12xdp512 {
   readonly system: S12XSystem;
   readonly nets: BoardNets;
   readonly periph: Mc9s12xdp512Peripherals;
-  /** The ME305 board model (null with board 'none'). */
-  readonly board: Me305BoardModel | null;
+  /** The ME3305 board model (null with board 'none'). */
+  readonly board: Me3305BoardModel | null;
   /** Every registered peripheral with its register ranges (registration order). */
   readonly registry: ReadonlyArray<{ peripheral: Peripheral; ranges: readonly RegisterRange[] }>;
   /** Exact current bus time (access cycle during a register access/tick, else the CPU cycle count). */
@@ -170,7 +170,7 @@ function glue(): Peripheral & { ctx: PeripheralContext | null } {
 
 export function createMc9s12xdp512(opts: Mc9s12xdp512Options = {}): Mc9s12xdp512 {
   const {
-    board: boardKind = 'me305',
+    board: boardKind = 'me3305',
     boardOptions,
     nets: givenNets,
     crg: crgOpts,
@@ -183,7 +183,7 @@ export function createMc9s12xdp512(opts: Mc9s12xdp512Options = {}): Mc9s12xdp512
     sciStrictTdreSequence,
     ...sysOpts
   } = opts;
-  const sys = new S12XSystem({ ...sysOpts, oscHz: opts.oscHz ?? ME305.oscillatorHz });
+  const sys = new S12XSystem({ ...sysOpts, oscHz: opts.oscHz ?? ME3305.oscillatorHz });
   const nets = givenNets ?? createBoardNets();
   const ctxs: PeripheralContext[] = [];
   const registry: Array<{ peripheral: Peripheral; ranges: readonly RegisterRange[] }> = [];
@@ -279,9 +279,9 @@ export function createMc9s12xdp512(opts: Mc9s12xdp512Options = {}): Mc9s12xdp512
   const can = [0, 1, 2, 3, 4].map((i) => add(new CanStub(i), [CAN_RANGES[i]]));
 
   // ---- board
-  let board: Me305BoardModel | null = null;
-  if (boardKind === 'me305') {
-    board = createMe305Board(nets, {
+  let board: Me3305BoardModel | null = null;
+  if (boardKind === 'me3305') {
+    board = createMe3305Board(nets, {
       ...boardOptions,
       clock: { busHz: () => sys.busHz, seconds: (c) => sys.bus.seconds(c), now },
     });

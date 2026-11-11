@@ -1,5 +1,5 @@
 /**
- * 20-key keypad behind an MM74C923-style encoder (ME305: codes on PK0-4, /OE = PK5 from the MCU, DA = PJ7).
+ * 20-key keypad behind an MM74C923-style encoder (ME3305: codes on PK0-4, /OE = PK5 from the MCU, DA = PJ7).
  *
  * - The encoder latches the 5-bit code of the last key; the code stays latched after release (until the next key).
  * - PK0-4 are driven only while /OE is low; with /OE high they are high-Z (the board stops driving, so the MCU
@@ -14,9 +14,9 @@
  * - Keys are named by label ('1', 'A', 'ENT', 'F1'...), by PC key name, or by `{ code }` (encoder code). A plain
  *   number is taken as a LABEL (`press(1)` presses '1'), never as an encoder code.
  *
- * Key code table, values and labels: @s12/devices ME305 profile (private me305-board.md §4).
+ * Key code table, values and labels: @s12/devices ME3305 profile (private me3305-board.md §4).
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { BoardNets, Level, PinNet } from '../pins.js';
 import { BoardScheduler, Emitter, makeBoardClock, watchLevel, type BoardClock } from './clock.js';
 
@@ -89,10 +89,10 @@ const PC_KEYS: Record<string, string[]> = {
   ENT: ['Enter'],
 };
 
-/** Keys of the ME305 keypad with layout (rows of `ME305.keypad.layout`) and PC key suggestions. */
-export function me305Keys(): KeyInfo[] {
-  const layout = ME305.keypad.layout;
-  return ME305.keypad.table.map((k) => {
+/** Keys of the ME3305 keypad with layout (rows of `ME3305.keypad.layout`) and PC key suggestions. */
+export function me3305Keys(): KeyInfo[] {
+  const layout = ME3305.keypad.layout;
+  return ME3305.keypad.table.map((k) => {
     let row = -1;
     let col = -1;
     layout.forEach((r, ri) => {
@@ -126,17 +126,17 @@ export class Mm74c923Keypad {
     this.pins = nets.pins;
     const clock = opts.clock ?? makeBoardClock(nets.pins);
     this.opts = {
-      codePins: opts.codePins ?? ME305.keypad.codes,
-      oe: opts.oe ?? ME305.keypad.oe,
-      da: opts.da ?? ME305.keypad.da,
-      daPolarity: opts.daPolarity ?? ME305.keypad.daPolarity,
+      codePins: opts.codePins ?? ME3305.keypad.codes,
+      oe: opts.oe ?? ME3305.keypad.oe,
+      da: opts.da ?? ME3305.keypad.da,
+      daPolarity: opts.daPolarity ?? ME3305.keypad.daPolarity,
       debounceSeconds: opts.debounceSeconds ?? 0,
       rolloverSeconds: opts.rolloverSeconds ?? 1e-3,
       initialCode: opts.initialCode ?? 0,
       clock,
       scheduler: opts.scheduler ?? new BoardScheduler(),
     };
-    this.keys = me305Keys();
+    this.keys = me3305Keys();
     this.latched = this.opts.initialCode & 0x1f;
     this.unsub.push(watchLevel(this.pins, this.opts.oe, () => this.driveCode()));
     this.driveCode();

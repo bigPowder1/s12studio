@@ -1,5 +1,5 @@
 /**
- * Regression tests for the ME305 board-model review findings: undriven pins, history cost, LCD reset glitches,
+ * Regression tests for the ME3305 board-model review findings: undriven pins, history cost, LCD reset glitches,
  * keypad rollover/tap/snapshot/powerOn, LCD mid-transfer snapshots, MCP4922 long frames.
  */
 import { describe, it, expect } from 'vitest';
@@ -12,7 +12,7 @@ import {
   Mcp4922,
   Mm74c923Keypad,
   Ring,
-  createMe305Board,
+  createMe3305Board,
   makeBoardClock,
   portPrefix,
 } from '../src/board/index.js';
@@ -24,7 +24,7 @@ describe('undriven pins (MAJOR 1)', () => {
   it('fresh nets, nothing driven: motor off, encoder still, all LEDs off', () => {
     const nets: BoardNets = createBoardNets();
     const bench = new PortBench(nets);
-    const board = createMe305Board(nets, { clock: { busHz: HZ } });
+    const board = createMe3305Board(nets, { clock: { busHz: HZ } });
     const s0 = board.motor.state();
     expect(s0).toMatchObject({ volts: 0, duty: 0, enabled: false });
     bench.wait(HZ * 0.1);
@@ -281,7 +281,7 @@ describe('keypad API, timers and power (MINOR 4, 5, 7, 9)', () => {
     const at = kp.tap('A', 0.002);
     const mid = kp.snapshot();
     expect(mid.taps).toEqual([[kp.key('A').code, at]]);
-    scheduler.clear(); // what Me305Board.restore() does
+    scheduler.clear(); // what Me3305Board.restore() does
     kp.restore(mid);
     expect(nets.pins.read('PJ7')).toBe(1);
     bench.t = at;
@@ -315,7 +315,7 @@ describe('keypad API, timers and power (MINOR 4, 5, 7, 9)', () => {
     const nets = createBoardNets();
     const bench = new PortBench(nets);
     for (let i = 0; i < 8; i++) nets.pins.setPull(`PK${i}`, 'up');
-    const board = createMe305Board(nets, { clock: { busHz: HZ } });
+    const board = createMe3305Board(nets, { clock: { busHz: HZ } });
     bench.bset('K', 0x20);
     bench.setDdr('K', 0x20);
     bench.bclr('K', 0x20);

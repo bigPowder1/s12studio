@@ -1,6 +1,6 @@
 /**
- * Board API (debugger window, "ME305 Board" and VisualizationTool components): the simulated ME305 board of the
- * debug session (@s12/sim Me305BoardModel). State is pushed with `state` events at the snapshot rate while running
+ * Board API (debugger window, "ME3305 Board" and VisualizationTool components): the simulated ME3305 board of the
+ * debug session (@s12/sim Me3305BoardModel). State is pushed with `state` events at the snapshot rate while running
  * and after every halt.
  */
 

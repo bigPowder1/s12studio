@@ -94,14 +94,14 @@ describe('EditorArea: opening files', () => {
     await screen.findByTestId('editor-tab-main.asm');
     expect(ed.getModel()!.getValue()).toBe(MAIN_TEXT);
     expect(ed.getModel()!.language).toBe('hc12asm');
-    expect(ed.getModel()!.options).toMatchObject({ tabSize: 8, insertSpaces: false });
+    expect(ed.getModel()!.options).toMatchObject({ tabSize: 2, insertSpaces: true });
     expect(screen.getByTestId('editor-toolbar')).toHaveTextContent(`Path: ${MAIN}`);
     // jump selects the whole line (CodeWarrior error jump) and reveals it
     await waitFor(() => expect(ed.selection).toEqual({ startLineNumber: 4, startColumn: 1, endLineNumber: 4, endColumn: 21 }));
     expect(ed.revealed).toContain(4);
     expect(screen.getByTestId('editor-linecol')).toHaveTextContent('Line 4 Col 21');
     expect(mock.calls('files', 'watch')).toEqual([[MAIN]]);
-    expect(ed.options).toMatchObject({ autoIndent: 'none', theme: 'cw-ide', minimap: { enabled: false }, fontFamily: THEME.monoFont, fontSize: 15 });
+    expect(ed.options).toMatchObject({ autoIndent: 'none', useTabStops: false, theme: 'cw-ide', minimap: { enabled: false }, fontFamily: THEME.monoFont, fontSize: 15 });
     expect(screen.getByTestId('editor-status')).toHaveTextContent('DOS');
   });
 

@@ -1,5 +1,5 @@
 /**
- * LSI/CSI LS7366R 32-bit quadrature counter with SPI interface (ME305: SPI0, CS = PH0 active low).
+ * LSI/CSI LS7366R 32-bit quadrature counter with SPI interface (ME3305: SPI0, CS = PH0 active low).
  *
  * Instruction byte (first byte after CS falls): IR7:6 = operation (00 CLR, 01 RD, 10 WR, 11 LOAD),
  * IR5:3 = register (001 MDR0, 010 MDR1, 011 DTR, 100 CNTR, 101 OTR, 110 STR). Data bytes MSB first.
@@ -14,7 +14,7 @@
  * (e.g. the motor model), sampled lazily at every SPI transfer / CS edge.
  * Typical use: WR MDR0, WR MDR1, then RD CNTR to read the count (see test/board-spi.test.ts).
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { BoardNets, PinNet, SpiSlave } from '../pins.js';
 import { Emitter, makeBoardClock, reverseBits8, watchLevel, type BoardClock } from './clock.js';
 
@@ -79,7 +79,7 @@ export class Ls7366r implements SpiSlave {
   constructor(nets: BoardNets, opts: Partial<Ls7366rOptions> = {}) {
     this.pins = nets.pins;
     this.opts = {
-      cs: opts.cs ?? ME305.encoder.cs,
+      cs: opts.cs ?? ME3305.encoder.cs,
       positionSource: opts.positionSource ?? null,
       clock: opts.clock ?? makeBoardClock(nets.pins),
     };

@@ -79,6 +79,8 @@ export function editorOptions(prefs: EditorPrefs, lineNumbers: boolean): MonacoN
     minimap: { enabled: false },
     // CodeWarrior defaults: no auto-indent, no completion, no auto-closing
     autoIndent: 'none',
+    // Backspace after a Tab deletes one space at a time (CodeWarrior), not back to the previous tab stop
+    useTabStops: false,
     formatOnType: false,
     formatOnPaste: false,
     quickSuggestions: false,

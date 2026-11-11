@@ -48,4 +48,5 @@ export function parseApiError(e: unknown): { code: ApiErrorCode; message: string
 }
 
 /** Which window a renderer runs in. */
-export type WindowKind = 'ide' | 'debugger';
+/** 'board': the ME3305 board simulator's own window, a satellite of the debugger window. */
+export type WindowKind = 'ide' | 'debugger' | 'board';

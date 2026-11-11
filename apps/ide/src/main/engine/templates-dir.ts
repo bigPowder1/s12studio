@@ -1,5 +1,5 @@
 /**
- * Where File > New Project finds an ME 305 `blank_project` template. S12 Studio ships no course content: the template
+ * Where File > New Project finds an ME 3305 `blank_project` template. S12 Studio ships no course content: the template
  * is the user's own copy of the course's blank_project folder (a CodeWarrior project with its .mcp). Lookup (first
  * match; candidate list: templateCandidates below): $S12_TEMPLATES_DIR, <userData>/templates (copy the course's
  * blank_project there), or - in a source checkout only - the private fixtures ($S12_FIXTURES or <repo>/fixtures;

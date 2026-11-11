@@ -1,12 +1,12 @@
 /**
- * Microchip MCP4922 dual 12-bit DAC (ME305: SPI0, CS = PH1 active low, LDAC tied low).
+ * Microchip MCP4922 dual 12-bit DAC (ME3305: SPI0, CS = PH1 active low, LDAC tied low).
  *
  * 16-bit write word, MSB first: bit15 A/B (0 = DAC A), bit14 BUF, bit13 /GA (1 = 1x, 0 = 2x), bit12 /SHDN
  * (1 = active), bits 11-0 data. The word is latched into the DAC register on the CS rising edge (LDAC low);
  * Vout = Vref * D / 4096 * gain, limited to VDD. The device has no SDO pin (MISO left open).
  * A write is one 16-bit word in a single CS frame: the config nibble, then the 12-bit data.
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { BoardNets, PinNet, SpiSlave } from '../pins.js';
 import { Emitter, Ring, makeBoardClock, reverseBits8, watchLevel, type BoardClock } from './clock.js';
 
@@ -60,8 +60,8 @@ export class Mcp4922 implements SpiSlave {
   constructor(nets: BoardNets, opts: Partial<Mcp4922Options> = {}) {
     this.pins = nets.pins;
     this.opts = {
-      cs: opts.cs ?? ME305.dac.cs,
-      vrefVolts: opts.vrefVolts ?? ME305.dac.vrefVolts,
+      cs: opts.cs ?? ME3305.dac.cs,
+      vrefVolts: opts.vrefVolts ?? ME3305.dac.vrefVolts,
       vddVolts: opts.vddVolts ?? 5,
       historyLength: opts.historyLength ?? 4096,
       clock: opts.clock ?? makeBoardClock(nets.pins),

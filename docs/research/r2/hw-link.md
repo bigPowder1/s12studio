@@ -327,7 +327,7 @@ interface TargetConnection {
 
 1. **EEPROM library programming.** CodeWarrior's `.s19` lacks the EEPROM library segments that the `.abs` contains. Any S19-based flasher must get our own S19 with EEPROM included; otherwise use ELF PT_LOAD. Also check whether lab boards already hold the library in EEPROM and the instructors expect it to be reflashed every load.
 2. **Security bricking.** Erasing the top flash sector leaves FSEC = `0xFF` (secured). Always rewrite `0xFF0E/0xFF0F = 0xFFFE`, and provide an "Unsecure / mass erase" command.
-3. **Oscillator frequency of the ME305 board** is unknown. FCLKDIV/ECLKDIV depend on it; the lab script defaults to `0x49` (16 MHz). Measure it with BDM SYNC, assuming CLKSW=0 selects the oscillator (**UNCERTAIN**).
+3. **Oscillator frequency of the ME3305 board** is unknown. FCLKDIV/ECLKDIV depend on it; the lab script defaults to `0x49` (16 MHz). Measure it with BDM SYNC, assuming CLKSW=0 selects the oscillator (**UNCERTAIN**).
 4. **USBDM on XDP512** is marked "Untested" in its own database. Unverified: CCRH access (`0xFF07`?), `MS_Global` on S12X (BDMGPR vs "BDMPPR"), EEPROM paging (`pages=4`, `pageEnd=0xFF`) for plain local `0x0800` S19 records, and the exact Windows exe and DLL install paths.
 5. **The student needs a USBDM pod.** The lab's P&E Multilink cannot run USBDM. Confirm the board has a standard 6-pin BDM header (BKGD/GND/RESET/VDD).
 6. **P&E route:** HCS12 UNIT library availability, price and licence; the exact GDI DLL file name and bitness (assumed PE32); the CodeWarrior callback semantics; struct packing; whether the P&E DLL opens modal dialogs (`SHOWDIALOG=0` suggests it can be suppressed); EULA limits on hosting the DLL outside hiwave.

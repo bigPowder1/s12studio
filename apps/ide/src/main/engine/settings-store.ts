@@ -24,13 +24,20 @@ export function mergeSettings(base: AppSettings, patch: AppSettingsPatch): AppSe
  * Bring a settings file from an older version up to date:
  * - v1 -> v2: the editor font is no longer a setting (drop `editor.fontFamily`), and the old default size 13 becomes
  *   the new default 15 (a size the user picked themselves is kept).
+ * - v2 -> v3: CodeWarrior-style tabs. The old defaults (8-column tabs, real tab characters) become 2-column stops (the
+ *   lab's CodeWarrior: Tab from column 1 goes to 3, 5, 7, ...) that insert spaces; tab settings the user changed themselves are kept.
  */
 export function migrateSettings(raw: Record<string, unknown>): AppSettingsPatch {
   const s = { ...raw };
   const editor = s.editor && typeof s.editor === 'object' && !Array.isArray(s.editor) ? { ...(s.editor as Record<string, unknown>) } : undefined;
   if (editor) {
     delete editor.fontFamily;
-    if (s.version !== 2 && editor.fontSize === 13) editor.fontSize = DEFAULT_SETTINGS.editor.fontSize;
+    const version = typeof s.version === 'number' ? s.version : 1;
+    if (version < 2 && editor.fontSize === 13) editor.fontSize = DEFAULT_SETTINGS.editor.fontSize;
+    if (version < 3 && (editor.tabSize ?? 8) === 8 && (editor.insertSpaces ?? false) === false) {
+      editor.tabSize = DEFAULT_SETTINGS.editor.tabSize;
+      editor.insertSpaces = DEFAULT_SETTINGS.editor.insertSpaces;
+    }
     s.editor = editor;
   }
   s.version = DEFAULT_SETTINGS.version;

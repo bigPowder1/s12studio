@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ByteReader, ByteWriter, readHiwareVarint, writeHiwareVarint, encodeHiwareVarint, decodeHiwareVarint } from '../src/index';
 
-// The golden checks on the ME305 library container itself (header, members, round trip) are private:
+// The golden checks on the ME3305 library container itself (header, members, round trip) are private:
 // s12studio-fixtures tests/formats/lib-golden.test.ts.
 
 describe('HIWARE varint', () => {

@@ -17,7 +17,7 @@ export interface DebuggerPrefs {
   speedFactor: number;
   /** Snapshot rate while running (Hz). */
   snapshotHz: number;
-  /** Map the PC keyboard to the ME305 keypad when the board component has focus. */
+  /** Map the PC keyboard to the ME3305 keypad when the board component has focus. */
   keyboardToKeypad: boolean;
 }
 
@@ -30,14 +30,19 @@ export interface WindowBounds {
 }
 
 export interface AppSettings {
-  /** 2: the editor font became fixed (fontFamily dropped) and the default size 13 -> 15. */
-  version: 2;
+  /**
+   * 2: the editor font became fixed (fontFamily dropped) and the default size 13 -> 15.
+   * 3: CodeWarrior-style tabs by default: stops every 2 columns (1, 3, 5, ...), Tab inserts spaces (tabSize 8 -> 2,
+   *    insertSpaces -> true).
+   */
+  version: 3;
   showStartupDialog: boolean;
   recentProjects: string[];
   recentFiles: string[];
   editor: EditorPrefs;
   debugger: DebuggerPrefs;
-  windows: { ide?: WindowBounds; debugger?: WindowBounds };
+  /** Remembered window placement (board: the ME3305 board window's last position and size). */
+  windows: { ide?: WindowBounds; debugger?: WindowBounds; board?: WindowBounds };
 }
 
 /** Deep-partial patch for AppSettings (arrays are replaced). */
@@ -46,11 +51,11 @@ export type AppSettingsPatch = {
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  version: 2,
+  version: 3,
   showStartupDialog: true,
   recentProjects: [],
   recentFiles: [],
-  editor: { fontSize: 15, tabSize: 8, insertSpaces: false, syntaxColoring: true },
+  editor: { fontSize: 15, tabSize: 2, insertSpaces: true, syntaxColoring: true },
   debugger: { pacing: 'true-time', speedFactor: 1, snapshotHz: 30, keyboardToKeypad: true },
   windows: {},
 };

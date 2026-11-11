@@ -17,7 +17,7 @@ import { ControlpointsDialog } from '../dialogs';
 import { DebuggerToolbar } from './DebuggerToolbar';
 import { AboutDialog, BackgroundDialog, ComponentOpenDialog, FontDialog } from './dialogs';
 import { loadDialogOptionsFromIni, loadDialogPreset, loadOptionsOf, LoadExecutableDialog, SetConnectionDialog } from './hiwave-dialogs';
-import { colorrefToCss, cssToColorref, EMPTY_MDI, findWindow, mdiReducer, mdiToHwl, parseOpenArgs, pointsToPx, windowsForCommand, type MdiState, type Rect } from './layout';
+import { BOARD_COMPONENT, colorrefToCss, cssToColorref, EMPTY_MDI, findWindow, mdiReducer, mdiToHwl, parseOpenArgs, pointsToPx, windowsForCommand, type MdiState, type Rect } from './layout';
 import { MdiArea, type MdiServices } from './MdiArea';
 import { debuggerMenus, STEP_COMMANDS } from './menus';
 import { clockText, cyclesText, HELP_MESSAGE, runStateText } from './status';
@@ -93,10 +93,10 @@ export function DebuggerShell() {
     );
   }, [s12, session?.layoutPath, report, applyLayout]);
 
-  // ME305 board: a session whose simulated system has the board (every ME305 project) gets the ME305 Board window,
-  // docked on the right, when its .hwl has none (course .hwl files predate S12 Studio's board). Once per applied
-  // layout, after it is in place: closing the board afterwards is respected until the layout is loaded again (another
-  // project, or a relaunch, whose null session reloads the windows).
+  // ME3305 board: a session whose simulated system has the board (every ME3305 project) shows the board window, a
+  // separate window floating over the debugger (main/windows.ts), without taking focus. Once per applied layout:
+  // closing the board window afterwards is respected until the layout is loaded again (another project, or a
+  // relaunch). Component > Open > ME3305 Board brings it back.
   const sessionKey = session ? `${session.projectDir}\n${session.iniPath ?? ''}\n${session.layoutPath ?? ''}` : null;
   const sessionKeyRef = useRef(sessionKey);
   sessionKeyRef.current = sessionKey;
@@ -108,7 +108,7 @@ export function DebuggerShell() {
     boardDockedFor.current = key;
     void Promise.resolve(s12.board.state()).then(
       (b) => {
-        if (b?.present && sessionKeyRef.current === sessionKey && layoutLoads.current === layoutLoaded) dispatch({ type: 'dockBoard' });
+        if (b?.present && sessionKeyRef.current === sessionKey && layoutLoads.current === layoutLoaded) void Promise.resolve(s12.app.showBoard({ focus: false })).catch(() => undefined);
       },
       () => undefined,
     );
@@ -168,8 +168,13 @@ export function DebuggerShell() {
       setMessage(`Component "${name}" not found`);
       return;
     }
+    // the board has its own window (floats over the debugger), never an MDI child
+    if (entry.name === BOARD_COMPONENT) {
+      void Promise.resolve(s12.app.showBoard({ focus: true })).catch(() => undefined);
+      return;
+    }
     dispatch({ type: 'open', component: entry.name, attributes, rect, kind: name.toLowerCase() === entry.name.toLowerCase() ? undefined : name, ...flags });
-  }, []);
+  }, [s12]);
 
   const loadLayoutFile = useCallback(
     (path: string) => void Promise.resolve(s12.layout.read(path)).then(applyLayout, report),

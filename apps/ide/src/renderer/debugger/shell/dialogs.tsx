@@ -242,7 +242,7 @@ export function AboutDialog({ open, onClose, version }: { open: boolean; onClose
         <br />
         S12 Studio {version} - a debugger compatible with CodeWarrior S12(X) 5.1 projects (not affiliated with NXP/Freescale)
         <br />
-        MC9S12XDP512 full chip simulation with the ME305 board.
+        MC9S12XDP512 full chip simulation with the ME3305 board.
       </div>
     </Dialog>
   );

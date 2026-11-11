@@ -5,11 +5,11 @@
 > Distribution (installers, GitHub, download site) is planned separately: see `docs/DISTRIBUTION.md` (Release 1 =
 > simulator edition, Release 2 = real board on Windows) and `docs/RELEASING.md`.
 
-The project owner (a Cal Poly ME 305 student) could only write and debug lab code at the lab PCs, which run **CodeWarrior Development Studio for S12(X) v5.1** (classic IDE plus the "True-Time Simulator & Real-Time Debugger", hiwave). The goal is a local desktop app that:
+The project owner (a Cal Poly ME 3305 student) could only write and debug lab code at the lab PCs, which run **CodeWarrior Development Studio for S12(X) v5.1** (classic IDE plus the "True-Time Simulator & Real-Time Debugger", hiwave). The goal is a local desktop app that:
 - feels like CodeWarrior,
 - opens CodeWarrior `.mcp` projects and `.asm` files,
 - builds them with **byte-identical** output,
-- runs them in a full-chip simulator of the **ME 305 board**,
+- runs them in a full-chip simulator of the **ME 3305 board**,
 - debugs with hiwave-style windows,
 - can also drive the real board through a P&E Multilink.
 
@@ -39,7 +39,7 @@ Decisions taken with the owner:
 - Electron desktop app.
 - Assembly only.
 - Byte-identical toolchain output.
-- Full simulator plus the real ME305 board through the lab's P&E pod.
+- Full simulator plus the real ME3305 board through the lab's P&E pod.
 
 Research notes from two research workflows are saved in `…/scratchpad/r1/*.md` and `…/scratchpad/r2/n7..n12.md`. Copy them into the repo as `docs/research/` at the start.
 
@@ -56,12 +56,12 @@ packages/
              .hwl/.cmd/.xpr/.BPT parsers; .prm + .bbl parsers
   asm/       CW HC12 assembler clone (CPU12 + CPU12X), emits CW-dialect ELF .o, .lst, .dbg
   link/      SmartLinker clone: PRM placement, smart linking, .abs (ELF+DWARF), .map; Burner (.bbl → .s19/.glo)
-  sim/       S12X CPU core + MMC + peripherals + XINT; board models (ME305, generic I/O)
+  sim/       S12X CPU core + MMC + peripherals + XINT; board models (ME3305, generic I/O)
   debug/     Target interface, SimTarget, breakpoints/watchpoints, stepping, symbols/lines,
              hiwave command-language interpreter, .cmd hooks
   hw/        PeGdiTarget (ia32 sidecar hosting P&E GDI DLL), UsbdmTarget (koffi → usbdm.dll), flash/EEPROM loader
   project/   project model = .mcp parse + sidecar JSON; build orchestration (make, dependency tracking)
-  devices/   generated mc9s12xdp512.inc (+ DG256/DP512/C32 later), memory maps, vector tables, ME305 board profile
+  devices/   generated mc9s12xdp512.inc (+ DG256/DP512/C32 later), memory maps, vector tables, ME3305 board profile
 apps/
   ide/       electron-vite + React. Main process, preload IPC, two window kinds:
              IDE window (CodeWarrior IDE) and Debugger window (hiwave), like the real two-app split
@@ -191,9 +191,9 @@ Specs are in `r2/n12.md`, `r2/n8.md` and `r1/isa.md`.
   10. EEPROM and flash command state machines (enough for the erase/unsecure `.cmd` pokes).
   
   Unimplemented registers log an "FCS Warning" to the Command window, as hiwave does.
-- **ME305 board model.**
+- **ME3305 board model.**
   - HD44780 40×2 LCD: 8-bit, busy flag and address counter readback, latch on the E falling edge, entry mode defaults to I/D=1.
-  - Keypad: MM74C923-style. Key codes appear on PK0–4 and DA on PJ7 with configurable polarity; the code-to-key table is in `packages/devices/src/me305.ts`.
+  - Keypad: MM74C923-style. Key codes appear on PK0–4 and DA on PJ7 with configurable polarity; the code-to-key table is in `packages/devices/src/me3305.ts`.
   - LS7366R on SPI0 with chip select PH0.
   - MCP4922 DAC with chip select PH1.
   - Motor: DC-motor ODE driven by PWM01, PA4 and PA6, feeding the encoder count and ATD1 AN0 current. Parameters are tunable.
@@ -257,7 +257,7 @@ Spec is in `r1/ide.md` §6–7.
   - Procedure.
   - Command: `in>` prompt, history, colour-coded output.
   - Terminal (SCI).
-  - ME305 Board panel: LCD, keypad (also mapped to the PC keyboard), LEDs, motor, encoder, DAC meters.
+  - ME3305 Board panel: LCD, keypad (also mapped to the PC keyboard), LEDs, motor, encoder, DAC meters.
   - VisualizationTool-lite: LED, 7-segment and bar instruments bound to ports.
 - **Drag and drop between components** (register → memory, and so on), plus Controlpoints Configuration dialogs.
 

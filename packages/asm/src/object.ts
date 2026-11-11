@@ -13,7 +13,7 @@
  *   - labels of data directives (DS/DC/DCB/...) and VARnnnnn are allocated when defined (pass 1),
  *   - every other label is allocated by its first reference in pass 2 (operands, branches, DC values),
  *   - labels never referenced come last, in definition order (UNCERTAIN: never observed).
- * This reproduces every symbol table of the fixtures (the main.asm.o objects and the ME305 library members).
+ * This reproduces every symbol table of the fixtures (the main.asm.o objects and the ME3305 library members).
  * Sizes: distance to the next label address in the same section (or the section end); several labels at one
  * address: the earliest-allocated one gets the size, the others 0 (UNCERTAIN: two samples, main/spin and
  * _Startup/Entry).

@@ -17,7 +17,7 @@ vi.mock('../components/registry', async () => {
     useComponentMenu(MENU);
     return <div data-testid={`stub-${title}`}>{title}</div>;
   };
-  const names = ['Source', 'Assembly', 'Register', 'Procedure', 'Memory', 'Data', 'Command', 'Terminal', 'ME305 Board', 'VisualizationTool'] as const;
+  const names = ['Source', 'Assembly', 'Register', 'Procedure', 'Memory', 'Data', 'Command', 'Terminal', 'ME3305 Board', 'VisualizationTool'] as const;
   const COMPONENTS = names.map((name) => ({ name, component: Stub, multiInstance: ['Memory', 'Data', 'VisualizationTool'].includes(name), infoBar: ['Source', 'Assembly', 'Register', 'Procedure', 'Memory', 'Data'].includes(name), description: `${name} window` }));
   const findComponent = (n: string) => {
     const k = n.trim().toLowerCase().replace(/[\s_]/g, '');

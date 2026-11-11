@@ -4,12 +4,12 @@
 - **M0** scaffold, fixtures (`fixtures/Lab3`, `fixtures/blank_project`; now a private repo, see below), research notes
   (`docs/research/`), plan (`docs/PLAN.md`).
 - **M1** `@s12/formats` (ELF/lib/DWARF/looc/.mcp/INI/hwl/cmd/xpr/PRM/BBL/S-record), `@s12/isa` (CPU12+S12X opcode
-  table, postbytes, cycles, disassembler), `@s12/devices` (MC9S12XDP512 registers/vectors/MMC, .inc generator, ME305 profile).
+  table, postbytes, cycles, disassembler), `@s12/devices` (MC9S12XDP512 registers/vectors/MMC, .inc generator, ME3305 profile).
 - **M2 (assembler)** `@s12/asm`: built + 2 review/fix rounds. Golden: Lab3 & blank_project `main.lst`, `main.dbg`,
   `main.asm.o` byte-identical.
 - **M3 (linker/burner)** `@s12/link`: built + 2 review/fix rounds. Golden: Project.abs/.map/.s19/.glo.
 - **M4 (simulator)** `@s12/sim`: S12X CPU core, MMC, bus; peripherals CRG, PIM/KWU, MEBI/IRQ, ECT (equality compare,
-  TFFCA, the C11 compare race reproduced), PIT, SPI0-2, SCI0-5, IIC, ATD0/1, PWM, flash/EEPROM NVM, misc stubs; ME305
+  TFFCA, the C11 compare race reproduced), PIT, SPI0-2, SCI0-5, IIC, ATD0/1, PWM, flash/EEPROM NVM, misc stubs; ME3305
   board (LCD, keypad, LS7366R, MCP4922, motor, LEDs). `createMc9s12xdp512()` in `mcu.ts` wires it all.
 - **M5 (debug engine)** `@s12/debug`: Target, SimTarget, symbols/lines, stepping, breakpoints/watchpoints, hiwave
   command language, .cmd hooks, .bpt/.xpr; `createMcuSimTarget()` in `sim-factory.ts`.
@@ -20,10 +20,10 @@
   (Alt+F7), New Project wizard (Device and Connection / Project Parameters / Add Additional Files), Make (F7),
   Debug (F5). Debugger window (hiwave): `.ini` MainFrame placement (FCS opens maximized), toolbar from `TOOLBAR=`,
   MDI layout from the `.hwl`, Source / Assembly / Register / Procedure / Memory / Data / Command / Terminal /
-  VisualizationTool / ME305 Board components, Load Executable File and Set Connection dialogs, Controlpoints, the
+  VisualizationTool / ME3305 Board components, Load Executable File and Set Connection dialogs, Controlpoints, the
   simulation in a worker thread at true time (measured 1.00x real time running Lab3 in its keypad-polling loop; ~17x
   with max pacing there). E2E: Playwright `_electron` specs, public ones in `apps/ide/e2e/` and the Lab3 ones in the
-  private `fixtures/e2e/` (incl. `final.spec.ts`: Lab3 -> debugger -> ME305 board prompt, and `plan-flows.spec.ts`:
+  private `fixtures/e2e/` (incl. `final.spec.ts`: Lab3 -> debugger -> ME3305 board prompt, and `plan-flows.spec.ts`:
   the 10 PLAN.md student flows through the UI -
   File > Open, Make byte-compared with CodeWarrior's outputs, error/jump/fix, Source-margin breakpoint, register and
   memory edits, F10/F11/Shift+F11, the board at true time with mouse keypad input, Command `bs`/`g`/`rd`/`db`, New
@@ -44,7 +44,7 @@ the private tests); blank_project reaches `spin`. Current test counts: see "Veri
 Plan and decisions: `docs/DISTRIBUTION.md`; release procedure: `docs/RELEASING.md`.
 
 **Decision of 2026-11-06: clone + board only, no course content.** S12 Studio ships only the CodeWarrior-style
-IDE/debugger, the simulated ME 305 board and our own demo project (`examples/blinky`). It bundles no ME 305 library
+IDE/debugger, the simulated ME 3305 board and our own demo project (`examples/blinky`). It bundles no ME 3305 library
 and no instructor template, in the repository or in any installer. Students open the `blank_project` folder their
 course gives them (File > Open its `.mcp`). No redistribution permission is needed; a courtesy note to the
 instructors (draft in `docs/DISTRIBUTION.md`) replaces the permission email.
@@ -52,7 +52,7 @@ instructors (draft in `docs/DISTRIBUTION.md`) replaces the permission email.
 What changed for it (2026-11-06):
 - **Bundling removed:** `prepare-course-content.mjs`, `resources/templates/`, the `course-content` script, the
   `S12_BUNDLE_COURSE` / `S12_PACKAGED_COURSE` switches, `release.yml`'s deploy key, private checkout and bundle
-  branching, and `@s12/project`'s generated course stationery (`newCourseProject` and friends). New Project's ME 305
+  branching, and `@s12/project`'s generated course stationery (`newCourseProject` and friends). New Project's ME 3305
   entry uses a course `blank_project` (with its `.mcp`) only if one is found in `S12_TEMPLATES_DIR`,
   `<userData>/templates` or (dev only) the fixtures; otherwise it is marked "not found" and points to File > Open.
 - **Demo in the installers:** `<resources>/examples/blinky` (no build outputs). Startup dialog "Load Example
@@ -62,7 +62,7 @@ What changed for it (2026-11-06):
   used to assemble only and debug a stale `bin/Project.abs`); a project path with characters above U+00FF (en dash,
   Hangul, Vietnamese) builds (they are recorded as `?` in the object/ELF/S0/listing paths instead of throwing); a
   missing connection `.ini` falls back to the project's `Full_Chip_Simulation.ini` with a note; the P&E connection
-  message is a once-per-project note, not a warning; the ME305 Board panel docks on the right (40%) when a session
+  message is a once-per-project note, not a warning; the ME3305 Board panel docks on the right (40%) when a session
   starts with a layout that has none; a failed double-click/command-line open shows a message box; a project opened
   from inside a zip (Windows' `Temp1_*.zip`, 7-Zip, WinRAR temp folders) is refused with "extract the zip first".
 - **Scrub:** tests, notes and comments that spelled out the graded Lab3 solution or the instructors' library moved to
@@ -72,7 +72,7 @@ What changed for it (2026-11-06):
   and `docs/PLAN.md` keep pointers). Public tests use `examples/`, synthetic code and values read from the fixtures
   at run time. The board caption and profile name no longer echo the library banner.
 - **Docs:** README, `apps/ide/README.md`, `docs-site/` (new step 1 "open your course's blank_project", "No course
-  project yet?", FAQ), NOTICE / `THIRD_PARTY_NOTICES.md` ("S12 Studio contains no ME 305 course material"),
+  project yet?", FAQ), NOTICE / `THIRD_PARTY_NOTICES.md` ("S12 Studio contains no ME 3305 course material"),
   `docs/RELEASING.md` (no deploy key, no bundling section; golden CI is §3), `docs/DISTRIBUTION.md` (decision row,
   courtesy note), `CONTRIBUTING.md` and `CLAUDE.md` (private tests and notes locations).
 
@@ -98,7 +98,7 @@ Earlier (2026-11-05, still valid):
   macOS (repository `bigPowder1/s12studio`; off in builds still carrying the `OWNER` placeholder).
 - **Screenshots:** `docs-site/img/{ide,debugger}.png` (also in `README.md`) from `examples/blinky` only, regenerated
   by `apps/ide/e2e/docs-screenshots.spec.ts` (`S12_DOCS_SCREENSHOTS=<dir>`); both (and the unreferenced
-  `new-project.png`) were regenerated on 2026-11-06 with the "ME305 Board" caption and the current stationery labels.
+  `new-project.png`) were regenerated on 2026-11-06 with the "ME3305 Board" caption and the current stationery labels.
 - **Copy-out recipe** (`docs/RELEASING.md` §2) for the public repo's first commit (never reuses this index or
   identity).
 
@@ -137,7 +137,7 @@ Earlier (2026-11-05, still valid):
 6. Copy `docs/ci/fixtures-golden.yml` into the private repo (§3); Pages source = GitHub Actions (§4). Check that
    `ci.yml` and Golden pass. (No deploy key or secret is needed any more.)
 7. Send the instructors the courtesy note (`docs/DISTRIBUTION.md`; no permission is needed). If they object to
-   naming ME 305, drop the course name from the site and README before the release.
+   naming ME 3305, drop the course name from the site and README before the release.
 8. Tag `v0.1.0`; review the draft release (all installers + `latest*.yml`); install-test on Windows 11 and an Apple
    Silicon Mac (install guide, open a course `blank_project`, the demo, F7, F5, board); publish.
 
@@ -147,8 +147,8 @@ Earlier (2026-11-05, still valid):
 - **Debugger window title** `S12 Studio Debugger  <ini path>`; About boxes say "compatible with CodeWarrior ...
   projects" plus the non-affiliation notice.
 - **App id** `io.github.bigpowder1.s12studio` (lower case, the reverse of the Pages host name; fixed after v0.1.0).
-- **Library research notes** private: `me305-board.md` and the full `elf-lib-formats.md` live in
-  `s12studio-fixtures/research/`; code cites them as "private me305-board.md §n". The public
+- **Library research notes** private: `me3305-board.md` and the full `elf-lib-formats.md` live in
+  `s12studio-fixtures/research/`; code cites them as "private me3305-board.md §n". The public
   `docs/research/r2/elf-lib-formats.md` §1 keeps only the generic `.lib` container format.
 - Unchanged: product name "S12 Studio" (disclaimers in place); copyright holder "S12 Studio contributors";
   `docs/DISTRIBUTION.md` (decisions, IP-policy note, courtesy note draft) stays public.
@@ -176,8 +176,8 @@ npm run app:e2e                                # build + Playwright E2E
 S12_FIXTURES=/nonexistent npx vitest run       # what a public clone runs (golden tests skipped)
 ```
 In the IDE: F7 Make, F5 Debug (Makes first, then opens the hiwave-style window; a P&E connection runs on Full Chip
-Simulation until M8, with a note), then F5 Start / F6 Halt / F11 step. The ME305 board panel docks on the right when
-the session starts (Component > Open... > ME305 Board reopens it). WSL notes (missing libasound, `--disable-gpu`) are in
+Simulation until M8, with a note), then F5 Start / F6 Halt / F11 step. The ME3305 board panel docks on the right when
+the session starts (Component > Open... > ME3305 Board reopens it). WSL notes (missing libasound, `--disable-gpu`) are in
 `apps/ide/README.md`.
 
 ## Known gaps

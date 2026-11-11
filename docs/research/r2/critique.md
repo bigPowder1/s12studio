@@ -10,7 +10,7 @@ No files were changed. I re-checked the claims below with read-only commands aga
 VERIFIED, three ways:
 - The library's own strings and the lab's LCD fields need 40 columns (details in the private notes, s12studio-fixtures research/critique.md §C1).
 - Any program that writes past DDRAM column `$0F` on one line needs more than 16 columns.
-- DDRAM layout: line 1 is `$00–$27`, line 2 is `$40–$67`. The me305 report is right; the "16x2" in the task context is wrong.
+- DDRAM layout: line 1 is `$00–$27`, line 2 is `$40–$67`. The me3305 report is right; the "16x2" in the task context is wrong.
 
 ### C2. The golden build does not need the stock `.inc`
 VERIFIED. Details in the private notes, s12studio-fixtures research/critique.md §C2.
@@ -62,7 +62,7 @@ Datasheet S12XMMCV2 says:
 ### C9. Reset CCR is `$D0` (S, X and I set)
 xdp512 §11 left out S. IVBR's reset value is `$FF`, and a system reset re-initialises IVBR *before* the reset vector is fetched (VERIFIED in the datasheet).
 
-### C10. An unresolved library XREF (xdp512 and me305 agree; made precise)
+### C10. An unresolved library XREF (xdp512 and me3305 agree; made precise)
 - One library member XREFs a start-up routine that no member defines (it is never relocated). Linking that member must behave as SmartLinker does (the message text is UNCERTAIN). Details in the private notes, s12studio-fixtures research/critique.md §C10.
 
 ### C11. Delay-loop race: the instruction forms were wrong; the conclusion gets stronger

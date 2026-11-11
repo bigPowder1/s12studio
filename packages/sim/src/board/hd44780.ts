@@ -1,12 +1,12 @@
 /**
- * HD44780-compatible character LCD (ME305: 40x2, 8-bit bus on PB0-7, RS=PM4, R/W=PM5, E=PM6).
+ * HD44780-compatible character LCD (ME3305: 40x2, 8-bit bus on PB0-7, RS=PM4, R/W=PM5, E=PM6).
  *
  * Bus protocol (datasheet timing diagrams): RS and R/W are sampled on the E rising edge; a write latches the data
  * bus on the E falling edge; a read drives the data bus (board layer of the PinNet) while E and R/W are high and
  * releases it when either drops. A data read advances the address counter at the end of the read (E falling).
  * In 4-bit mode (DL=0) transfers use DB4-7, high nibble first.
  *
- * Access patterns this must support (private me305-board.md §3): reset writes (E high, data, E low, no busy
+ * Access patterns this must support (private me3305-board.md §3): reset writes (E high, data, E low, no busy
  * check), writes followed by busy-flag polling, BF/AC reads (GETADDR), character/address writes (OUTCHAR/SETADDR);
  * the library never sends Entry Mode Set, so the power-on I/D=1, S=0 is relied on.
  *

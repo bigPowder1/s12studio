@@ -1,14 +1,14 @@
 # S12 Studio
 
-**Write, build and debug MC9S12XDP512 assembly on your own laptop, the way you do on the ME 305 lab PCs.**
+**Write, build and debug MC9S12XDP512 assembly on your own laptop, the way you do on the ME 3305 lab PCs.**
 
-S12 Studio is a free, open-source desktop app for Cal Poly ME 305 (HCS12X / MC9S12XDP512, assembly). It works like
+S12 Studio is a free, open-source desktop app for Cal Poly ME 3305 (HCS12X / MC9S12XDP512, assembly). It works like
 the lab's CodeWarrior for S12(X) v5.1 and its simulator/debugger (hiwave): it opens CodeWarrior-format
 projects (`.mcp`), assembles and links them to the same output files byte for byte, and runs them in a full-chip
-simulator with an on-screen ME 305 benchtop board (LCD, keypad, LEDs, motor and encoder), at real speed.
+simulator with an on-screen ME 3305 benchtop board (LCD, keypad, LEDs, motor and encoder), at real speed.
 
 ![The S12 Studio IDE with the blinky demo open after Make](docs-site/img/ide.png)
-![The debugger running the blinky demo, with the ME 305 board panel](docs-site/img/debugger.png)
+![The debugger running the blinky demo, with the ME 3305 board window floating over it](docs-site/img/debugger.png)
 
 > S12 Studio is an independent student project. It is not affiliated with or endorsed by NXP; CodeWarrior is a
 > trademark of NXP B.V. See [NOTICE](NOTICE).
@@ -40,23 +40,24 @@ This is expected. Full guide with screenshots: [install guide](https://bigpowder
 
 ## Quick start
 
-1. **Open your lab project:** copy the `blank_project` folder ME 305 gives you (course page), then **File > Open...**
+1. **Open your lab project:** copy the `blank_project` folder ME 3305 gives you (course page), then **File > Open...**
    and pick its `.mcp`. S12 Studio does not include the course library or template; they come with your course's
    project folder. Work on a copy: building writes `bin/` and object files next to the project, as CodeWarrior does.
 2. **Build:** press **F7** (Project > Make). Errors appear in the Errors & Warnings window; double-click to jump
    to the line.
 3. **Debug:** press **F5** (Project > Debug). The debugger window opens with your program loaded into the
-   full-chip simulator and the ME305 Board panel docked on the right (F5 builds first if anything changed).
+   full-chip simulator and the ME3305 Board in its own window, which you can move and resize anywhere (F5 builds first
+   if anything changed).
 4. **Run:** press **F5** again (Run > Start). Click the board's keypad to type; F6 halts, F11 single-steps, F10
    steps over. Breakpoints: click in the Source window's margin.
 
 No course project yet? Open the demo project (**Help > Open Demo Project**, or from the startup dialog) to see the
 board's LCD, LEDs and keypad in action, or use **File > New Project** for an empty assembly project (without the
-ME 305 library). The demo's source is in [`examples/blinky`](examples/blinky/).
+ME 3305 library). The demo's source is in [`examples/blinky`](examples/blinky/).
 
 ## FAQ
 
-**Where do I get the ME 305 library / blank project?** From your course: they are in the `blank_project` folder ME 305
+**Where do I get the ME 3305 library / blank project?** From your course: they are in the `blank_project` folder ME 3305
 gives you (course page). S12 Studio does not include course material; copy that folder and open its `.mcp` with
 File > Open... . To list it in File > New Project as well, copy the `blank_project` folder into the `templates`
 folder of S12 Studio's user-data folder (the New Project dialog shows the exact path).
@@ -69,7 +70,7 @@ folder of S12 Studio's user-data folder (the New Project dialog shows the exact 
 - hiwave-style debugger: Source, Assembly, Register, Memory, Data, Procedure, Command and Terminal windows,
   breakpoints and watchpoints, stepping, the debugger command language and `.cmd` files.
 - Full-chip MC9S12XDP512 simulation in real time (timers, interrupts, SCI, SPI, ATD, PWM, flash/EEPROM...) plus the
-  ME 305 board.
+  ME 3305 board.
 - Everything runs locally; nothing is uploaded and no account is needed.
 
 ## Known gaps
@@ -112,7 +113,7 @@ status and research notes. See [CONTRIBUTING.md](CONTRIBUTING.md).
 ### Private fixtures (maintainers)
 
 Byte-for-byte "golden" tests compare our output with real CodeWarrior output from course projects. Those projects
-(and the ME 305 library) are not public; they live in a private repository checked out at `fixtures/` (ignored by
+(and the ME 3305 library) are not public; they live in a private repository checked out at `fixtures/` (ignored by
 git here), or anywhere you point `S12_FIXTURES` at. Without them the golden tests are skipped and everything else
 runs. The public CI never sees them; the golden suite runs in the private repository's own workflow
 ([`docs/ci/fixtures-golden.yml`](docs/ci/fixtures-golden.yml), see [docs/RELEASING.md](docs/RELEASING.md)).
@@ -120,4 +121,4 @@ runs. The public CI never sees them; the golden suite runs in the private reposi
 ## License
 
 Apache License 2.0 ([LICENSE](LICENSE)). Third-party material: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-S12 Studio contains no ME 305 course material; the course's project files and library belong to their authors.
+S12 Studio contains no ME 3305 course material; the course's project files and library belong to their authors.

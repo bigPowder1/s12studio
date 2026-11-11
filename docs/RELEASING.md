@@ -3,7 +3,7 @@
 Background and decisions: [DISTRIBUTION.md](DISTRIBUTION.md). Workflows: `.github/workflows/{ci,release,pages}.yml`.
 
 The installers contain S12 Studio and the public demo `examples/blinky` (as `<resources>/examples/blinky`, without
-build outputs) and no course content: no ME 305 library or template (decision of 2026-11-06). Students open the
+build outputs) and no course content: no ME 3305 library or template (decision of 2026-11-06). Students open the
 `blank_project` folder their course gives them. No release step checks out the private fixtures repository.
 
 ## One-time setup

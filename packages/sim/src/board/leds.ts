@@ -1,5 +1,5 @@
 /**
- * ME305 LEDs on PP4..PP7 (active high: on when the pin is DRIVEN high). Two red/green pairs:
+ * ME3305 LEDs on PP4..PP7 (active high: on when the pin is DRIVEN high). Two red/green pairs:
  * PP4 green / PP5 red = pair 2, PP6 green / PP7 red = pair 1 (from course lab code comments; positions UNCERTAIN).
  * An undriven pin does not light an LED (PinNet reports a floating pin as 1, which must not count); a pin held up
  * only by the MCU pull device counts as off unless `pullLights` (UNCERTAIN: an internal ~50 kohm pull-up through an
@@ -7,7 +7,7 @@
  * Every on/off edge is recorded with its bus cycle and simulated time (bounded ring history) for the UI and for
  * tests that measure blink periods.
  */
-import { ME305 } from '@s12/devices';
+import { ME3305 } from '@s12/devices';
 import type { BoardNets, PinNet } from '../pins.js';
 import { Emitter, Ring, drivenLevel, makeBoardClock, watchDriven, type BoardClock } from './clock.js';
 
@@ -43,7 +43,7 @@ export class Leds {
   constructor(nets: BoardNets, opts: Partial<LedsOptions> = {}) {
     this.pins = nets.pins;
     this.opts = {
-      leds: opts.leds ?? ME305.leds.map((l) => ({ ...l })),
+      leds: opts.leds ?? ME3305.leds.map((l) => ({ ...l })),
       historyLength: opts.historyLength ?? 100_000,
       pullLights: opts.pullLights ?? false,
       clock: opts.clock ?? makeBoardClock(nets.pins),

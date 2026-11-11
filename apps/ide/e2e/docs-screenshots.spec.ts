@@ -5,7 +5,7 @@
  *   npm run build -w @s12/ide
  *   S12_DOCS_SCREENSHOTS=$PWD/docs-site/img npm run e2e:nobuild -w @s12/ide -- docs-screenshots.spec.ts
  *
- * Writes ide.png (blinky open after Make), debugger.png (running, ME305 Board panel with the demo's LCD text and lit
+ * Writes ide.png (blinky open after Make), debugger.png (running, ME3305 Board panel with the demo's LCD text and lit
  * LEDs) and new-project.png (File > New, Project Parameters page), each 1280x800 (the size docs-site/index.html
  * declares). The demo is copied to <os tmp>/demo/blinky and new projects are placed in <os tmp>/demo, so no personal
  * path shows in the pictures. Look at every picture before committing it.
@@ -88,22 +88,41 @@ test('docs screenshots: ide.png + debugger.png (examples/blinky)', async () => {
   await ide.waitForTimeout(500);
   await shot(ide, 'ide');
 
-  // debugger, ME305 Board, run
+  // debugger + ME3305 board window, run
   await ide.keyboard.press('F5');
   const dbg = await s.debuggerWindow();
   await expect(dbg.getByTestId('reg-PC')).toHaveText(/^[0-9A-F]{4}$/, { timeout: 60_000 });
   await resize(s.app, dbg);
-  await dbg.locator('[data-menu="Component"]').click();
-  await dbg.locator('[data-menu-id="component.open"]').click();
-  await dbg.getByTestId('component-option-ME305 Board').click();
-  await dbg.getByTestId('component-open-ok').click();
-  await expect(dbg.getByTestId('me305-board')).toBeVisible();
+  // the ME3305 board has its own window, opened with the session
+  const bw = await s.boardWindow();
+  await expect(bw.getByTestId('me3305-board')).toBeVisible();
   await dbg.keyboard.press('F5');
   await expect(dbg.getByTestId('debugger-status')).toContainText('RUNNING');
-  await expect(dbg.getByTestId('lcd-row-0')).toContainText(msg1, { timeout: 30_000 });
+  await expect(bw.getByTestId('lcd-row-0')).toContainText(msg1, { timeout: 30_000 });
   // a moment when PP4 is lit (PP4+PP6 or PP5+PP7 are always on)
-  await expect.poll(async () => dbg.getByTestId('led-PP4').getAttribute('data-on'), { timeout: 15_000, intervals: [50] }).toBe('1');
+  await expect.poll(async () => bw.getByTestId('led-PP4').getAttribute('data-on'), { timeout: 15_000, intervals: [50] }).toBe('1');
+  // debugger.png shows the board window floating over the debugger: its picture is laid over the debugger page for
+  // the shot (a page screenshot has only its own window)
+  const boardPng = (await bw.screenshot()).toString('base64');
+  await dbg.evaluate((b64) => {
+    // page-side code (the spec is typed for Node: no DOM lib)
+    type El = { id: string; style: Record<string, string>; textContent: string; src: string; append(...n: El[]): void };
+    const document = (globalThis as unknown as { document: { createElement(t: string): El; body: El } }).document;
+    const d = document.createElement('div');
+    d.id = 'docs-board-overlay';
+    Object.assign(d.style, { position: 'fixed', right: '18px', top: '64px', border: '1px solid #404040', boxShadow: '4px 4px 14px rgba(0,0,0,.45)', background: '#d4d0c8', zIndex: '99999' });
+    const cap = document.createElement('div');
+    cap.textContent = 'ME3305 Board';
+    Object.assign(cap.style, { background: 'linear-gradient(90deg,#0a246a,#a6caf0)', color: '#fff', font: 'bold 11px Tahoma, sans-serif', padding: '3px 6px' });
+    const img = document.createElement('img');
+    img.src = `data:image/png;base64,${b64}`;
+    img.style.display = 'block';
+    d.append(cap, img);
+    document.body.append(d);
+  }, boardPng);
+  await dbg.waitForTimeout(200);
   await shot(dbg, 'debugger');
+  await dbg.evaluate(() => (globalThis as unknown as { document: { getElementById(id: string): { remove(): void } | null } }).document.getElementById('docs-board-overlay')?.remove());
   await dbg.keyboard.press('F6');
 });
 

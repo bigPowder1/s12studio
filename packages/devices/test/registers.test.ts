@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ME305_MASKS,
+  ME3305_MASKS,
   REGISTERS,
   REGISTER_ALIASES,
   addr,
@@ -11,7 +11,7 @@ import {
 } from '../src/index.js';
 
 describe('register table', () => {
-  // Addresses used by the ME305 library and Lab3 (datasheet Table 1-1 / App. G via docs/research/r2).
+  // Addresses used by the ME3305 library and Lab3 (datasheet Table 1-1 / App. G via docs/research/r2).
   const expected: Record<string, number> = {
     PORTA: 0x0000, PORTB: 0x0001, DDRA: 0x0002, DDRB: 0x0003, PORTE: 0x0008, DDRE: 0x0009,
     MMCCTL0: 0x000a, MODE: 0x000b, PUCR: 0x000c, RDRIV: 0x000d, EBICTL0: 0x000e, EBICTL1: 0x000f,
@@ -147,8 +147,8 @@ describe('register table', () => {
     expect(registerByName('CRGFLG')!.w1cMask).toBe(0xf2);
   });
 
-  it('ME305 masks match the bit table', () => {
-    for (const [key, value] of Object.entries(ME305_MASKS)) {
+  it('ME3305 masks match the bit table', () => {
+    for (const [key, value] of Object.entries(ME3305_MASKS)) {
       const i = key.indexOf('_');
       expect(mask(key.slice(0, i), key.slice(i + 1)), key).toBe(value);
     }

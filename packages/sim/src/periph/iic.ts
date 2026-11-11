@@ -1,7 +1,7 @@
 /**
  * IIC0/IIC1 (S12IICV2) of the MC9S12XDP512: register file stub with IBSR basics.
  *
- * UNCERTAIN: there is no I2C bus model (the ME305 board uses no I2C device). A master byte transfer completes
+ * UNCERTAIN: there is no I2C bus model (the ME3305 board uses no I2C device). A master byte transfer completes
  * after 9 SCL periods (SCL divider from IBFD) with TCF/IBIF set and RXAK=1 (nobody acknowledges); a master
  * receive returns $FF (bus pulled high). Arbitration, slave addressing (IAAS) and SRW are not modelled. The
  * first enable of the module logs a warning. SDA/SCL (IIC0: PJ7/PJ6) are not claimed on the PinNet when IBEN=1,

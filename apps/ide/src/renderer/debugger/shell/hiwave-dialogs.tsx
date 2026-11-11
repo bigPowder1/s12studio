@@ -166,7 +166,7 @@ export interface ConnectionChoice {
 
 /** hiwave's HC12 connection list (ide.md §2 "Connections"); only the simulator is implemented. */
 export const HC12_CONNECTIONS: readonly ConnectionChoice[] = [
-  { name: 'Full Chip Simulation', supported: true, info: 'Simulates the MC9S12XDP512 and its peripherals (CPU, timers, SPI, SCI, ATD...) with the ME305 board.' },
+  { name: 'Full Chip Simulation', supported: true, info: 'Simulates the MC9S12XDP512 and its peripherals (CPU, timers, SPI, SCI, ATD...) with the ME3305 board.' },
   { name: 'P&E Multilink/Cyclone Pro', supported: false, info: 'BDM connection to real hardware: not supported yet (planned, M8).' },
   { name: 'HCS12 Serial Monitor', supported: false, info: 'Serial monitor connection to real hardware: not supported yet.' },
   { name: 'SofTec HCS12', supported: false, info: 'Not supported.' },

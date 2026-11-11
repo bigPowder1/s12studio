@@ -20,4 +20,4 @@ export * from './ls7366r.js';
 export * from './mcp4922.js';
 export * from './motor.js';
 export * from './leds.js';
-export * from './me305/index.js';
+export * from './me3305/index.js';

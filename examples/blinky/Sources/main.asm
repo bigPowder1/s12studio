@@ -1,6 +1,6 @@
 ;******************************************************************************
 ;* S12 Studio example -- Apache-2.0
-;* blinky: ME305 board demo for the MC9S12XDP512 (relocatable assembly, no
+;* blinky: ME3305 board demo for the MC9S12XDP512 (relocatable assembly, no
 ;* course library). Everything here is our own code:
 ;*   - CRG: 16 MHz crystal -> PLL 20 MHz -> 10 MHz bus
 ;*   - ECT: TCNT at bus/32 (3.2 us), output compare 0 = 10 ms tick, TC1 = delays

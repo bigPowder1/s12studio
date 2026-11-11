@@ -1,7 +1,7 @@
 /**
- * "ME305 Board" debugger component (S12 Studio addition; not a hiwave component): a drawing of the Cal Poly ME305
+ * "ME3305 Board" debugger component (S12 Studio addition; not a hiwave component): a drawing of the Cal Poly ME3305
  * benchtop unit driven by the board state stream (`board.state` events at the snapshot rate, no per-instruction
- * traffic). Spec: private me305-board.md §3-§8.
+ * traffic). Spec: private me3305-board.md §3-§8.
  *
  *   - 40x2 HD44780 LCD (Lcd.tsx), 20-key keypad (Keypad.tsx), LEDs PP7..PP4 (Leds.tsx), motor/encoder/DAC (Motor.tsx)
  *   - keypad: mouse down/up = board.pressKey/releaseKey (calls are serialized, so a release never overtakes its
@@ -194,9 +194,9 @@ export function BoardComponent(_props: DebuggerComponentProps) {
   return (
     <div
       ref={rootRef}
-      className={`me305-board${focused ? ' focused' : ''}`}
+      className={`me3305-board${focused ? ' focused' : ''}`}
       tabIndex={0}
-      data-testid="me305-board"
+      data-testid="me3305-board"
       data-present={present ? '1' : '0'}
       onKeyDown={onKeyDown}
       onKeyUp={onKeyUp}
@@ -205,7 +205,7 @@ export function BoardComponent(_props: DebuggerComponentProps) {
       onMouseDown={() => rootRef.current?.focus({ preventScroll: true })}
     >
       <div
-        className="me305-fit"
+        className="me3305-fit"
         style={
           fit
             ? {
@@ -215,32 +215,32 @@ export function BoardComponent(_props: DebuggerComponentProps) {
             : undefined
         }
       >
-        <div ref={unitRef} className={`me305-unit${fit ? ' scaled' : ''}`} style={fit ? { transform: `scale(${fit.scale})` } : undefined} data-scale={fit?.scale ?? 1}>
-          <div className="me305-title">
-            <span>ME305 Board</span>
-            <span className="me305-status" data-testid="me305-status">
+        <div ref={unitRef} className={`me3305-unit${fit ? ' scaled' : ''}`} style={fit ? { transform: `scale(${fit.scale})` } : undefined} data-scale={fit?.scale ?? 1}>
+          <div className="me3305-title">
+            <span>ME3305 Board</span>
+            <span className="me3305-status" data-testid="me3305-status">
               {present ? `t = ${(board?.simSeconds ?? 0).toFixed(3)} s` : 'no simulated board (start a debug session)'}
             </span>
           </div>
-          <div className="me305-lcd-bezel">
+          <div className="me3305-lcd-bezel">
             <Lcd lcd={board?.lcd ?? null} />
           </div>
-          <div className="me305-lower">
-            <div className="me305-section">
-              <div className="me305-caption">KEYPAD{focused && kbdEnabled ? ' (keyboard active)' : ''}</div>
+          <div className="me3305-lower">
+            <div className="me3305-section">
+              <div className="me3305-caption">KEYPAD{focused && kbdEnabled ? ' (keyboard active)' : ''}</div>
               <Keypad keys={keys} down={down} onPress={press} onRelease={release} />
             </div>
-            <div className="me305-section">
-              <div className="me305-caption">LEDS</div>
+            <div className="me3305-section">
+              <div className="me3305-caption">LEDS</div>
               <Leds leds={board?.leds?.length ? board.leds : defaultLeds()} />
-              <div className="me305-caption">ENCODER</div>
+              <div className="me3305-caption">ENCODER</div>
               <EncoderView count={board?.encoderCount ?? 0} />
-              <div className="me305-caption">DAC (MCP4922)</div>
+              <div className="me3305-caption">DAC (MCP4922)</div>
               <DacMeter name="A" volts={board?.dac.a ?? 0} />
               <DacMeter name="B" volts={board?.dac.b ?? 0} />
             </div>
-            <div className="me305-section">
-              <div className="me305-caption">MOTOR</div>
+            <div className="me3305-section">
+              <div className="me3305-caption">MOTOR</div>
               <MotorView motor={board?.motor ?? null} />
             </div>
           </div>

@@ -28,13 +28,16 @@ export interface LaunchedApp {
   userData: string;
   ideWindow(): Promise<Page>;
   debuggerWindow(): Promise<Page>;
+  /** The ME3305 board window (opens with a debug session that has the board, or Component > Open > ME3305 Board). */
+  boardWindow(): Promise<Page>;
   screenshot(page: Page, name: string): Promise<string>;
   close(): Promise<void>;
 }
 
-export type WindowKindName = 'ide' | 'debugger';
+export type WindowKindName = 'ide' | 'debugger' | 'board';
 
-const kindOf = (p: Page): WindowKindName | null => (/\/debugger\/index\.html/.test(p.url()) ? 'debugger' : /\/ide\/index\.html/.test(p.url()) ? 'ide' : null);
+const kindOf = (p: Page): WindowKindName | null =>
+  /\/debugger\/index\.html#board$/.test(p.url()) ? 'board' : /\/debugger\/index\.html/.test(p.url()) ? 'debugger' : /\/ide\/index\.html/.test(p.url()) ? 'ide' : null;
 
 const fx = locateFixtures(repoDir);
 /** The private fixtures directory: $S12_FIXTURES (relative to the repo root when relative), else <repo>/fixtures. */
@@ -127,6 +130,7 @@ export async function launchApp(opts: { args?: string[]; env?: Record<string, st
     userData,
     ideWindow: () => ready('ide'),
     debuggerWindow: () => ready('debugger'),
+    boardWindow: () => ready('board'),
     async screenshot(page, name) {
       mkdirSync(SCREENS_DIR, { recursive: true });
       const path = join(SCREENS_DIR, `${name}.png`);

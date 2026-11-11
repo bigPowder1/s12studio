@@ -1,11 +1,11 @@
 /**
- * Test helpers for the ME305 board models.
+ * Test helpers for the ME3305 board models.
  * - `PortBench`: a PinNet-level stand-in for the MCU ports/SPI that drives the board chips with HD44780 / SPI
  *   register sequences and explicit cycle counts (no CPU).
  * - `FakePorts` / `FakeSpi0`: TEST-ONLY register-level fakes (the real PIM/SPI models are other modules) so code can
  *   run on an S12XSystem against the board models.
  * - `callRoutine`: call a routine with a return trap.
- * The helpers that link and read the private ME305 library are private too (s12studio-fixtures: tests/sim/lib-helpers.ts).
+ * The helpers that link and read the private ME3305 library are private too (s12studio-fixtures: tests/sim/lib-helpers.ts).
  */
 import { addr } from '@s12/devices';
 import type { BoardNets, Level, Peripheral, PeripheralContext, S12XSystem } from '@s12/sim';

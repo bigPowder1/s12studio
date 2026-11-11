@@ -1,5 +1,5 @@
 /**
- * 5x8 dot-matrix glyphs for the ME305 LCD (HD44780-style, 5x7 character + cursor row 8).
+ * 5x8 dot-matrix glyphs for the ME3305 LCD (HD44780-style, 5x7 character + cursor row 8).
  *
  * The board state carries the LCD text already mapped through the HD44780 A00 ROM to Unicode (@s12/sim
  * hd44780-rom.ts: ASCII, '¥' for $5C, '→'/'←' for $7E/$7F, katakana, Greek row; CGRAM glyphs as U+E000+n).

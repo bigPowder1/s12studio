@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Assembler, resolveOptions } from '@s12/asm';
 import { S12XSystem, createBoardNets, VEC_IRQ, VEC_XIRQ } from '@s12/sim';
-import { ME305_MASKS, addr } from '@s12/devices';
+import { ME3305_MASKS, addr } from '@s12/devices';
 import { IRQ_PIN, MEBI_BITS, MEBI_RANGES, MEBI_VECTORS, Mebi, PORTE_PULLUP_BITS, XIRQ_PIN, type MebiOptions } from '../src/periph/mebi';
 
 function load(s: S12XSystem, src: string): Map<string, number> {
@@ -46,11 +46,11 @@ describe('MEBI core ports: map and reset', () => {
       [0x32, 0x33],
     ]);
     expect(MEBI_VECTORS).toEqual({ irq: VEC_IRQ, xirq: VEC_XIRQ });
-    expect(MEBI_BITS.PUPKE).toBe(ME305_MASKS.PUCR_PUPKE);
-    expect(MEBI_BITS.PUPEE).toBe(ME305_MASKS.PUCR_PUPEE);
-    expect(MEBI_BITS.PUPBE).toBe(ME305_MASKS.PUCR_PUPBE);
-    expect(MEBI_BITS.PUPAE).toBe(ME305_MASKS.PUCR_PUPAE);
-    expect(MEBI_BITS.NECLK).toBe(ME305_MASKS.ECLKCTL_NECLK);
+    expect(MEBI_BITS.PUPKE).toBe(ME3305_MASKS.PUCR_PUPKE);
+    expect(MEBI_BITS.PUPEE).toBe(ME3305_MASKS.PUCR_PUPEE);
+    expect(MEBI_BITS.PUPBE).toBe(ME3305_MASKS.PUCR_PUPBE);
+    expect(MEBI_BITS.PUPAE).toBe(ME3305_MASKS.PUCR_PUPAE);
+    expect(MEBI_BITS.NECLK).toBe(ME3305_MASKS.ECLKCTL_NECLK);
   });
 
   it('reset values: PUCR $D0, ECLKCTL $C0, IRQCR $40, EBICTL0/1 per table; DDRE1:0 read 0; MODE still core', () => {
@@ -95,7 +95,7 @@ describe('MEBI ports A/B/E/K', () => {
     expect(nets.pins.state('PB7').pull).toBe('up');
     expect(rd(s, 'PORTA')).toBe(0xff);
     wr(s, 'PORTA', 0x50);
-    wr(s, 'DDRA', 0x50); // ME305 motor direction/enable pins PA4/PA6 as outputs
+    wr(s, 'DDRA', 0x50); // ME3305 motor direction/enable pins PA4/PA6 as outputs
     expect([nets.pins.mcuOutput('PA4'), nets.pins.mcuOutput('PA6'), nets.pins.mcuOutput('PA5')]).toEqual([1, 1, null]);
     expect(nets.pins.state('PA4').pull).toBeNull();
     nets.pins.drive('PA5', 0);

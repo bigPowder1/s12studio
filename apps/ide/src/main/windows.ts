@@ -2,6 +2,8 @@
  * Window manager: the two CodeWarrior window kinds. The IDE window ("S12 Studio", like the CodeWarrior IDE frame)
  * and the separate debugger window ("S12 Studio Debugger", like hiwave.exe), opened by
  * Project > Debug. Both use in-window React menu bars; the native menu bar is hidden.
+ * S12 Studio adds a third: the ME3305 board window, a child of the debugger window (floats over it, can be moved and
+ * resized anywhere, closes with it), rendered by the debugger page at `#board`.
  *
  * Security: contextIsolation, sandbox, no nodeIntegration, navigation and window.open blocked, permission requests
  * denied, IPC accepted only from our own windows.
@@ -20,6 +22,37 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 export const DEBUGGER_TITLE = 'S12 Studio Debugger';
 export const IDE_TITLE = 'S12 Studio';
+export const BOARD_TITLE = 'ME3305 Board';
+/** Board window size when there is no remembered placement (fits the board drawing at about 0.7 scale). */
+const BOARD_DEFAULT = { width: 640, height: 300 };
+
+export interface Bounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Events for the board window: it is a satellite of the debugger, so of the debugger-only events it gets the board's
+ * own and the session (no 30 Hz debug snapshots).
+ */
+export function boardWantsEvent(domain: string, event: string): boolean {
+  return domain === 'board' || (domain === 'debug' && (event === 'session' || event === 'engineError'));
+}
+
+/**
+ * Where a new board window goes: the remembered placement when it is still on a visible display, otherwise the
+ * top-right corner of the debugger window.
+ */
+export function boardPlacement(saved: Bounds | undefined, parent: Bounds | undefined, areas: Bounds[]): Bounds {
+  const visible = (b: Bounds) => areas.some((a) => b.x < a.x + a.width - 40 && b.x + b.width > a.x + 40 && b.y >= a.y - 10 && b.y < a.y + a.height - 40);
+  if (saved && saved.width > 0 && saved.height > 0 && visible(saved)) return saved;
+  const { width, height } = BOARD_DEFAULT;
+  if (parent) return { x: parent.x + Math.max(0, parent.width - width - 24), y: parent.y + 90, width, height };
+  const a = areas[0] ?? { x: 0, y: 0, width: 1280, height: 800 };
+  return { x: a.x + Math.max(0, a.width - width - 24), y: a.y + 90, width, height };
+}
 
 /**
  * Window icon (Windows/Linux; macOS uses the bundle's .icns). Packaged: electron-builder extraResources copies
@@ -53,6 +86,10 @@ export class WindowManager implements WindowsPort {
   onQuitCancelled: () => void = () => undefined;
   /** Called when a window closed (main ends the debug session with the debugger window). */
   onClosed: (kind: WindowKind) => void = () => undefined;
+  /** Remembered board window placement (main loads it from settings and saves it via onBoardBounds). */
+  boardBounds: Bounds | undefined;
+  /** The board window was moved or resized (debounced) or is closing: its normal bounds. */
+  onBoardBounds: (b: Bounds) => void = () => undefined;
 
   /** Window kind of an IPC sender, or undefined when it is not one of ours. */
   kindOf(wc: WebContents): WindowKind | undefined {
@@ -75,7 +112,7 @@ export class WindowManager implements WindowsPort {
   /** Forward a bus event to windows (queued until the window's renderer called app.ready). */
   send(domain: Domain, event: string, payload: unknown, to?: WindowKind): void {
     for (const m of this.windows.values()) {
-      if (to && m.kind !== to) continue;
+      if (to && m.kind !== to && !(to === 'debugger' && m.kind === 'board' && boardWantsEvent(domain, event))) continue;
       if (m.win.isDestroyed()) continue;
       if (!m.ready) {
         if (COALESCED.has(`${domain}:${event}`)) {
@@ -101,12 +138,14 @@ export class WindowManager implements WindowsPort {
   create(kind: WindowKind): Managed {
     const existing = this.byKind(kind);
     if (existing) return existing;
+    const board = kind === 'board' ? boardPlacement(this.boardBounds, this.debuggerWindow?.getBounds(), screen.getAllDisplays().map((d) => d.workArea)) : undefined;
     const win = new BrowserWindow({
-      width: kind === 'ide' ? 1200 : 1280,
-      height: kind === 'ide' ? 800 : 860,
-      minWidth: 480,
-      minHeight: 320,
-      title: kind === 'ide' ? IDE_TITLE : DEBUGGER_TITLE,
+      ...(board ?? { width: kind === 'ide' ? 1200 : 1280, height: kind === 'ide' ? 800 : 860 }),
+      minWidth: board ? 280 : 480,
+      minHeight: board ? 150 : 320,
+      title: kind === 'ide' ? IDE_TITLE : kind === 'board' ? BOARD_TITLE : DEBUGGER_TITLE,
+      // the board floats over the debugger (stays in front of it, minimizes and closes with it)
+      ...(board ? { parent: this.debuggerWindow, minimizable: true, maximizable: false, fullscreenable: false } : {}),
       backgroundColor: '#d4d0c8',
       icon: windowIcon(),
       show: false,
@@ -133,7 +172,26 @@ export class WindowManager implements WindowsPort {
     wc.on('will-navigate', (e, url) => {
       if (url !== wc.getURL()) e.preventDefault();
     });
-    win.once('ready-to-show', () => win.show());
+    // the board window is shown by showBoard (inactive when it opens with a session, so the debugger keeps focus)
+    if (kind !== 'board') win.once('ready-to-show', () => win.show());
+    if (kind === 'board') {
+      let t: ReturnType<typeof setTimeout> | undefined;
+      const save = () => {
+        if (!win.isDestroyed() && !win.isMinimized()) this.onBoardBounds(win.getNormalBounds());
+      };
+      const later = () => {
+        if (t) clearTimeout(t);
+        t = setTimeout(save, 400);
+      };
+      win.on('moved', later);
+      win.on('resized', later);
+      win.on('close', () => {
+        if (t) clearTimeout(t);
+        save();
+      });
+    }
+    // the board window belongs to the debugger window
+    if (kind === 'debugger') win.on('closed', () => this.byKind('board')?.win.close());
     // the IDE's "save changes?" guard kept the window open: a pending File > Exit is cancelled (should the user then
     // confirm, the guard closes just the IDE window, like its close box)
     if (kind === 'ide')
@@ -154,8 +212,9 @@ export class WindowManager implements WindowsPort {
     const m: Managed = { kind, win, ready: false, queue: [], loaded: Promise.resolve() };
     this.windows.set(id, m);
     const page = kind === 'ide' ? 'ide' : 'debugger';
+    const hash = kind === 'board' ? 'board' : '';
     const devUrl = process.env.ELECTRON_RENDERER_URL;
-    m.loaded = (devUrl ? win.loadURL(`${devUrl}/${page}/index.html`) : win.loadFile(join(here, `../renderer/${page}/index.html`))).catch((e: Error) => {
+    m.loaded = (devUrl ? win.loadURL(`${devUrl}/${page}/index.html${hash ? `#${hash}` : ''}`) : win.loadFile(join(here, `../renderer/${page}/index.html`), hash ? { hash } : undefined)).catch((e: Error) => {
       console.error(`failed to load ${page} window: ${e.message}`);
     });
     if (this.devtools) wc.openDevTools({ mode: 'detach' });
@@ -169,8 +228,21 @@ export class WindowManager implements WindowsPort {
     m.win.focus();
   }
 
+  async showBoard(focus: boolean): Promise<void> {
+    if (!this.debuggerWindow) return;
+    const m = this.create('board');
+    await m.loaded;
+    if (m.win.isDestroyed()) return;
+    if (m.win.isMinimized()) m.win.restore();
+    if (focus) {
+      m.win.show();
+      m.win.focus();
+    } else if (!m.win.isVisible()) m.win.showInactive();
+  }
+
   async focus(kind: WindowKind): Promise<void> {
     if (kind === 'debugger') return this.openDebugger();
+    if (kind === 'board') return this.showBoard(true);
     const m = this.create('ide');
     await m.loaded;
     m.win.show();

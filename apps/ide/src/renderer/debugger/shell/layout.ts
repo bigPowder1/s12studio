@@ -119,6 +119,8 @@ export function hwlToMdi(layout: HwlLayoutInfo): MdiState {
       unknown.push(w.component);
       continue;
     }
+    // a layout saved while the board was an MDI child (0.1.x): the board now has its own window
+    if (entry.name === BOARD_COMPONENT) continue;
     const n = (counts.get(entry.name) ?? 0) + 1;
     counts.set(entry.name, n);
     const rect = w.hasGeometry === false ? defaultRect(noGeo++) : clampRect({ x: w.x, y: w.y, w: w.w, h: w.h });
@@ -220,30 +222,10 @@ export function iconSlots(windows: readonly MdiWindow[]): Map<string, number> {
   return out;
 }
 
-// ------------------------------------------------------------------------------------------------ ME305 board dock
+// ------------------------------------------------------------------------------------------------ ME3305 board
 
-/** The ME305 board's component (registry name). */
-export const BOARD_COMPONENT: HiwaveComponentName = 'ME305 Board';
-/**
- * Width in percent of the ME305 Board window docked on the right when a session's layout has none.
- * UNCERTAIN: our choice (hiwave has no board component); wide enough for the board drawing at about 0.7 scale.
- */
-export const BOARD_DOCK_WIDTH = 40;
-
-/**
- * Add the ME305 Board window on the right of a layout that has none (a course project's .hwl predates S12 Studio's
- * board): the layout's windows are squeezed into the left part, keeping their arrangement, and the board takes the
- * right BOARD_DOCK_WIDTH percent at full height. The layout's active window stays active. Unchanged when a board
- * window is already open. Nothing is written to the .hwl (Save Configuration would).
- */
-export function dockBoard(state: MdiState): MdiState {
-  if (state.windows.some((w) => w.component === BOARD_COMPONENT)) return state;
-  const k = (100 - BOARD_DOCK_WIDTH) / 100;
-  const squeezed: MdiState = { ...state, windows: state.windows.map((w) => ({ ...w, rect: { ...w.rect, x: w.rect.x * k, w: w.rect.w * k } })) };
-  const opened = mdiReducer(squeezed, { type: 'open', component: BOARD_COMPONENT, rect: { x: 100 - BOARD_DOCK_WIDTH, y: 0, w: BOARD_DOCK_WIDTH, h: 100 } });
-  return state.active ? mdiReducer(opened, { type: 'activate', id: state.active }) : opened;
-}
-
+/** The ME3305 board's component (registry name). It has its own window, so it is never an MDI child here. */
+export const BOARD_COMPONENT: HiwaveComponentName = 'ME3305 Board';
 // ------------------------------------------------------------------------------------------------ reducer
 
 export type MdiAction =
@@ -261,9 +243,7 @@ export type MdiAction =
   | { type: 'arrangeIcons' }
   | { type: 'font'; font: { face: string; size: number; color: string } }
   | { type: 'bckcolor'; color: number }
-  | { type: 'autosize'; on: boolean }
-  /** Dock the ME305 Board on the right unless it is open (dockBoard). */
-  | { type: 'dockBoard' };
+  | { type: 'autosize'; on: boolean };
 
 export function mdiReducer(state: MdiState, a: MdiAction): MdiState {
   const maxZ = state.windows.reduce((m, w) => Math.max(m, w.z), 0);
@@ -273,7 +253,8 @@ export function mdiReducer(state: MdiState, a: MdiAction): MdiState {
       return hwlToMdi(a.layout);
     case 'open': {
       const entry = findComponent(a.component);
-      if (!entry) return state;
+      // the board has its own window (DebuggerShell shows it); never an MDI child
+      if (!entry || entry.name === BOARD_COMPONENT) return state;
       const existing = state.windows.filter((w) => w.component === entry.name);
       if (existing.length && !entry.multiInstance) {
         const w = existing[0];
@@ -336,8 +317,6 @@ export function mdiReducer(state: MdiState, a: MdiAction): MdiState {
       return { ...state, bckcolor: a.color };
     case 'autosize':
       return { ...state, autosize: a.on };
-    case 'dockBoard':
-      return dockBoard(state);
   }
 }
 

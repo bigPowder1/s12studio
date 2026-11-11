@@ -204,7 +204,7 @@ export class SpiBus {
 /** Voltage sources on ATD input pins ('PAD00'..'PAD23'). */
 export class AnalogBus {
   private readonly sources = new Map<string, (cycle: number) => number>();
-  /** Reference voltages (VRH/VRL). ME305 board: UNCERTAIN, assume 5 V / 0 V. */
+  /** Reference voltages (VRH/VRL). ME3305 board: UNCERTAIN, assume 5 V / 0 V. */
   vrh = 5;
   vrl = 0;
   set(pin: string, source: number | ((cycle: number) => number)): void {

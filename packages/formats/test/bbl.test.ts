@@ -4,7 +4,7 @@ import { parseBbl, planBbl, applyBblTransfers, bblOutputWriteOptions, expandBblM
 import { readSRecords, writeSRecords } from '../src/srec';
 
 /** Any tool path works here: the planner only threads it through to the outputs. */
-const ABS = 'C:\\Users\\student\\ME305\\Lab3\\bin\\Project.abs';
+const ABS = 'C:\\Users\\student\\ME3305\\Lab3\\bin\\Project.abs';
 
 describeFx('Burner .bbl: fixtures/Lab3/prm/burner.bbl', () => {
   const text = readFixture('Lab3', 'prm', 'burner.bbl').toString('latin1');

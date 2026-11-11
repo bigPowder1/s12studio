@@ -1,5 +1,5 @@
 /**
- * Fit-to-window scaling of the ME305 Board drawing: the unit is laid out at its natural size (one row: keypad |
+ * Fit-to-window scaling of the ME3305 Board drawing: the unit is laid out at its natural size (one row: keypad |
  * LEDs/encoder/DAC | motor) and scaled with a CSS transform so the whole board (LCD, keypad, motor) is visible in
  * whatever window size the layout gives it. Below MIN_SCALE the panel scrolls instead (text would be unreadable).
  */

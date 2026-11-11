@@ -3,7 +3,7 @@ import { fixture, itFx } from '../../formats/test/fixtures';
 import { readFileSync } from 'node:fs';
 import { Assembler, resolveOptions } from '@s12/asm';
 import { S12XSystem } from '@s12/sim';
-import { ME305_MASKS, addr, vectorByName } from '@s12/devices';
+import { ME3305_MASKS, addr, vectorByName } from '@s12/devices';
 import {
   CRG_BITS,
   CRG_RANGE,
@@ -73,10 +73,10 @@ describe('CRG register map', () => {
     expect(R).toMatchObject({ SYNR: 0x34, REFDV: 0x35, CRGFLG: 0x37, CRGINT: 0x38, CLKSEL: 0x39, PLLCTL: 0x3a, RTICTL: 0x3b, COPCTL: 0x3c, ARMCOP: 0x3f });
     expect(CRG_VECTORS).toEqual({ rti: 0xf0, lock: 0xc6, scm: 0xc4 });
     expect(vectorByName('Vcop')!.offset).toBe(0xfa);
-    expect(B.PLLSEL).toBe(ME305_MASKS.CLKSEL_PLLSEL);
-    expect(B.PLLON).toBe(ME305_MASKS.PLLCTL_PLLON);
-    expect(B.AUTO).toBe(ME305_MASKS.PLLCTL_AUTO);
-    expect(B.LOCK).toBe(ME305_MASKS.CRGFLG_LOCK);
+    expect(B.PLLSEL).toBe(ME3305_MASKS.CLKSEL_PLLSEL);
+    expect(B.PLLON).toBe(ME3305_MASKS.PLLCTL_PLLON);
+    expect(B.AUTO).toBe(ME3305_MASKS.PLLCTL_AUTO);
+    expect(B.LOCK).toBe(ME3305_MASKS.CRGFLG_LOCK);
     expect([B.RTIF, B.PORF, B.LVRF, B.LOCKIF, B.TRACK, B.SCMIF, B.SCM]).toEqual([0x80, 0x40, 0x20, 0x10, 0x04, 0x02, 0x01]);
     expect([B.RTIE, B.ILAF, B.LOCKIE, B.SCMIE]).toEqual([0x80, 0x40, 0x10, 0x02]);
     expect([B.WCOP, B.RSBCK, B.WRTMASK, B.CR, B.RTDEC]).toEqual([0x80, 0x40, 0x20, 0x07, 0x80]);

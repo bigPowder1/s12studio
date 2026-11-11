@@ -23,7 +23,7 @@ export * from './periph/atd.js';
 export * from './periph/pwm.js';
 export * from './periph/nvm.js';
 export * from './periph/misc.js';
-// Board device models and the ME305 board.
+// Board device models and the ME3305 board.
 export * from './board/index.js';
 // Fully wired MCU (+ board).
 export * from './mcu.js';

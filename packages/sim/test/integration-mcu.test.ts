@@ -54,7 +54,7 @@ describe('createMc9s12xdp512 wiring', () => {
   });
 
   it('PinNet.now is the exact access cycle of a port write inside an instruction', () => {
-    const m = createMc9s12xdp512({ board: 'me305' });
+    const m = createMc9s12xdp512({ board: 'me3305' });
     const seen: number[] = [];
     m.nets.pins.on('PP4', (_p, s, c) => seen.push(s.level === 1 ? c : -c));
     // MOVB #$10,DDRP (drives PP4 low: no LED edge) ; MOVB #$10,PTP
@@ -149,7 +149,7 @@ describe('createMc9s12xdp512 wiring', () => {
   });
 
   itFx('runSeconds integrates across the PLL switch; board time = system time', () => {
-    const m = createMc9s12xdp512({ board: 'me305' });
+    const m = createMc9s12xdp512({ board: 'me3305' });
     m.loadAbs(new Uint8Array(readFileSync(fixture('blank_project', 'bin', 'Project.abs'))));
     expect(m.system.busHz).toBe(8_000_000);
     expect(m.runSeconds(0.01)).toBe('limit');
@@ -165,9 +165,9 @@ describe('createMc9s12xdp512 wiring', () => {
 
   it('dispose detaches the board and the pin listeners from shared nets', () => {
     const nets = createBoardNets();
-    const a = createMc9s12xdp512({ nets, board: 'me305' });
+    const a = createMc9s12xdp512({ nets, board: 'me3305' });
     a.dispose();
-    const b = createMc9s12xdp512({ nets, board: 'me305' });
+    const b = createMc9s12xdp512({ nets, board: 'me3305' });
     b.system.poke(addr('DDRP'), 0x10);
     b.system.poke(addr('PTP'), 0x10);
     expect(a.board!.leds.edgeCount).toBe(0);

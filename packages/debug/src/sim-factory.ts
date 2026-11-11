@@ -1,8 +1,8 @@
 /**
- * SimTarget factories over the fully wired MC9S12XDP512 model (+ ME305 board) from @s12/sim: the hiwave
+ * SimTarget factories over the fully wired MC9S12XDP512 model (+ ME3305 board) from @s12/sim: the hiwave
  * "Full Chip Simulation" connection for real programs (no fakes).
  *
- *   const { target, mcu } = createMcuSimTarget({ mcu: { board: 'me305' } });
+ *   const { target, mcu } = createMcuSimTarget({ mcu: { board: 'me3305' } });
  *   await target.load({ kind: 'abs', data });   // load + reset
  *   mcu.board!.keypad.tap('F1', 0.08);           // board stimulus (call while halted, or between slices)
  *   await runForSeconds(target, mcu, 3.5);       // go, halt at a simulated time
@@ -38,13 +38,13 @@ export function mcuSystemFactory(opts: Mc9s12xdp512Options = {}, onCreate?: (mcu
 }
 
 export interface McuSimTargetOptions {
-  /** MCU/board model options (default: ME305 board, 16 MHz oscillator). */
+  /** MCU/board model options (default: ME3305 board, 16 MHz oscillator). */
   mcu?: Mc9s12xdp512Options;
   /** SimTarget options (pacing, slices, reset cause...). */
   target?: Omit<SimTargetOptions, 'createSystem'>;
 }
 
-/** SimTarget on the full MC9S12XDP512 + ME305 model. */
+/** SimTarget on the full MC9S12XDP512 + ME3305 model. */
 export function createMcuSimTarget(opts: McuSimTargetOptions = {}): { target: SimTarget; mcu: Mc9s12xdp512 } {
   const f = mcuSystemFactory(opts.mcu);
   const target = new SimTarget({ ...opts.target, createSystem: f.createSystem });

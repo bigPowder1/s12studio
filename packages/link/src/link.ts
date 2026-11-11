@@ -68,7 +68,7 @@ interface SegState {
 
 /**
  * Order the inputs: explicit `inputs` first, then `libraries`, then `objects` (libraries before objects is the
- * CodeWarrior ME305 project link order, used both with and without `inputs`).
+ * CodeWarrior ME3305 project link order, used both with and without `inputs`).
  */
 export function orderLinkInputs(input: Pick<LinkInput, 'inputs' | 'objects' | 'libraries'>): LinkInputEntry[] {
   const objs = (input.objects ?? []).map((f) => ({ ...f, kind: 'object' as const }));

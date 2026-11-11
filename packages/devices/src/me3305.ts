@@ -1,6 +1,6 @@
 /**
- * ME 305 benchtop board profile (MC9S12XDP512): clocks, pin wiring and parts of the board S12 Studio simulates.
- * Source: private me305-board.md (and critique C1: the LCD is 40x2).
+ * ME 3305 benchtop board profile (MC9S12XDP512): clocks, pin wiring and parts of the board S12 Studio simulates.
+ * Source: private me3305-board.md (and critique C1: the LCD is 40x2).
  */
 
 /** Pin reference such as 'PM4', 'PK5', 'PJ7', 'PP1', 'PA4', 'PH0', 'PS4'. */
@@ -44,7 +44,7 @@ export interface KeypadKey {
   label: string;
 }
 
-export interface Me305Board {
+export interface Me3305Board {
   name: string;
   oscillatorHz: number;
   pllClockHz: number;
@@ -115,8 +115,8 @@ function keypadTable(): KeypadKey[] {
   return t;
 }
 
-export const ME305: Me305Board = {
-  name: 'ME 305 benchtop board (MC9S12XDP512)',
+export const ME3305: Me3305Board = {
+  name: 'ME 3305 benchtop board (MC9S12XDP512)',
   oscillatorHz: 16_000_000, // UNCERTAIN: derived from PLL/delay math, no schematic seen
   pllClockHz: 20_000_000,
   busHzBeforePll: 8_000_000,

@@ -6,7 +6,7 @@ export * from './types.js';
 export { parseBits, fieldMask } from './bits.js';
 export * from './mc9s12xdp512/index.js';
 export { generateIncFile, INC_LINE_PATTERNS, type IncOptions } from './inc.js';
-export * from './me305.js';
+export * from './me3305.js';
 
 /** Default device for this project. */
 export const DEFAULT_DEVICE: DeviceDescription = MC9S12XDP512;
@@ -147,8 +147,8 @@ export function addr(reg: string, device: DeviceDescription = DEFAULT_DEVICE): n
   return r.address;
 }
 
-/** Register addresses and bit masks used by the ME305 library and Lab3 (checked against the table by tests). */
-export const ME305_MASKS = {
+/** Register addresses and bit masks used by the ME3305 library and Lab3 (checked against the table by tests). */
+export const ME3305_MASKS = {
   TSCR1_TEN: 0x80,
   TSCR1_TSFRZ: 0x20,
   TSCR1_TFFCA: 0x10,

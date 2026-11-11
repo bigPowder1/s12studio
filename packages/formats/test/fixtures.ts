@@ -1,5 +1,5 @@
 /**
- * The private CodeWarrior fixtures (Lab3 and blank_project with CodeWarrior's golden outputs, the ME305 library).
+ * The private CodeWarrior fixtures (Lab3 and blank_project with CodeWarrior's golden outputs, the ME3305 library).
  * They live in a separate private repo checked out at `<repo>/fixtures`, or wherever `S12_FIXTURES` points.
  * Every package's tests resolve them through this module; fixture-dependent tests are skipped when they are absent:
  *

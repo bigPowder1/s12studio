@@ -138,7 +138,7 @@ export class ProjectService {
     await this.ensureCompiler();
     const dest = `${req.dir.replace(/[\\/]+$/, '')}/${req.name}`;
     if (req.template === 'blank_project' && !this.opts.templatesDir)
-      throw new ApiError('not-found', "no ME 305 blank_project found in the templates folder: open a copy of the course's blank_project with File > Open... (or choose the generic project)");
+      throw new ApiError('not-found', "no ME 3305 blank_project found in the templates folder: open a copy of the course's blank_project with File > Open... (or choose the generic project)");
     let r;
     try {
       r =
