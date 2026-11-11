@@ -7,6 +7,7 @@ import { createMockS12, type MockS12 } from '../../common/testing/mockS12';
 import { setMonacoLoader } from '../../common/monaco/loader';
 import { createFakeMonaco, type FakeEditor, type FakeMonaco } from '../../common/monaco/testing/fakeMonaco';
 import { ApiError, type ProjectInfo, type WriteTextRequest } from '../../../shared/api';
+import { THEME } from '../../../shared/theme/tokens';
 import { runIdeCommand } from '../commands';
 import { getEditorArea, type EditorAreaHandle } from './bridge';
 import { visualColumn } from './documents';
@@ -100,7 +101,7 @@ describe('EditorArea: opening files', () => {
     expect(ed.revealed).toContain(4);
     expect(screen.getByTestId('editor-linecol')).toHaveTextContent('Line 4 Col 21');
     expect(mock.calls('files', 'watch')).toEqual([[MAIN]]);
-    expect(ed.options).toMatchObject({ autoIndent: 'none', theme: 'cw-ide', minimap: { enabled: false }, fontFamily: "'Courier New', Courier, monospace", fontSize: 13 });
+    expect(ed.options).toMatchObject({ autoIndent: 'none', theme: 'cw-ide', minimap: { enabled: false }, fontFamily: THEME.monoFont, fontSize: 15 });
     expect(screen.getByTestId('editor-status')).toHaveTextContent('DOS');
   });
 

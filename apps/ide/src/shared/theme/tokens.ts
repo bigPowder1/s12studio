@@ -34,7 +34,8 @@ export const THEME = {
   cmdWarning: '#008000',
   uiFont: "Tahoma, 'MS Sans Serif', 'Microsoft Sans Serif', 'Segoe UI', Arial, sans-serif",
   uiFontSize: '11px',
-  monoFont: "'Courier New', Courier, 'Liberation Mono', monospace",
+  /** The only code font (editor, debugger, errors, board). Consolas: Courier New's hairline strokes strain the eyes. */
+  monoFont: "Consolas, Menlo, 'DejaVu Sans Mono', 'Liberation Mono', 'Courier New', monospace",
   monoFontSize: '12px',
 } as const;
 

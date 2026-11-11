@@ -20,6 +20,23 @@ export function mergeSettings(base: AppSettings, patch: AppSettingsPatch): AppSe
   return s;
 }
 
+/**
+ * Bring a settings file from an older version up to date:
+ * - v1 -> v2: the editor font is no longer a setting (drop `editor.fontFamily`), and the old default size 13 becomes
+ *   the new default 15 (a size the user picked themselves is kept).
+ */
+export function migrateSettings(raw: Record<string, unknown>): AppSettingsPatch {
+  const s = { ...raw };
+  const editor = s.editor && typeof s.editor === 'object' && !Array.isArray(s.editor) ? { ...(s.editor as Record<string, unknown>) } : undefined;
+  if (editor) {
+    delete editor.fontFamily;
+    if (s.version !== 2 && editor.fontSize === 13) editor.fontSize = DEFAULT_SETTINGS.editor.fontSize;
+    s.editor = editor;
+  }
+  s.version = DEFAULT_SETTINGS.version;
+  return s as AppSettingsPatch;
+}
+
 export class SettingsStore {
   private settings: AppSettings = structuredClone(DEFAULT_SETTINGS);
   private loaded = false;
@@ -34,7 +51,7 @@ export class SettingsStore {
     if (!this.loaded) {
       this.loaded = true;
       try {
-        const parsed = JSON.parse(await readFile(this.file, 'utf8')) as AppSettingsPatch;
+        const parsed = migrateSettings(JSON.parse(await readFile(this.file, 'utf8')) as Record<string, unknown>);
         this.settings = mergeSettings(structuredClone(DEFAULT_SETTINGS), parsed);
       } catch {
         // missing or corrupt: defaults

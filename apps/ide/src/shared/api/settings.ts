@@ -3,8 +3,8 @@
  * sidecar ('<name>.s12studio.json'; structured edits go through ProjectApi).
  */
 
+/** Editor preferences. The code font itself is fixed (THEME.monoFont, Consolas); only its size is a preference. */
 export interface EditorPrefs {
-  fontFamily: string;
   fontSize: number;
   tabSize: number;
   /** Insert spaces instead of tabs. */
@@ -30,7 +30,8 @@ export interface WindowBounds {
 }
 
 export interface AppSettings {
-  version: 1;
+  /** 2: the editor font became fixed (fontFamily dropped) and the default size 13 -> 15. */
+  version: 2;
   showStartupDialog: boolean;
   recentProjects: string[];
   recentFiles: string[];
@@ -45,11 +46,11 @@ export type AppSettingsPatch = {
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  version: 1,
+  version: 2,
   showStartupDialog: true,
   recentProjects: [],
   recentFiles: [],
-  editor: { fontFamily: "'Courier New', Courier, monospace", fontSize: 13, tabSize: 8, insertSpaces: false, syntaxColoring: true },
+  editor: { fontSize: 15, tabSize: 8, insertSpaces: false, syntaxColoring: true },
   debugger: { pacing: 'true-time', speedFactor: 1, snapshotHz: 30, keyboardToKeypad: true },
   windows: {},
 };

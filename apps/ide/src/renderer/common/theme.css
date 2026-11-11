@@ -1,6 +1,6 @@
 /*
  * Classic Win2000/XP-era CodeWarrior / hiwave look: grey 3D chrome, bevels, Tahoma/MS Sans Serif UI font,
- * Courier New for code. Token names match src/shared/theme/tokens.ts (--cw-<key>).
+ * Consolas for code (THEME.monoFont). Token names match src/shared/theme/tokens.ts (--cw-<key>).
  * Utility classes are prefixed `cw-`; components may add their own CSS modules/files next to them.
  */
 :root {
@@ -30,7 +30,7 @@
   --cw-cmd-warning: #008000;
   --cw-ui-font: Tahoma, 'MS Sans Serif', 'Microsoft Sans Serif', 'Segoe UI', Arial, sans-serif;
   --cw-ui-font-size: 11px;
-  --cw-mono-font: 'Courier New', Courier, 'Liberation Mono', monospace;
+  --cw-mono-font: Consolas, Menlo, 'DejaVu Sans Mono', 'Liberation Mono', 'Courier New', monospace;
   --cw-mono-font-size: 12px;
   color-scheme: light;
 }

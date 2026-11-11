@@ -17,6 +17,7 @@ import { ContextMenu, type ContextMenuState } from '../menu/MenuBar';
 import { SEP, type MenuEntry } from '../menu/model';
 import { languageForPath, HC12_LANGUAGE_ID } from './hc12';
 import { useMonaco } from './loader';
+import { THEME } from '../../../shared/theme/tokens';
 import { CW_HIWAVE_THEME } from './themes';
 import './sourceView.css';
 
@@ -168,7 +169,7 @@ function describeBp(b: SourceBreakpointMark): string {
 }
 
 export const SourceView = forwardRef<SourceViewHandle, SourceViewProps>(function SourceView(props, ref) {
-  const { text, path, pcLine, codeLines, breakpoints, followPc = true, fontFamily = "'Courier New', Courier, 'Liberation Mono', monospace", fontSize = 12, tabSize = 8, testId = 'source-view' } = props;
+  const { text, path, pcLine, codeLines, breakpoints, followPc = true, fontFamily = THEME.monoFont, fontSize = 12, tabSize = 8, testId = 'source-view' } = props;
   const monaco = useMonaco();
   const hostRef = useRef<HTMLDivElement>(null);
   const edRef = useRef<MonacoNs.editor.IStandaloneCodeEditor | null>(null);

@@ -12,6 +12,7 @@ import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { parseApiError } from '../../../../shared/api';
+import { THEME } from '../../../../shared/theme/tokens';
 import { Button, Dialog, GroupBox, useResetOnOpen } from '../../../common/controls';
 import { DialogLayer } from '../../dialogs/DialogLayer';
 import { ContextMenu, type ContextMenuState } from '../../../common/menu/MenuBar';
@@ -86,7 +87,7 @@ export function TerminalComponent(_props: DebuggerComponentProps) {
     if (!el) return;
     const term = new Terminal({
       convertEol: settingsRef.current.convertEol,
-      fontFamily: "'Courier New', Courier, 'Liberation Mono', monospace",
+      fontFamily: THEME.monoFont,
       fontSize: 13,
       cursorBlink: true,
       scrollback: 5000,

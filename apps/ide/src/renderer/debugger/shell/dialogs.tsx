@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog, useResetOnOpen } from '../../common/controls';
 import { COMPONENTS, type ComponentEntry } from '../components/registry';
 import type { HiwaveComponentName } from '../components/contract';
+import { THEME } from '../../../shared/theme/tokens';
 import { ToolbarIcons } from './toolbar-icons';
 
 export { PromptDialog, type PromptDialogProps } from './PromptDialog';
@@ -148,17 +149,12 @@ export function ComponentOpenDialog({ open, onClose, onOpen }: { open: boolean; 
 
 // ------------------------------------------------------------------------------------------------ fonts / background
 
-export const FONT_FACES = ['Courier New', 'Lucida Console', 'Consolas', 'Liberation Mono', 'DejaVu Sans Mono', 'monospace'];
 export const FONT_SIZES = [7, 8, 9, 10, 11, 12, 14, 16, 18];
 
 export function FontDialog({ open, onClose, font, onApply }: { open: boolean; onClose: () => void; font: { face: string; size: number; color: string }; onApply: (f: { face: string; size: number; color: string }) => void }) {
-  const [face, setFace] = useState(font.face);
+  // Only the size is a choice: the code font is always THEME.monoFont (Consolas). The layout's face passes through.
   const [size, setSize] = useState(font.size);
-  useResetOnOpen(open, () => {
-    setFace(font.face);
-    setSize(font.size);
-  });
-  const faces = FONT_FACES.includes(font.face) ? FONT_FACES : [font.face, ...FONT_FACES];
+  useResetOnOpen(open, () => setSize(font.size));
   return (
     <Dialog
       title="Font"
@@ -171,7 +167,7 @@ export function FontDialog({ open, onClose, font, onApply }: { open: boolean; on
           <Button
             isDefault
             onClick={() => {
-              onApply({ face, size, color: font.color || 'BLACK' });
+              onApply({ face: font.face, size, color: font.color || 'BLACK' });
               onClose();
             }}
           >
@@ -183,14 +179,6 @@ export function FontDialog({ open, onClose, font, onApply }: { open: boolean; on
     >
       <div style={{ display: 'flex', gap: 8 }}>
         <label>
-          Font:
-          <select className="cw-field" style={{ display: 'block', width: 200 }} value={face} onChange={(e) => setFace(e.target.value)} aria-label="Font">
-            {faces.map((f) => (
-              <option key={f}>{f}</option>
-            ))}
-          </select>
-        </label>
-        <label>
           Size:
           <select className="cw-field" style={{ display: 'block', width: 70 }} value={size} onChange={(e) => setSize(Number(e.target.value))} aria-label="Size">
             {FONT_SIZES.map((s) => (
@@ -201,7 +189,7 @@ export function FontDialog({ open, onClose, font, onApply }: { open: boolean; on
           </select>
         </label>
       </div>
-      <div className="cw-sunken" style={{ marginTop: 8, padding: 6, background: 'var(--cw-window)', fontFamily: `'${face}', monospace`, fontSize: `${(size * 96) / 72}px` }}>
+      <div className="cw-sunken" style={{ marginTop: 8, padding: 6, background: 'var(--cw-window)', fontFamily: THEME.monoFont, fontSize: `${(size * 96) / 72}px` }}>
         LDAA #$FF ; AaBbYyZz
       </div>
     </Dialog>

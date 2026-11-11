@@ -424,7 +424,7 @@ export function DebuggerShell() {
 
   const mdiStyle = useMemo(() => {
     const st: Record<string, string> = {};
-    if (mdi.font?.face) st['--cw-mono-font'] = `'${mdi.font.face}', 'Courier New', Courier, monospace`;
+    // the typeface is fixed (THEME.monoFont); a layout's FONT face is kept only so a saved layout round-trips
     if (mdi.font?.size) st['--cw-mono-font-size'] = `${pointsToPx(mdi.font.size)}px`;
     if (mdi.bckcolor !== undefined) st['--cw-window'] = colorrefToCss(mdi.bckcolor);
     return st as React.CSSProperties;

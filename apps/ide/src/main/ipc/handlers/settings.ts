@@ -6,13 +6,12 @@ import type { MainServices } from '../../services';
 const bounds = v.object({ x: v.number(), y: v.number(), width: v.number({ min: 0 }), height: v.number({ min: 0 }), maximized: v.boolean() });
 
 const patchV = v.object({
-  version: v.optional(v.literal(1)),
+  version: v.optional(v.literal(2)),
   showStartupDialog: v.optional(v.boolean()),
   recentProjects: v.optional(v.array(v.path(), 50)),
   recentFiles: v.optional(v.array(v.path(), 50)),
   editor: v.optional(
     v.object({
-      fontFamily: v.optional(v.string({ max: 256 })),
       fontSize: v.optional(v.number({ min: 6, max: 72 })),
       tabSize: v.optional(v.int(1, 16)),
       insertSpaces: v.optional(v.boolean()),

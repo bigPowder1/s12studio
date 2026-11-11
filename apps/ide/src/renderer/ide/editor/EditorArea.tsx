@@ -16,6 +16,7 @@ import { commentLines, scanIncludes, scanLabels, type CommentMode, type TextSear
 import { languageForPath } from '../../common/monaco/hc12';
 import { loadMonaco, useMonaco, type Monaco } from '../../common/monaco/loader';
 import { CW_IDE_THEME, CW_PLAIN_THEME } from '../../common/monaco/themes';
+import { THEME } from '../../../shared/theme/tokens';
 import { useIdeCommand } from '../commands';
 import { setEditorArea, type EditorAreaHandle } from './bridge';
 import { baseName, dirName, isBinaryPath, isDirty, joinPath, samePath, visualColumn, type EditorDoc } from './documents';
@@ -67,7 +68,7 @@ function useEditorPrefs(): EditorPrefs {
 export function editorOptions(prefs: EditorPrefs, lineNumbers: boolean): MonacoNs.editor.IStandaloneEditorConstructionOptions {
   return {
     theme: prefs.syntaxColoring ? CW_IDE_THEME : CW_PLAIN_THEME,
-    fontFamily: prefs.fontFamily,
+    fontFamily: THEME.monoFont,
     fontSize: prefs.fontSize,
     fontLigatures: false,
     lineNumbers: lineNumbers ? 'on' : 'off',
