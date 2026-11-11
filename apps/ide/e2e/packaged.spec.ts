@@ -49,11 +49,24 @@ async function ideWindow(a: ElectronApplication): Promise<Page> {
 }
 
 async function debuggerWindow(a: ElectronApplication): Promise<Page> {
-  const isDbg = (p: Page) => /\/debugger\/index\.html/.test(p.url());
+  const isDbg = (p: Page) => /\/debugger\/index\.html$/.test(p.url());
   for (;;) {
     const w = a.windows().find(isDbg);
     if (w) {
       await w.locator('#root > *').first().waitFor();
+      return w;
+    }
+    await a.waitForEvent('window', { timeout: 60_000 });
+  }
+}
+
+/** The ME3305 board window (the debugger page at #board), loaded. */
+async function boardWindow(a: ElectronApplication): Promise<Page> {
+  const isBoard = (p: Page) => /\/debugger\/index\.html#board$/.test(p.url());
+  for (;;) {
+    const w = a.windows().find(isBoard);
+    if (w) {
+      await w.getByTestId('me3305-board').waitFor();
       return w;
     }
     await a.waitForEvent('window', { timeout: 60_000 });
@@ -126,8 +139,12 @@ test('packaged app: ships the demo project and no course content; the demo -> Ma
   const dbg = await debuggerWindow(a);
   const status = dbg.getByTestId('debugger-status');
   await expect(dbg.getByTestId('reg-PC')).toHaveText(/^[0-9A-F]{4}$/, { timeout: 60_000 });
+  // the ME3305 board window loads from the asar (debugger page at #board) and shows the running demo
+  const bw = await boardWindow(a);
+  await expect(bw).toHaveTitle('ME3305 Board');
   await dbg.keyboard.press('F5');
   await expect(status.locator('[data-pane="state"]')).toContainText('RUNNING', { timeout: 20_000 });
+  await expect(bw.getByTestId('lcd-row-0')).toContainText('S12 Studio blinky demo', { timeout: 30_000 });
   const cycles = async () => Number(((await status.locator('[data-pane="cycles"]').textContent()) ?? '').replace(/\D/g, '') || 0);
   const c0 = await cycles();
   await expect.poll(cycles, { timeout: 20_000 }).toBeGreaterThan(c0);
